@@ -1,4 +1,3 @@
-
 // Importaciones principales
 const express = require('express');
 const cors = require('cors');
@@ -8,7 +7,13 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./src/config/swagger');
 const { sequelize } = require('./src/config/database');
 const errorHandler = require('./src/middleware/errorHandler');
+
+const adminRoutes = require('./src/routes/adminRoutes');
+const bookRoutes = require('./src/routes/bookRoutes');
 const chatRoutes = require('./src/routes/chatRoutes');
+const userRoutes = require('./src/routes/userRoutes');
+const validationRoutes = require('./src/routes/validationRoutes');
+
 const { logger, expressLogger } = require('./src/config/logger');
 // Crear instància d'Express
 const app = express();
@@ -26,13 +31,17 @@ app.use((req, res, next) => {
         userAgent: req.get('user-agent')
     });
 
-    log.createLog("DEBUG","SERVER","Petición HTTP recibida")
+    logger.debug("DEBUG","SERVER","Petición HTTP recibida")
     next();
 });
 
 app.use(expressLogger);
 
-app.use('/api', chatRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/book', bookRoutes);
+app.use('/api/chat', chatRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api/validation', validationRoutes);
 
 app.use(errorHandler);
 
@@ -66,7 +75,7 @@ async function startServer() {
             });
         });
 
-        logger.debug("DEBUG","SERVER",`Servidor iniciado correctamente en: http://127.0.0.1:${PORT}/api-docs`)
+        logger.debug(`Servidor iniciado correctamente en: http://127.0.0.1:${PORT}/api-docs`)
         
     } catch (error) {
         logger.error('Error fatal en iniciar el servidor', {
@@ -75,7 +84,7 @@ async function startServer() {
             timestamp: new Date().toISOString()
         });
 
-        log.createLog("ERROR","SERVER","Error fatal en iniciar el servidor")
+        logger.debug("Error fatal en iniciar el servidor")
 
         process.exit(1);
 
@@ -90,7 +99,7 @@ process.on('unhandledRejection', (error) => {
         timestamp: new Date().toISOString()
     });
 
-    log.createLog("ERROR","SERVER","Error no controlado detectado")
+    logger.debug("SERVER","Error no controlado detectado")
 
     process.exit(1);
 });
@@ -98,7 +107,7 @@ process.on('unhandledRejection', (error) => {
 process.on('SIGTERM', () => {
     logger.info('Senyal SIGTERM rebut. Tancant el servidor...');
 
-    log.createLog("INFO","SERVER","Señal SIGTERM recibido. Cerrando el servidor...")
+    logger.info("Señal SIGTERM recibido. Cerrando el servidor...")
 
     process.exit(0);
 });
