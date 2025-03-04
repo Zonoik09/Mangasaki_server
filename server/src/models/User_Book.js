@@ -31,7 +31,7 @@ const User_Book = sequelize.define('User_Book', {
         type: DataTypes.ENUM('PENDING', 'READING', 'COMPLETED', 'ABANDONED'),
         allowNull: false,
         defaultValue: 'PENDING'
-    }
+    },
 }, {
     timestamps: true,
     tableName: 'User_Book',

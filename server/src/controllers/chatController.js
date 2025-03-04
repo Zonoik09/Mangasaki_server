@@ -13,7 +13,7 @@ const { logger } = require('../config/logger');
 const { Op } = require('sequelize');
 
 const OLLAMA_API_URL = process.env.CHAT_API_OLLAMA_URL;
-const DEFAULT_OLLAMA_MODEL = process.env.CHAT_API_OLLAMA_MODEL;
+const CHAT_API_OLLAMA_MODEL = process.env.CHAT_API_OLLAMA_MODEL;
 
 /**
  * Lista los modelos de ollama disponibles.
