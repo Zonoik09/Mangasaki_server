@@ -1,38 +1,34 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
 
-const Request = sequelize.define('Request', {
+const Recommendation = sequelize.define('Recommendation', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
     },
-    userId: {
+    friendship_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'Users',
+            model: Friendship,
             key: 'id'
         },
         onDelete: 'CASCADE'
     },
-    prompt: {
-        type: DataTypes.TEXT,
-        allowNull: false
-    },
-    answer: {
-        type: DataTypes.TEXT,
-        allowNull: false
-    },
-    model: {
-        type: DataTypes.STRING(50),
-        allowNull: false
-    },
+    book_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: Book,
+            key: 'id'
+        },
+        onDelete: 'CASCADE'
+    }
 }, {
     timestamps: true,
-    tableName: 'Requests',
+    tableName: 'Recommendation',
     underscored: true
 });
 
-module.exports = Request;
- 
+module.exports = Recommendation;

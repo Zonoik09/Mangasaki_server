@@ -4,13 +4,13 @@ const swaggerOptions = {
     definition: {
         openapi: '3.0.0',
         info: {
-            title: 'ImagIA API',
+            title: 'MANGASAKI API',
             version: '1.0.0',
-            description: 'API per gestionar projecte de ImagIA'
+            description: 'API per gestionar projecte de Mangasaki'
         },
         servers: [
             {
-                url: 'https://imagia2.ieti.site',
+                url: 'https://mangasaki.ieti.site',
                 description: 'Servidor de desenvolupament'
             }
         ]

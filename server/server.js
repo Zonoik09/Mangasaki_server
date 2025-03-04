@@ -1,24 +1,19 @@
-const dotenv = require('dotenv');
-dotenv.config();
 
 // Importaciones principales
 const express = require('express');
 const cors = require('cors');
+const dotenv = require('dotenv');
+dotenv.config();
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./src/config/swagger');
 const { sequelize } = require('./src/config/database');
 const errorHandler = require('./src/middleware/errorHandler');
 const chatRoutes = require('./src/routes/chatRoutes');
 const { logger, expressLogger } = require('./src/config/logger');
-const log = require('./src/log/logsUtility');
-
 // Crear instància d'Express
 const app = express();
 
 app.use(cors());
-
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
@@ -71,8 +66,7 @@ async function startServer() {
             });
         });
 
-        log.createLog("DEBUG","BASE DE DATOS","Base de datos creada correctamente")
-        log.createLog("DEBUG","SERVER",`Servidor iniciado correctamente en: http://127.0.0.1:${PORT}/api-docs`)
+        logger.debug("DEBUG","SERVER",`Servidor iniciado correctamente en: http://127.0.0.1:${PORT}/api-docs`)
         
     } catch (error) {
         logger.error('Error fatal en iniciar el servidor', {

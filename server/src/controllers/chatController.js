@@ -1,7 +1,6 @@
 const Requests = require('../models/Requests');
-const Users = require('../models/Users');
+const Users = require('../models/User');
 const Logs = require('../models/Logs');
-const log = require('../log/logsUtility');
 const { validateUUID } = require('../middleware/validators');
 const axios = require('axios');
 const crypto = require('crypto');
@@ -10,14 +9,6 @@ const { Op } = require('sequelize');
 
 const OLLAMA_API_URL = process.env.CHAT_API_OLLAMA_URL;
 const DEFAULT_OLLAMA_MODEL = process.env.CHAT_API_OLLAMA_MODEL;
-const SMS_API_URL = process.env.API_SMS_URL;
-const username = process.env.SMS_API_USERNAME;
-const api_token = process.env.SMS_API_TOKEN;
-
-const FREE_QUOTE = process.env.FREE_QUOTE;
-const PREMIUM_QUOTE = process.env.PREMIUM_QUOTE;
-const ADMIN_QUOTE = process.env.ADMIN_QUOTE;
-
 
 let verificationCodes = {};
 

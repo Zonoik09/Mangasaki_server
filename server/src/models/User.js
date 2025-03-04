@@ -17,19 +17,6 @@ const User = sequelize.define('User', {
         allowNull: false,
         unique: true
     },
-    email: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
-        unique: true
-    },
-    type_id: {
-        type: DataTypes.STRING(100),
-        allowNull: false
-    },
-    remainingQuote: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
     password: {
         type: DataTypes.STRING(20),
         allowNull: false,
@@ -38,11 +25,16 @@ const User = sequelize.define('User', {
     token: {
         type: DataTypes.STRING(100),
         allowNull: true,
-        unique: false
+        unique: true
+    },
+    imageURL: {
+        type: DataTypes.STRING(100),
+        allowNull: true,
+        unique: true
     },
 }, {
     timestamps: true,
-    tableName: 'Users',
+    tableName: 'User',
     underscored: true
 });
 
