@@ -1,6 +1,12 @@
-const { Book, Friendship, Gallery, Recommendation, User_Book, User, Verification } = require('../models');
-const { validateUUID } = require('../middleware/validators');
+const Book = require('../models/Book');
+const Friendship = require('../models/Friendship');
+const Gallery = require('../models/Gallery');
+const Recommendation = require('../models/Recommendation');
+const Users = require('../models/User_Book');
+const Logs = require('../models/User');
+const Verification = require('../models/Verification');
 
+const { validateUUID } = require('../middleware/validators');
 const axios = require('axios');
 const crypto = require('crypto');
 const { logger } = require('../config/logger');
