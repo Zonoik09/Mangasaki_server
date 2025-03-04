@@ -7,7 +7,7 @@ const {
 
 /**
  * @swagger
- * /api/models:
+ * /api/chat/models:
  *   get:
  *     summary: Lista los modelos disponibles en Ollama
  *     tags: [Chat]

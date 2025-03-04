@@ -17,7 +17,7 @@ const DEFAULT_OLLAMA_MODEL = process.env.CHAT_API_OLLAMA_MODEL;
 
 /**
  * Lista los modelos de ollama disponibles.
- * @route GET /api/models
+ * @route GET /api/chat/models
  */
 const listOllamaModels = async (req, res, next) => {
     try {
