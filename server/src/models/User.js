@@ -7,20 +7,20 @@ const User = sequelize.define('User', {
         autoIncrement: true,
         primaryKey: true
     },
-    phone: {
-        type: DataTypes.STRING(15),
-        allowNull: false,
-        unique: true
-    },
     nickname: {
         type: DataTypes.STRING(50),
         allowNull: false,
         unique: true
     },
     password: {
-        type: DataTypes.STRING(20),
+        type: DataTypes.STRING(255),
         allowNull: false,
         unique: false
+    },
+    phone: {
+        type: DataTypes.STRING(15),
+        allowNull: false,
+        unique: true
     },
     token: {
         type: DataTypes.STRING(100),

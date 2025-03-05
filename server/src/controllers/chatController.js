@@ -2,8 +2,8 @@ const Book = require('../models/Book');
 const Friendship = require('../models/Friendship');
 const Gallery = require('../models/Gallery');
 const Recommendation = require('../models/Recommendation');
-const Users = require('../models/User_Book');
-const Logs = require('../models/User');
+const User_Book = require('../models/User_Book');
+const User = require('../models/User');
 const Verification = require('../models/Verification');
 
 const { validateUUID } = require('../middleware/validators');

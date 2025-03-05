@@ -15,7 +15,8 @@ const Verification = sequelize.define('Verification', {
             model: User,
             key: 'id'
         },
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE',
+        unique: true
     },
     code: {
         type: DataTypes.STRING(50),
