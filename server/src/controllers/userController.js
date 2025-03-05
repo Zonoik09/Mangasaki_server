@@ -55,8 +55,6 @@ const registerUser = async (req, res, next) => {
         res.status(500).json({
             status: 'ERROR',
             message: 'Error interno al registrar el usuario',
-            error: error.message, // Ahora incluye el mensaje del error
-            stack: error.stack,   // Ahora incluye el stack trace para más detalles
         });
     }
 };
