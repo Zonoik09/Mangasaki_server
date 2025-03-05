@@ -22,8 +22,6 @@ const CHAT_API_OLLAMA_MODEL = process.env.CHAT_API_OLLAMA_MODEL;
 const listOllamaModels = async (req, res, next) => {
     try {
 
-        log.createLog("DEBUG","MODELS","Se ha solicitado la lista de modelos de ollama")
-
         logger.info('Solicitando lista de modelos en Ollama');
         const response = await axios.get(`${OLLAMA_API_URL}/tags`);
 
@@ -36,8 +34,6 @@ const listOllamaModels = async (req, res, next) => {
 
         logger.info('Modelos recuperados correctamente', { count: models.length });
 
-        log.createLog("INFO","MODELS","Se recuperaron los modelos correctamente")
-
         res.status(200).json({
             status: 'OK',
             message: 'Modelos recuperados correctamente',
@@ -47,8 +43,6 @@ const listOllamaModels = async (req, res, next) => {
             },
         });
     } catch (error) {
-
-        log.createLog("ERROR","MODELS","Ha habido un error en el listado de modelos de ollama")
 
         logger.error('Error al recuperar modelos de Ollama', {
             error: error.message,
