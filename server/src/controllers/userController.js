@@ -14,7 +14,7 @@ const SMS_API_USERNAME = process.env.SMS_API_USERNAME;
  * Registra un usuario y envia SMS
  * @route POST /api/user/register
  */
-const registerUser = async (req, res) => {
+const registerUser = async (req, res, next) => {
     try {
         const { nickname, password, phone } = req.body;
 
@@ -55,7 +55,8 @@ const registerUser = async (req, res) => {
         res.status(500).json({
             status: 'ERROR',
             message: 'Error interno al registrar el usuario',
-            data: null,
+            error: error.message, // Ahora incluye el mensaje del error
+            stack: error.stack,   // Ahora incluye el stack trace para más detalles
         });
     }
 };
@@ -84,7 +85,7 @@ const generateSMS = async (receiver, verificationCode) => {
  * Valida un código de verificación para un usuario.
  * @route POST /api/user/validate
  */
-const validateUser = async (req, res) => {
+const validateUser = async (req, res, next) => {
     try {
         const { userId, code } = req.body;
 
