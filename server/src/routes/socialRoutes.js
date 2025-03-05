@@ -2,14 +2,14 @@ const express = require('express');
 const router = express.Router();
 const {
     listOllamaModels,
-} = require('../controllers/chatController');
+} = require('../controllers/socialController');
 
 /**
  * @swagger
  * /api/chat/models:
  *   get:
  *     summary: Lista los modelos disponibles en Ollama
- *     tags: [Chat]
+ *     tags: [Social]
  *     responses:
  *       200:
  *         description: Lista de modelos disponibles

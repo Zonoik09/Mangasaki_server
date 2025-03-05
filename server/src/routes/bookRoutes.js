@@ -1,22 +1,37 @@
 const express = require('express');
 const router = express.Router();
 const {
-    listOllamaModels,
+    analyzeBook,
 
-} = require('../controllers/chatController');
-
+} = require('../controllers/bookController');
 /**
  * @swagger
- * /api/chat/models:
- *   get:
- *     summary: Lista los modelos disponibles en Ollama
- *     tags: [Chat]
+ * /api/book/analyzeBook:
+ *   post:
+ *     summary: Analiza un libro a partir de una cadena base64
+ *     tags: [Book]
+ *     consumes:
+ *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: bookImage
+ *         description: Cadena base64 de la imagen del libro que se desea analizar
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             base64Image:
+ *               type: string
+ *               description: Imagen del libro codificada en base64
+ *               example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA..."
  *     responses:
  *       200:
- *         description: Lista de modelos disponibles
+ *         description: Resultado del análisis del libro
+ *       400:
+ *         description: Error en la solicitud (por ejemplo, si no se proporciona la imagen)
  *       500:
- *         description: Error al recuperar modelos
+ *         description: Error interno al procesar la imagen
  */
-router.get('/models', listOllamaModels);
+router.post('/analyzeBook', analyzeBook);
 
 module.exports = router;

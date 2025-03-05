@@ -10,7 +10,7 @@ const errorHandler = require('./src/middleware/errorHandler');
 
 const adminRoutes = require('./src/routes/adminRoutes');
 const bookRoutes = require('./src/routes/bookRoutes');
-const chatRoutes = require('./src/routes/chatRoutes');
+const socialRoutes = require('./src/routes/socialRoutes');
 const userRoutes = require('./src/routes/userRoutes');
 const validationRoutes = require('./src/routes/validationRoutes');
 
@@ -41,7 +41,7 @@ app.use(expressLogger);
 
 app.use('/api/admin', adminRoutes);
 app.use('/api/book', bookRoutes);
-app.use('/api/chat', chatRoutes);
+app.use('/api/social', socialRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/validation', validationRoutes);
 
