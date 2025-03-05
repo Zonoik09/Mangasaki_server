@@ -6,7 +6,6 @@ const User_Book = require('../models/User_Book');
 const User = require('../models/User');
 const Verification = require('../models/Verification');
 
-const { validateUUID } = require('../middleware/validators');
 const axios = require('axios');
 const crypto = require('crypto');
 const { logger } = require('../config/logger');
