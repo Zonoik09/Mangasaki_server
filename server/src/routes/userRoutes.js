@@ -22,11 +22,11 @@ const {
  *               nickname:
  *                 type: string
  *                 description: El nickname del usuario
- *                 example: admin
+ *                 example: user
  *               password:
  *                 type: string
  *                 description: La contraseña del usuario
- *                 example: admin
+ *                 example: user
  *               phone:
  *                 type: string
  *                 description: El número de teléfono del usuario
@@ -68,7 +68,7 @@ router.post('/register', registerUser);
  *               userId:
  *                 type: string
  *                 description: El ID del usuario a validar
- *                 example: "1"
+ *                 example: "2"
  *               code:
  *                 type: string
  *                 description: El código de 6 cifras enviado para validación
@@ -112,11 +112,11 @@ router.post('/validate', validateUser);
  *               nickname:
  *                 type: string
  *                 description: El nickname del usuario para iniciar sesión
- *                 default: "admin"
+ *                 default: "user"
  *               password:
  *                 type: string
  *                 description: La contraseña del usuario
- *                 default: "admin"
+ *                 default: "user"
  *     responses:
  *       200:
  *         description: Inicio de sesión exitoso
@@ -125,7 +125,7 @@ router.post('/validate', validateUser);
  *             description: Token JWT que debe usarse en las siguientes solicitudes
  *             schema:
  *               type: string
- *               example: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTIzNDU2In0.KTj-Q6Deq9SHfRzNk-TuNT_1mcXaQ3YjH2J7_z0NS2I"
+ *               example: "Authorization eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTIzNDU2In0.KTj-Q6Deq9SHfRzNk-TuNT_1mcXaQ3YjH2J7_z0NS2I"
  *         content:
  *           application/json:
  *             schema:
@@ -145,7 +145,7 @@ router.post('/validate', validateUser);
  *                       example: "123456"
  *                     nickname:
  *                       type: string
- *                       example: "johndoe"
+ *                       example: "user"
  *       400:
  *         description: Datos inválidos o formato incorrecto
  *         content:
