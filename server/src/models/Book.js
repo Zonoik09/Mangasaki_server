@@ -22,7 +22,7 @@ const Book = sequelize.define('Book', {
     }
 }, {
     timestamps: true,
-    tableName: 'Books',
+    tableName: 'Book',
     underscored: true,
     indexes: [
         {
