@@ -11,7 +11,7 @@ const Friendship = sequelize.define('Friendship', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: User,
+            model: 'User',
             key: 'id'
         },
         onDelete: 'CASCADE'
@@ -20,7 +20,7 @@ const Friendship = sequelize.define('Friendship', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: User,
+            model: 'User',
             key: 'id'
         },
         onDelete: 'CASCADE'

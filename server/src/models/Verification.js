@@ -11,7 +11,7 @@ const Verification = sequelize.define('Verification', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: User,
+            model: 'User',
             key: 'id'
         },
         onDelete: 'CASCADE',

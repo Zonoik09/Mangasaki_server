@@ -11,7 +11,7 @@ const User_Book = sequelize.define('User_Book', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: User,
+            model: 'User',
             key: 'id'
         },
         onDelete: 'CASCADE'
@@ -20,7 +20,7 @@ const User_Book = sequelize.define('User_Book', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: Book,
+            model: 'Book',
             key: 'id'
         },
         onDelete: 'CASCADE'

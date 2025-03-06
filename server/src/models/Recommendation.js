@@ -11,7 +11,7 @@ const Recommendation = sequelize.define('Recommendation', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: Friendship,
+            model: 'Friendship',
             key: 'id'
         },
         onDelete: 'CASCADE'
@@ -20,7 +20,7 @@ const Recommendation = sequelize.define('Recommendation', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: Book,
+            model: 'Book',
             key: 'id'
         },
         onDelete: 'CASCADE'

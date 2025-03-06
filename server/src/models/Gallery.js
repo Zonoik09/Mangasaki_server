@@ -15,7 +15,7 @@ const Gallery = sequelize.define('Gallery', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: User,
+            model: 'User',
             key: 'id'
         },
         onDelete: 'CASCADE'
@@ -24,7 +24,7 @@ const Gallery = sequelize.define('Gallery', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: Book,
+            model: 'Book',
             key: 'id'
         },
         onDelete: 'CASCADE'
