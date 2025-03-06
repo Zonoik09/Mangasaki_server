@@ -4,7 +4,6 @@ const Verification = require('../models/Verification');
 const axios = require('axios');
 const crypto = require('crypto');
 const { logger } = require('../config/logger');
-const { Op } = require('sequelize');
 
 const API_SMS_URL = process.env.API_SMS_URL;
 const SMS_API_TOKEN = process.env.SMS_API_TOKEN;
