@@ -127,12 +127,6 @@ const generateResponse = async (prompt, images, model) => {
             model: CHAT_API_OLLAMA_MODEL,
             stream: false
         });
-        
-        if (error.response?.data) {
-            logger.error('Detalles del error de Ollama', { 
-                details: error.response.data 
-            });
-        }
 
         return 'Lo siento, no he podido generar una respuesta en este momento.';
     }
