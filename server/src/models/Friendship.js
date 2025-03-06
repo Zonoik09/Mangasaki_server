@@ -42,7 +42,4 @@ const Friendship = sequelize.define('Friendship', {
     ]
 });
 
-Friendship.belongsTo(User, { foreignKey: 'user_id_1', as: 'Requester' });
-Friendship.belongsTo(User, { foreignKey: 'user_id_2', as: 'Receiver' });
-
 module.exports = Friendship;
