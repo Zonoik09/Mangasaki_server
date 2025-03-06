@@ -1,7 +1,5 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
-const Friendship = require('../models/Friendship');
-const Book = require('../models/Book');
 
 const Recommendation = sequelize.define('Recommendation', {
     id: {
