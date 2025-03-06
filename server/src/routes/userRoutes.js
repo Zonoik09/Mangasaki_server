@@ -68,7 +68,7 @@ router.post('/register', registerUser);
  *               userId:
  *                 type: string
  *                 description: El ID del usuario a validar
- *                 example: "123456"
+ *                 example: "1"
  *               code:
  *                 type: string
  *                 description: El código de 6 cifras enviado para validación

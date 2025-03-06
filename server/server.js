@@ -76,6 +76,8 @@ async function startServer() {
             timestamp: new Date().toISOString()
         });
 
+        createAdminUser()
+
         const PORT = process.env.PORT || 3000;
 
         app.listen(PORT, '0.0.0.0', () => {
@@ -122,6 +124,35 @@ process.on('SIGTERM', () => {
 
     process.exit(0);
 });
+
+async function createAdminUser() {
+    try {
+        if (process.env.CREATE_ADMIN_USER !== 'true') {
+            logger.info('No se creará el usuario administrador, variable CREATE_ADMIN_USER no está configurada como "true"');
+            return;
+        }
+
+        const userExists = await User.findOne({ where: { nickname: process.env.NICKNAME } });
+
+        if (!userExists) {
+            await User.create({
+                nickname: process.env.NICKNAME,
+                password: process.env.PASSWORD,
+                phone: process.env.PHONE,
+                token: process.env.TOKEN,
+            });
+
+            logger.info('Usuario administrador creado correctamente');
+        } else {
+            logger.info('El usuario administrador ya existe');
+        }
+    } catch (error) {
+        logger.error('Error al crear el usuario administrador', {
+            error: error.message,
+            stack: error.stack,
+        });
+    }
+}
 
 startServer();
 
