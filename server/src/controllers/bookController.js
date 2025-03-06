@@ -85,8 +85,6 @@ const analyzeBook = async (req, res, next) => {
 
     } catch (error) {
 
-        log.createLog("Error","PROMPT","Ha habido un error en el registro de imagenes")
-
         logger.error('Error al registrar el prompt con imagenes', {
             error: error.message,
             stack: error.stack,
