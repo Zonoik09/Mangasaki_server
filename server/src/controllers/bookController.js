@@ -53,7 +53,9 @@ const analyzeBook = async (req, res, next) => {
         let parsedResponse = JSON.parse(response);
 
         if (parsedResponse.type === "ISBN") {
-            // Handle ISBN response
+
+            isbnSearch(parsedResponse);
+            
             res.status(201).json({
                 status: 'OK',
                 message: 'Análisis de ISBN realizado correctamente',
@@ -63,6 +65,9 @@ const analyzeBook = async (req, res, next) => {
                 },
             });
         } else if (parsedResponse.type === "Manga Cover") {
+
+            nmameSearch(parsedResponse);
+
             res.status(201).json({
                 status: 'OK',
                 message: 'Análisis de portada de manga realizado correctamente',
@@ -123,6 +128,30 @@ const generateResponse = async (prompt, images, model) => {
         });
 
         return 'Lo siento, no he podido generar una respuesta en este momento.';
+    }
+};
+
+const isbnSearch = async (response) =>  {
+    try  {
+        logger.debug('Inicialización de respuestaa con isbn');
+    } catch (error) {
+        logger.error('Error en la generación de respuesta', {
+            error: error.message,
+            model: CHAT_API_OLLAMA_MODEL,
+            stream: false
+        });
+    }
+};
+
+const nmameSearch = async (response) =>  {
+    try  {
+        logger.debug('Inicialización de respuestaa con nombre');
+    } catch (error) {
+        logger.error('Error en la generación de respuesta', {
+            error: error.message,
+            model: CHAT_API_OLLAMA_MODEL,
+            stream: false
+        });
     }
 };
 
