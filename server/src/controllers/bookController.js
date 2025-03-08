@@ -58,7 +58,8 @@ const analyzeBook = async (req, res, next) => {
                 status: 'OK',
                 message: 'Análisis de ISBN realizado correctamente',
                 data: {
-                    data: parsedResponse,
+                    type: parsedResponse.type,
+                    isbn_code: parsedResponse.isbn_code,
                 },
             });
         } else if (parsedResponse.type === "Manga Cover") {
@@ -66,7 +67,9 @@ const analyzeBook = async (req, res, next) => {
                 status: 'OK',
                 message: 'Análisis de portada de manga realizado correctamente',
                 data: {
-                    data: parsedResponse,
+                    type: parsedResponse.type,
+                    manga_name: parsedResponse.manga_name,
+                    volume: parsedResponse.volume,
                 },
             });
         } else {
