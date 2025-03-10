@@ -84,7 +84,7 @@ const analyzeBook = async (req, res, next) => {
 
             let result = await nameSearch(parsedResponse.manga_name + " ,Vol. " + parsedResponse.volume);
 
-            logger.info("Información del manga: " + result)
+            logger.info("Información del manga: " + JSON.stringify(result, null, 2));
 
             return res.status(201).json({
                 status: 'OK',
