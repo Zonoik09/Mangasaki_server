@@ -11,6 +11,11 @@ const { logger } = require('../config/logger');
 const OLLAMA_API_URL = process.env.CHAT_API_OLLAMA_URL;
 const CHAT_API_OLLAMA_MODEL = process.env.CHAT_API_OLLAMA_MODEL;
 
+const ISBN_API_KEY = process.env.ISBN_API_KEY;
+const ISBN_URL = process.env.ISBN_URL;
+
+const MANGA_NAME_URL = process.env.MANGA_NAME_URL;
+
 /**
  * Hace una petición con imagen.
  * @route POST /api/book/analyzeBook
@@ -54,30 +59,32 @@ const analyzeBook = async (req, res, next) => {
 
         if (parsedResponse.type === "ISBN") {
 
-            isbnSearch(parsedResponse);
+            nameByISBN = isbnSearch(parsedResponse.isbn_code);
+
+            result = nameSearch(nameByISBN.book.title_long);
             
             res.status(201).json({
                 status: 'OK',
                 message: 'Análisis de ISBN realizado correctamente',
                 data: {
-                    type: parsedResponse.type,
-                    isbn_code: parsedResponse.isbn_code,
+                    data: result,
                 },
             });
+
         } else if (parsedResponse.type === "Manga Cover") {
 
-            nmameSearch(parsedResponse);
+            result = nameSearch(parsedResponse.manga_name + " ,Vol. " + parsedResponse.volume);
 
             res.status(201).json({
                 status: 'OK',
                 message: 'Análisis de portada de manga realizado correctamente',
                 data: {
-                    type: parsedResponse.type,
-                    manga_name: parsedResponse.manga_name,
-                    volume: parsedResponse.volume,
+                    data: result,
                 },
             });
+
         } else {
+
             res.status(400).json({
                 status: 'Error',
                 message: 'Tipo de respuesta no reconocido',
@@ -131,27 +138,69 @@ const generateResponse = async (prompt, images, model) => {
     }
 };
 
-const isbnSearch = async (response) =>  {
-    try  {
-        logger.debug('Inicialización de respuestaa con isbn');
-    } catch (error) {
-        logger.error('Error en la generación de respuesta', {
-            error: error.message,
-            model: CHAT_API_OLLAMA_MODEL,
-            stream: false
+const isbnSearch = async (isbn) => {
+    try {
+        logger.debug(`Buscando información para ISBN: ${isbn}`);
+        
+        const response = await axios.get(`${ISBN_URL}${isbn}`, {
+            headers: {
+                'Authorization': ISBN_API_KEY
+            }
         });
+
+        // Verificar que la respuesta contiene datos
+        if (!response.data) {
+            throw new Error('No se encontró información para este ISBN');
+        }
+
+        logger.debug('Respuesta recibida de la API', {
+            data: response.data
+        });
+
+        return response.data;
+    } catch (error) {
+        logger.error('Error en la búsqueda de ISBN', {
+            error: error.message,
+            isbn: isbn
+        });
+
+        // Retornar un mensaje de error adecuado en caso de falla
+        return {
+            status: 'ERROR',
+            message: 'Error al obtener información del ISBN',
+            data: null
+        };
     }
 };
 
-const nmameSearch = async (response) =>  {
-    try  {
-        logger.debug('Inicialización de respuestaa con nombre');
-    } catch (error) {
-        logger.error('Error en la generación de respuesta', {
-            error: error.message,
-            model: CHAT_API_OLLAMA_MODEL,
-            stream: false
+const nameSearch = async (name) =>  {
+    try {
+        logger.debug('Inicialización de respuesta con nombre: ' + name);
+        
+        const response = await axios.get(MANGA_NAME_URL + name);
+
+        // Verificar si la respuesta contiene datos
+        if (!response.data) {
+            throw new Error('No se encontró información para este manga');
+        }
+
+        logger.debug('Respuesta recibida de la API', {
+            data: response.data
         });
+
+        return response.data;
+    } catch (error) {
+        logger.error('Error en la búsqueda del manga', {
+            error: error.message,
+            name: name
+        });
+
+        // Retornar un mensaje de error adecuado en caso de falla
+        return {
+            status: 'ERROR',
+            message: 'Error al obtener información del manga',
+            data: null
+        };
     }
 };
 
