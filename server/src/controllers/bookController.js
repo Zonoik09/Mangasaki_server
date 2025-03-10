@@ -64,21 +64,7 @@ const analyzeBook = async (req, res, next) => {
 
             result = await nameSearch(nameByISBN.book.title_long);
             
-            return res.status(201).json({
-                status: 'OK',
-                message: 'Análisis de ISBN realizado correctamente',
-                data: {
-                    title: result.volumeInfo.title || 'No disponible',
-                    authors: result.volumeInfo.authors || 'No disponible',
-                    publisher: result.volumeInfo.publisher || 'No disponible',
-                    publishedDate: result.volumeInfo.publishedDate || 'No disponible',
-                    description: result.volumeInfo.description || 'No disponible',
-                    pageCount: result.volumeInfo.pageCount || 'No disponible',
-                    categories: result.volumeInfo.categories || 'No disponible',
-                    averageRating: result.volumeInfo.averageRating || 'No disponible',
-                    imageLinks: result.volumeInfo.imageLinks || 'No disponible',
-                },
-            });
+            return res.status(201).json(buildResponse('OK', 'Análisis de portada de manga realizado correctamente', result));
 
         } else if (parsedResponse.type === "Manga Cover") {
 
@@ -86,21 +72,7 @@ const analyzeBook = async (req, res, next) => {
 
             logger.info("Información del manga: " + JSON.stringify(result, null, 2));
 
-            return res.status(201).json({
-                status: 'OK',
-                message: 'Análisis de ISBN realizado correctamente',
-                data: {
-                    title: result.volumeInfo.title || 'No disponible',
-                    authors: result.volumeInfo.authors || 'No disponible',
-                    publisher: result.volumeInfo.publisher || 'No disponible',
-                    publishedDate: result.volumeInfo.publishedDate || 'No disponible',
-                    description: result.volumeInfo.description || 'No disponible',
-                    pageCount: result.volumeInfo.pageCount || 'No disponible',
-                    categories: result.volumeInfo.categories || 'No disponible',
-                    averageRating: result.volumeInfo.averageRating || 'No disponible',
-                    imageLinks: result.volumeInfo.imageLinks || 'No disponible',
-                },
-            });
+            return res.status(201).json(buildResponse('OK', 'Análisis de portada de manga realizado correctamente', result));
 
         } else {
 
@@ -222,6 +194,24 @@ const nameSearch = async (name) =>  {
             data: null
         };
     }
+};
+
+const buildResponse = (status, message, result) => {
+    return {
+        status,
+        message,
+        data: {
+            title: result.volumeInfo.title || 'No disponible',
+            authors: result.volumeInfo.authors || 'No disponible',
+            publisher: result.volumeInfo.publisher || 'No disponible',
+            publishedDate: result.volumeInfo.publishedDate || 'No disponible',
+            description: result.volumeInfo.description || 'No disponible',
+            pageCount: result.volumeInfo.pageCount || 'No disponible',
+            categories: result.volumeInfo.categories || 'No disponible',
+            averageRating: result.volumeInfo.averageRating || 'No disponible',
+            imageLinks: result.volumeInfo.imageLinks || 'No disponible',
+        },
+    };
 };
 
 module.exports = {
