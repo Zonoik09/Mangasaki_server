@@ -188,7 +188,7 @@ const nameSearch = async (name) =>  {
             data: response.data
         });
 
-        logger.debug("--------- Esta es la información de response: " + response.data.data.totalItems.items[0])
+        logger.debug("--------- Esta es la información de response: " + response.data.totalItems.items[0])
 
         return response.data;
 
