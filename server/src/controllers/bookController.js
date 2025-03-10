@@ -67,7 +67,17 @@ const analyzeBook = async (req, res, next) => {
                 status: 'OK',
                 message: 'Análisis de ISBN realizado correctamente',
                 data: {
-                    data: result,
+                    title: result.title,
+                    authors: result.authors,
+                    publisher: result.authors,
+                    publishedDate: result.publishedDate,
+                    description: result.description,
+                    ISBN13: result.industryIdentifiers[0].identifier,
+                    ISBN10: result.industryIdentifiers[1].identifier,
+                    pageCount: result.pageCount,
+                    categories: result.categories,
+                    averageRating: result.averageRating,
+                    imageLinks: result.imageLinks
                 },
             });
 
