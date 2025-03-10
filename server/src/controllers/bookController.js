@@ -83,21 +83,21 @@ const analyzeBook = async (req, res, next) => {
 
             result = nameSearch(parsedResponse.manga_name + " ,Vol. " + parsedResponse.volume);
 
-            let parsedResponse = JSON.parse(result);
+            let defrt = JSON.parse(result);
 
             res.status(201).json({
                 status: 'OK',
                 message: 'Análisis de portada de manga realizado correctamente',
                 data: {
-                    title: parsedResponse.title,
-                    authors: parsedResponse.authors,
-                    publisher: parsedResponse.authors,
-                    publishedDate: parsedResponse.publishedDate,
-                    description: parsedResponse.description,
-                    pageCount: parsedResponse.pageCount,
-                    categories: parsedResponse.categories,
-                    averageRating: parsedResponse.averageRating,
-                    imageLinks: parsedResponse.imageLinks
+                    title: defrt.title,
+                    authors: defrt.authors,
+                    publisher: defrt.authors,
+                    publishedDate: defrt.publishedDate,
+                    description: defrt.description,
+                    pageCount: defrt.pageCount,
+                    categories: defrt.categories,
+                    averageRating: defrt.averageRating,
+                    imageLinks: defrt.imageLinks
                 },
             });
 
