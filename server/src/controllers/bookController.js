@@ -188,7 +188,10 @@ const nameSearch = async (name) =>  {
             data: response.data
         });
 
+        logger.debug("--------- Esta es la información de response: " + response.data)
+
         return response.data;
+
     } catch (error) {
         logger.error('Error en la búsqueda del manga', {
             error: error.message,
