@@ -83,7 +83,7 @@ const analyzeBook = async (req, res, next) => {
 
             result = nameSearch(parsedResponse.manga_name + " ,Vol. " + parsedResponse.volume);
 
-            logger.debug("INFORMACION DEL MANGA: " + result )
+            logger.debug("------------------------------------------------ DIOSSSSSSSSSS ------------------- NOSE EJECUTA")
 
             res.status(201).json({
                 status: 'OK',
