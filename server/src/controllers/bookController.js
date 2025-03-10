@@ -60,9 +60,9 @@ const analyzeBook = async (req, res, next) => {
 
         if (parsedResponse.type === "ISBN") {
 
-            nameByISBN = isbnSearch(parsedResponse.isbn_code);
+            nameByISBN = await isbnSearch(parsedResponse.isbn_code);
 
-            result = nameSearch(nameByISBN.book.title_long);
+            result = await nameSearch(nameByISBN.book.title_long);
             
             res.status(201).json({
                 status: 'OK',
@@ -82,7 +82,7 @@ const analyzeBook = async (req, res, next) => {
 
         } else if (parsedResponse.type === "Manga Cover") {
 
-            let result = nameSearch(parsedResponse.manga_name + " ,Vol. " + parsedResponse.volume);
+            let result = await nameSearch(parsedResponse.manga_name + " ,Vol. " + parsedResponse.volume);
 
             logger.info("Información del manga: " + result)
 
