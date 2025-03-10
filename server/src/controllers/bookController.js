@@ -185,12 +185,10 @@ const nameSearch = async (name) =>  {
         }
 
         logger.debug('Respuesta recibida de la API', {
-            data: response.data
+            data: response.data.items[0]
         });
 
-        logger.debug("--------- Esta es la información de response: " + response.data.items[0])
-
-        return response.data;
+        return response.data.items[0];
 
     } catch (error) {
         logger.error('Error en la búsqueda del manga', {
