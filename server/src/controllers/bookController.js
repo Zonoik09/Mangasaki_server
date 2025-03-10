@@ -53,9 +53,9 @@ const analyzeBook = async (req, res, next) => {
 
         const response = await generateResponse(prompt, [base64Image], CHAT_API_OLLAMA_MODEL);
 
-        logger.debug("Respuesta de Ollama: ", response);
-
         let parsedResponse = JSON.parse(response);
+
+        logger.debug("Respuesta de Ollama: ", parsedResponse);
 
         if (parsedResponse.type === "ISBN") {
 
