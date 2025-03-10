@@ -64,19 +64,19 @@ const analyzeBook = async (req, res, next) => {
 
             result = await nameSearch(nameByISBN.book.title_long);
             
-            res.status(201).json({
+            return res.status(201).json({
                 status: 'OK',
                 message: 'Análisis de ISBN realizado correctamente',
                 data: {
-                    title: result.title,
-                    authors: result.authors,
-                    publisher: result.authors,
-                    publishedDate: result.publishedDate,
-                    description: result.description,
-                    pageCount: result.pageCount,
-                    categories: result.categories,
-                    averageRating: result.averageRating,
-                    imageLinks: result.imageLinks
+                    title: result.title || 'No disponible',
+                    authors: result.authors || 'No disponible',
+                    publisher: result.publisher || 'No disponible',
+                    publishedDate: result.publishedDate || 'No disponible',
+                    description: result.description || 'No disponible',
+                    pageCount: result.pageCount || 'No disponible',
+                    categories: result.categories || 'No disponible',
+                    averageRating: result.averageRating || 'No disponible',
+                    imageLinks: result.imageLinks || 'No disponible',
                 },
             });
 
@@ -86,19 +86,19 @@ const analyzeBook = async (req, res, next) => {
 
             logger.info("Información del manga: " + result)
 
-            res.status(201).json({
+            return res.status(201).json({
                 status: 'OK',
-                message: 'Análisis de portada de manga realizado correctamente',
+                message: 'Análisis de ISBN realizado correctamente',
                 data: {
-                    title: result.title,
-                    authors: result.authors,
-                    publisher: result.authors,
-                    publishedDate: result.publishedDate,
-                    description: result.description,
-                    pageCount: result.pageCount,
-                    categories: result.categories,
-                    averageRating: result.averageRating,
-                    imageLinks: result.imageLinks
+                    title: result.title || 'No disponible',
+                    authors: result.authors || 'No disponible',
+                    publisher: result.publisher || 'No disponible',
+                    publishedDate: result.publishedDate || 'No disponible',
+                    description: result.description || 'No disponible',
+                    pageCount: result.pageCount || 'No disponible',
+                    categories: result.categories || 'No disponible',
+                    averageRating: result.averageRating || 'No disponible',
+                    imageLinks: result.imageLinks || 'No disponible',
                 },
             });
 
