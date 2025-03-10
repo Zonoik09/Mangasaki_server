@@ -173,27 +173,24 @@ const isbnSearch = async (isbn) => {
     }
 };
 
-const nameSearch = async (name) => {
+const nameSearch = async (name) =>  {
     try {
         logger.debug('Inicialización de respuesta con nombre: ' + name);
         
         const response = await axios.get(MANGA_NAME_URL + name);
 
         // Verificar si la respuesta contiene datos
-        if (!response.data || !Array.isArray(response.data) || response.data.length === 0) {
+        if (!response.data) {
             throw new Error('No se encontró información para este manga');
         }
 
-        // Obtener el primer elemento de la respuesta
-        const firstItem = response.data.data.itemms[0];
-
         logger.debug('Respuesta recibida de la API', {
-            data: firstItem
+            data: response.data
         });
 
-        logger.debug("Esta es la información del primer libro: ", firstItem);
+        logger.debug("--------- Esta es la información de response: " + response.data.data.items[0])
 
-        return firstItem;
+        return response.data;
 
     } catch (error) {
         logger.error('Error en la búsqueda del manga', {
@@ -209,7 +206,6 @@ const nameSearch = async (name) => {
         };
     }
 };
-
 
 module.exports = {
     analyzeBook,
