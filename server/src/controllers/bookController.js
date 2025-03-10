@@ -7,6 +7,7 @@ const User = require('../models/User');
 const axios = require('axios');
 const crypto = require('crypto');
 const { logger } = require('../config/logger');
+const { Logger } = require('winston');
 
 const OLLAMA_API_URL = process.env.CHAT_API_OLLAMA_URL;
 const CHAT_API_OLLAMA_MODEL = process.env.CHAT_API_OLLAMA_MODEL;
@@ -81,9 +82,9 @@ const analyzeBook = async (req, res, next) => {
 
         } else if (parsedResponse.type === "Manga Cover") {
 
-            result = nameSearch(parsedResponse.manga_name + " ,Vol. " + parsedResponse.volume);
+            let result = nameSearch(parsedResponse.manga_name + " ,Vol. " + parsedResponse.volume);
 
-            logger.debug("------------------------------------------------ DIOSSSSSSSSSS ------------------- NOSE EJECUTA")
+            logger.info("Información del manga: " + result)
 
             res.status(201).json({
                 status: 'OK',
