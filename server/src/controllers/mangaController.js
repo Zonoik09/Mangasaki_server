@@ -224,6 +224,7 @@ const buildResponse = (status, message, result) => {
         },
     };
 };
+
 /**
  * Hace una petición con imagen para obtener los mangas más populares.
  * @route GET /api/manga/previsualization
@@ -256,7 +257,7 @@ const getPrevisualization = async (req, res, next) => {
 
         const responseRecommendationMangas = await axios.get(RecommendationMangaURL);
 
-        // Process top mangas (same as before)
+        // Process top mangas
         const topMangas = responseTopMangas.data.data.map(manga => ({
             title: manga.title,
             synopsis: manga.synopsis,
@@ -269,8 +270,11 @@ const getPrevisualization = async (req, res, next) => {
         // Create an array for recommendation mangas
         const recommendationMangas = [];
 
+        // Function to delay between requests
+        const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
         // Iterate through each recommended manga and fetch additional details
-        responseRecommendationMangas.data.data.forEach(async (mangaData) => {
+        for (let mangaData of responseRecommendationMangas.data.data) {
             // Iterate over each entry inside the data object
             for (let manga of mangaData.entry) {
                 let mal_id = manga.mal_id;
@@ -291,8 +295,11 @@ const getPrevisualization = async (req, res, next) => {
                     score: responseMangaById.data.data.score,
                     rank: responseMangaById.data.data.rank,
                 });
+
+                // Add a delay of 500ms (or any other amount you prefer)
+                await delay(100);  // Delay in milliseconds (500ms = 0.5 segundos)
             }
-        });
+        }
 
         return res.status(200).json({
             status: 'success',
