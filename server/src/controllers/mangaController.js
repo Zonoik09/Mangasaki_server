@@ -271,7 +271,7 @@ const getPrevisualization = async (req, res, next) => {
 
         // Iterate through each recommended manga and fetch additional details
         for (let manga of responseRecommendationMangas.data.data) {
-            let mal_id = manga.mal_id;
+            let mal_id = manga.entry.mal_id;
             let mangaSearchURL = `https://api.jikan.moe/v4/manga/${mal_id}`;
 
             logger.info(mal_id)
