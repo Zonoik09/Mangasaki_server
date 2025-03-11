@@ -69,7 +69,7 @@ const analyzeBook = async (req, res, next) => {
         if (parsedResponse.type === "ISBN") {
 
             // Llamada a la función que busca el ISBN con reintentos
-            const nameByISBN = await isbnSearchWithRetry(parsedResponse.isbn_code);
+            const nameByISBN = await isbnSearch(parsedResponse.isbn_code);
 
             if (!nameByISBN) {
                 return res.status(400).json({
@@ -78,8 +78,6 @@ const analyzeBook = async (req, res, next) => {
                     data: null,
                 });
             }
-
-            logger.debug("----- Se iniciar un nameSearch con " + nameByISBN + " -----")
 
             const result = await nameSearch(nameByISBN);
             return res.status(201).json(buildResponse('OK', 'Análisis de portada de manga realizado correctamente', result));
@@ -147,87 +145,34 @@ const generateResponse = async (prompt, images, model) => {
     }
 };
 
-/**
- * Función que intenta buscar el ISBN hasta 3 veces en caso de fallo.
- * @param {string} isbn El código ISBN para buscar.
- * @param {number} retries Número de intentos (por defecto 3).
- * @returns {string} El título del libro o un error.
- */
-const isbnSearchWithRetry = async (isbn, retries = 3) => {
+const isbnSearch = async (isbn) => {
     try {
-        let attempt = 0;
-        let response;
+        logger.debug(`Buscando información del ISBN: ${isbn}`);
 
-        while (attempt < retries) {
-            attempt++;
-            logger.debug(`Intento ${attempt} para buscar información del ISBN: ${isbn}`);
+        // Realizamos la solicitud a la API para obtener la información del ISBN
+        const response = await axios.get(`${ISBN_URL}${isbn}`, {
+            headers: { 'Authorization': ISBN_API_KEY }
+        });
 
-            response = await axios.get(`${ISBN_URL}${isbn}`, {
-                headers: { 'Authorization': ISBN_API_KEY }
-            });
-
-            if (response.data && response.data.book) {
-                logger.debug('Información obtenida para el ISBN en intento ' + attempt);
-                
-                return response.data.book.title_long || response.data.book.title;
-            }
-
-            logger.warn(`No se encontró información para el ISBN en el intento ${attempt}`);
-
-            if (attempt < retries) {
-                await new Promise(resolve => setTimeout(resolve, 2000));
-            }
+        // Verificar si la respuesta contiene los datos del libro
+        if (response.data && response.data.book) {
+            logger.debug('Información obtenida para el ISBN');
+            
+            // Retornar el título del libro (usando title_long si está disponible)
+            return response.data.book.title_long || response.data.book.title;
         }
 
-        logger.warn('No se encontró información después de 3 intentos. Volveré a intentar con Ollama.');
-        return await handleOllamaAnalysis(isbn);
+        // Si no se encuentra la información, retornamos un mensaje de error
+        logger.warn(`No se encontró información para el ISBN`);
+        return { status: 'ERROR', message: 'No se encontró información para el ISBN', data: null };
 
     } catch (error) {
-        // Si ocurre un error durante el proceso de búsqueda
+        // Si ocurre un error durante la búsqueda
         logger.error('Error en la búsqueda de ISBN', {
             error: error.message,
             isbn: isbn
         });
         return { status: 'ERROR', message: 'Error al obtener información del ISBN', data: null };
-    }
-};
-
-const handleOllamaAnalysis = async (isbn) => {
-    try {
-        logger.debug('Solicitando a Ollama el análisis del ISBN');
-
-        const prompt = `
-        Identificar si el código ingresado es un código ISBN válido y proporcionar la información correspondiente.
-        Responder solo con un objeto JSON válido, siguiendo la estructura indicada a continuación. No incluir explicaciones, texto o delimitadores de bloques de código.
-        
-        Respuesta:
-        {
-            "type": "ISBN",
-            "isbn_code": "El código ISBN",
-            "title": "Título del libro",
-            "authors": "Autores del libro",
-            "publisher": "Editorial",
-            "publishedDate": "Fecha de publicación",
-            "description": "Descripción del libro"
-        }
-        `;
-
-        // Ejecutar la solicitud a Ollama con el ISBN
-        const response = await generateResponse(prompt, [isbn], CHAT_API_OLLAMA_MODEL);
-
-        // Parsear la respuesta y devolverla
-        const parsedResponse = JSON.parse(response);
-        logger.debug('Respuesta de Ollama: ', parsedResponse);
-
-        // Devolver la respuesta de Ollama
-        return parsedResponse;
-
-    } catch (error) {
-        logger.error('Error al obtener información de Ollama', {
-            error: error.message,
-            isbn: isbn
-        });
-        return { status: 'ERROR', message: 'Error al obtener información de Ollama', data: null };
     }
 };
 
