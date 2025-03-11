@@ -71,14 +71,15 @@ const analyzeBook = async (req, res, next) => {
             // Llamada a la función que busca el ISBN con reintentos
             const nameByISBN = await isbnSearchWithRetry(parsedResponse.isbn_code);
 
-            // Si no se obtiene respuesta válida después de 3 intentos, devolver error
-            if (!nameByISBN || !nameByISBN.items || nameByISBN.items.length === 0) {
+            if (!nameByISBN) {
                 return res.status(400).json({
                     status: 'ERROR',
                     message: 'No se pudo encontrar información para el ISBN después de varios intentos.',
                     data: null,
                 });
             }
+
+            logger.debug("----- Se iniciar un nameSearch con " + nameByISBN + " -----")
 
             const result = await nameSearch(nameByISBN.items[0].volumeInfo.title);
             return res.status(201).json(buildResponse('OK', 'Análisis de portada de manga realizado correctamente', result));
@@ -151,14 +152,13 @@ const generateResponse = async (prompt, images, model) => {
  * Función que intenta buscar el ISBN hasta 3 veces en caso de fallo.
  * @param {string} isbn El código ISBN para buscar.
  * @param {number} retries Número de intentos (por defecto 3).
- * @returns {Object} Los resultados de la búsqueda o un error.
+ * @returns {string} El título del libro o un error.
  */
 const isbnSearchWithRetry = async (isbn, retries = 3) => {
     try {
         let attempt = 0;
         let response;
 
-        // Intentos de búsqueda hasta el número de reintentos especificado
         while (attempt < retries) {
             attempt++;
             logger.debug(`Intento ${attempt} para buscar información del ISBN: ${isbn}`);
@@ -167,24 +167,21 @@ const isbnSearchWithRetry = async (isbn, retries = 3) => {
                 headers: { 'Authorization': ISBN_API_KEY }
             });
 
-            // Verificar si la respuesta contiene la información necesaria
             if (response.data && response.data.book) {
                 logger.debug('Información obtenida para el ISBN en intento ' + attempt);
-                return response.data.book;  // Devuelve la información del libro
+                
+                return response.data.book.title_long || response.data.book.title;
             }
 
-            // Si la respuesta no contiene los datos esperados, se genera una advertencia
             logger.warn(`No se encontró información para el ISBN en el intento ${attempt}`);
 
-            // Si la respuesta es inválida, esperar antes de reintentar
             if (attempt < retries) {
-                await new Promise(resolve => setTimeout(resolve, 2000)); // Esperar 2 segundos entre intentos
+                await new Promise(resolve => setTimeout(resolve, 2000));
             }
         }
 
-        // Si después de los reintentos no se obtiene respuesta, volver a intentar con Ollama
         logger.warn('No se encontró información después de 3 intentos. Volveré a intentar con Ollama.');
-        return await handleOllamaAnalysis(isbn);  // Aquí se hace el análisis con Ollama
+        return await handleOllamaAnalysis(isbn);
 
     } catch (error) {
         // Si ocurre un error durante el proceso de búsqueda
