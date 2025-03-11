@@ -1,15 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const {
-    analyzeBook,
-} = require('../controllers/bookController.js');
+    analyzeManga,
+} = require('../controllers/mangaController.js');
 
 /**
  * @swagger
- * /api/book/analyzeBook:
+ * /api/manga/analyzeManga:
  *   post:
  *     summary: Analiza un libro basado en una imagen en Base64
- *     tags: [Book]
+ *     tags: [Manga]
  *     requestBody:
  *       required: true
  *       content:
@@ -40,6 +40,6 @@ const {
  *       500:
  *         description: Error interno del servidor
  */
-router.post('/analyzeBook', analyzeBook);
+router.post('/analyzeManga', analyzeManga);
 
 module.exports = router;

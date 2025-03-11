@@ -8,7 +8,7 @@ const swaggerSpecs = require('./src/config/swagger');
 const errorHandler = require('./src/middleware/errorHandler');
 
 const adminRoutes = require('./src/routes/adminRoutes');
-const bookRoutes = require('./src/routes/bookRoutes');
+const mangaRoutes = require('./src/routes/mangaRoutes');
 const socialRoutes = require('./src/routes/socialRoutes');
 const userRoutes = require('./src/routes/userRoutes');
 const validationRoutes = require('./src/routes/validationRoutes');
@@ -16,11 +16,11 @@ const validationRoutes = require('./src/routes/validationRoutes');
 const { sequelize } = require('./src/config/database');
 
 const User = require('./src/models/User');
-const Book = require('./src/models/Book');
+const Manga = require('./src/models/Manga');
 const Friendship = require('./src/models/Friendship');
 const Gallery = require('./src/models/Gallery');
 const Recommendation = require('./src/models/Recommendation');
-const User_Book = require('./src/models/User_Book');
+const User_Manga = require('./src/models/User_Manga');
 const Verification = require('./src/models/Verification');
 
 const { logger, expressLogger } = require('./src/config/logger');
@@ -50,7 +50,7 @@ app.use((req, res, next) => {
 app.use(expressLogger);
 
 app.use('/api/admin', adminRoutes);
-app.use('/api/manga', bookRoutes);
+app.use('/api/manga', mangaRoutes);
 app.use('/api/social', socialRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/validation', validationRoutes);

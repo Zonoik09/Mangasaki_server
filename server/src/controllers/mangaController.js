@@ -1,7 +1,7 @@
-const Book = require('../models/Book');
+const Manga = require('../models/Manga');
 const Gallery = require('../models/Gallery');
 const Recommendation = require('../models/Recommendation');
-const User_Book = require('../models/User_Book');
+const User_Manga = require('../models/User_Manga');
 const User = require('../models/User');
 
 const axios = require('axios');
@@ -19,9 +19,9 @@ const MANGA_NAME_URL = process.env.MANGA_NAME_URL;
 
 /**
  * Hace una petición con imagen.
- * @route POST /api/book/analyzeBook
+ * @route POST /api/manga/analyzeManga
  */
-const analyzeBook = async (req, res, next) => {
+const analyzeManga = async (req, res, next) => {
     try {
 
         const { base64Image } = req.body;
@@ -269,6 +269,6 @@ const getPrevisualization = async (req, res, next) => {
 
 
 module.exports = {
-    analyzeBook,
+    analyzeManga,
     getPrevisualization,
 };

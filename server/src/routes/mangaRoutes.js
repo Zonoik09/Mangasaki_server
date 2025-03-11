@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const {
-    analyzeBook,
+    analyzeManga,
     getPrevisualization,
-} = require('../controllers/bookController.js');
+} = require('../controllers/mangaController.js');
 
 /**
  * @swagger
- * /api/manga/analyzeBook:
+ * /api/manga/analyzeManga:
  *   post:
  *     summary: Analiza un libro basado en una imagen en Base64
  *     tags: [Manga]
@@ -41,7 +41,7 @@ const {
  *       500:
  *         description: Error interno del servidor
  */
-router.post('/analyzeBook', analyzeBook);
+router.post('/analyzeManga', analyzeManga);
 
 /**
  * @swagger
