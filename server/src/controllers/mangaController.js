@@ -224,7 +224,6 @@ const buildResponse = (status, message, result) => {
         },
     };
 };
-
 /**
  * Hace una petición con imagen para obtener los mangas más populares.
  * @route GET /api/manga/previsualization
@@ -233,10 +232,28 @@ const getPrevisualization = async (req, res, next) => {
     try {
         logger.info("Se recibió una petición para obtener el top mangas");
 
-        let topMangaURL = "https://api.jikan.moe/v4/top/manga?limit=24";
-        let RecommendationMangaURL = "https://api.jikan.moe/v4/recommendations/manga?limit=30";
+        let topMangaURL = "https://api.jikan.moe/v4/top/manga?limit=25";
+        let RecommendationMangaURL = "https://api.jikan.moe/v4/recommendations/manga?limit=25";
 
-        const responseTopMangas = await axios.get(topMangaURL);
+        const responseTopMangas = await axios.get(topMangaURL).catch(error => {
+            if (error.response && error.response.status === 404) {
+                logger.error('Error 404: La URL de Top Manga no existe', {
+                    error: error.message,
+                    url: topMangaURL
+                });
+                return null;  // Return null or handle appropriately
+            }
+            throw error; // If it's another error, throw it
+        });
+
+        if (!responseTopMangas) {
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'No se pudo obtener el top de mangas. URL incorrecta o recurso no encontrado.',
+                data: null,
+            });
+        }
+
         const responseRecommendationMangas = await axios.get(RecommendationMangaURL);
 
         // Process top mangas (same as before)
