@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {
     analyzeManga,
-} = require('../controllers/mangaontroller.js');
+} = require('../controllers/mangaController.js');
 
 /**
  * @swagger
