@@ -296,7 +296,7 @@ const getPrevisualization = async (req, res, next) => {
                     rank: responseMangaById.data.data.rank,
                 });
 
-                await delay(500);
+                await delay(2000);
             }
         }
 
