@@ -199,7 +199,6 @@ const nameSearch = async (name) =>  {
             name: name
         });
 
-        // Retornar un mensaje de error adecuado en caso de falla
         return {
             status: 'ERROR',
             message: 'Error al obtener información del manga',
@@ -226,6 +225,50 @@ const buildResponse = (status, message, result) => {
     };
 };
 
+
+/**
+ * Hace una petición con imagen para obtener los mangas más populares.
+ * @route GET /api/manga/previsualization
+ */
+const getPrevisualization = async (req, res, next) => {
+    try {
+        logger.info("Se recibió una petición para obtener el top mangas");
+
+        let topMangaURL = "https://api.jikan.moe/v4/top/manga?limit=25";
+        
+        const response = await axios.get(topMangaURL);
+
+        const topMangas = response.data.data.map(manga => ({
+            title: manga.title,
+            synopsis: manga.synopsis,
+            image_url: manga.images.jpg.image_url,
+            status: manga.status,
+            score: manga.score,
+            rank: manga.rank,
+        }));
+
+        return res.status(200).json({
+            status: 'success',
+            message: 'Lista de top mangas obtenida correctamente',
+            topManga: topMangas
+        });
+        
+    } catch (error) {
+        logger.error('Error al obtener el top de mangas', {
+            error: error.message,
+            stack: error.stack,
+        });
+
+        return res.status(500).json({
+            status: 'ERROR',
+            message: 'Error interno al obtener el top de mangas',
+            data: null,
+        });
+    }
+};
+
+
 module.exports = {
     analyzeBook,
+    getPrevisualization,
 };
