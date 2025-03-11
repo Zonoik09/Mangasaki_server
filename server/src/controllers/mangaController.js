@@ -8,7 +8,6 @@ const axios = require('axios');
 const crypto = require('crypto');
 const { logger } = require('../config/logger');
 const { Logger } = require('winston');
-const { log } = require('console');
 
 const OLLAMA_API_URL = process.env.CHAT_API_OLLAMA_URL;
 const CHAT_API_OLLAMA_MODEL = process.env.CHAT_API_OLLAMA_MODEL;
@@ -274,14 +273,12 @@ const getPrevisualization = async (req, res, next) => {
         // Function to delay between requests
         const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-        for (let mangaData of responseRecommendationMangas.data.data.entry) {
+        for (let mangaData of responseRecommendationMangas.data.data) {
+            for (let manga of mangaData.entry) {
+                
+                let mal_id = manga.mal_id;
 
-                logger.debug(mangaData);
-                /*if (processedMangaIds.has(mal_id)) {
-                    continue;  // Si ya fue procesado, saltamos al siguiente manga
-                }
-
-                processedMangaIds.add(mal_id);  // Marcamos este manga como procesado
+                logger.log(mal_id)
 
                 // El resto del código sigue igual
                 let mangaSearchURL = `https://api.jikan.moe/v4/manga/${mal_id}`;
@@ -296,8 +293,9 @@ const getPrevisualization = async (req, res, next) => {
                     rank: responseMangaById.data.data.rank,
                 });
 
-                awfait delay(1000);*/
+                await delay(1000);
             }
+        }
 
         return res.status(200).json({
             status: 'success',
