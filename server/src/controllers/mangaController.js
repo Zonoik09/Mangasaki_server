@@ -225,7 +225,6 @@ const buildResponse = (status, message, result) => {
     };
 };
 
-
 /**
  * Hace una petición con imagen para obtener los mangas más populares.
  * @route GET /api/manga/previsualization
@@ -235,10 +234,13 @@ const getPrevisualization = async (req, res, next) => {
         logger.info("Se recibió una petición para obtener el top mangas");
 
         let topMangaURL = "https://api.jikan.moe/v4/top/manga?limit=25";
-        
-        const response = await axios.get(topMangaURL);
+        let RecommendationMangaURL = "https://api.jikan.moe/v4/recommendations/manga?limit=25";
 
-        const topMangas = response.data.data.map(manga => ({
+        const responseTopMangas = await axios.get(topMangaURL);
+        const responseRecommendationMangas = await axios.get(RecommendationMangaURL);
+
+        // Process top mangas (same as before)
+        const topMangas = responseTopMangas.data.data.map(manga => ({
             title: manga.title,
             synopsis: manga.synopsis,
             image_url: manga.images.jpg.image_url,
@@ -247,10 +249,32 @@ const getPrevisualization = async (req, res, next) => {
             rank: manga.rank,
         }));
 
+        // Create an array for recommendation mangas
+        const recommendationMangas = [];
+
+        // Iterate through each recommended manga and fetch additional details
+        for (let manga of responseRecommendationMangas.data.data) {
+            let mal_id = manga.mal_id;
+            let mangaSearchURL = `https://api.jikan.moe/v4/manga/${mal_id}`;
+
+            const responseMangaById = await axios.get(mangaSearchURL);
+
+            // Push the necessary details to the recommendationMangas array
+            recommendationMangas.push({
+                title: responseMangaById.data.data.title,
+                synopsis: responseMangaById.data.data.synopsis,
+                image_url: responseMangaById.data.data.images.jpg.image_url,
+                status: responseMangaById.data.data.status,
+                score: responseMangaById.data.data.score,
+                rank: responseMangaById.data.data.rank,
+            });
+        }
+
         return res.status(200).json({
             status: 'success',
             message: 'Lista de top mangas obtenida correctamente',
-            topManga: topMangas
+            topManga: topMangas,
+            recommendationMangas: recommendationMangas,
         });
 
     } catch (error) {
@@ -266,7 +290,6 @@ const getPrevisualization = async (req, res, next) => {
         });
     }
 };
-
 
 module.exports = {
     analyzeManga,
