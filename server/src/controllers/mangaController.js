@@ -273,13 +273,12 @@ const getPrevisualization = async (req, res, next) => {
         // Function to delay between requests
         const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-        const processedMangaIds = new Set();  // Para almacenar los IDs ya procesados
-
         for (let mangaData of responseRecommendationMangas.data.data) {
             for (let manga of mangaData.entry) {
                 let mal_id = manga.mal_id;
 
-                if (processedMangaIds.has(mal_id)) {
+                logger.debug(mal_id)
+                /*if (processedMangaIds.has(mal_id)) {
                     continue;  // Si ya fue procesado, saltamos al siguiente manga
                 }
 
@@ -298,7 +297,7 @@ const getPrevisualization = async (req, res, next) => {
                     rank: responseMangaById.data.data.rank,
                 });
 
-                await delay(1000);
+                await delay(1000);*/
             }
         }
 
