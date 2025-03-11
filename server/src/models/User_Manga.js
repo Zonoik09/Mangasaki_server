@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
 
-const User_Book = sequelize.define('User_Book', {
+const User_Manga = sequelize.define('User_Manga', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -16,11 +16,11 @@ const User_Book = sequelize.define('User_Book', {
         },
         onDelete: 'CASCADE'
     },
-    book_id: {
+    manga_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'Book',
+            model: 'Manga',
             key: 'id'
         },
         onDelete: 'CASCADE'
@@ -32,14 +32,14 @@ const User_Book = sequelize.define('User_Book', {
     },
 }, {
     timestamps: true,
-    tableName: 'User_Book',
+    tableName: 'User_Manga',
     underscored: true,
     indexes: [
         {
             unique: true,
-            fields: ['user_id', 'book_id']
+            fields: ['user_id', 'manga_id']
         }
     ]
 });
 
-module.exports = User_Book;
+module.exports = User_Manga;

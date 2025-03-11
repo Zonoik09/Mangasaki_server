@@ -20,11 +20,11 @@ const Gallery = sequelize.define('Gallery', {
         },
         onDelete: 'CASCADE'
     },
-    book_id: {
+    manga_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'Book',
+            model: 'Manga',
             key: 'id'
         },
         onDelete: 'CASCADE'
