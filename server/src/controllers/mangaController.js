@@ -274,9 +274,10 @@ const getPrevisualization = async (req, res, next) => {
             let mal_id = manga.mal_id;
             let mangaSearchURL = `https://api.jikan.moe/v4/manga/${mal_id}`;
 
+            logger.info(mal_id)
+
             const responseMangaById = await axios.get(mangaSearchURL);
 
-            // Push the necessary details to the recommendationMangas array
             recommendationMangas.push({
                 title: responseMangaById.data.data.title,
                 synopsis: responseMangaById.data.data.synopsis,
