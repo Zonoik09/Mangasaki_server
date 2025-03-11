@@ -274,30 +274,26 @@ const getPrevisualization = async (req, res, next) => {
         const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
         // Iterate through each recommended manga and fetch additional details
-        for (let mangaData of responseRecommendationMangas.data.data) {
+        for (let manga of responseRecommendationMangas.data.data.entry[0]) {
             // Iterate over each entry inside the data object
-            for (let manga of mangaData.entry) {
-                let mal_id = manga.mal_id;
-                let mangaSearchURL = `https://api.jikan.moe/v4/manga/${mal_id}`;
-        
-                // Log the mal_id for debugging
-                logger.info(`Fetching details for manga with mal_id: ${mal_id}`);
-        
-                // Fetch manga details by mal_id
-                const responseMangaById = await axios.get(mangaSearchURL);
-        
-                // Push the necessary manga details to the recommendationMangas array
-                recommendationMangas.push({
-                    title: responseMangaById.data.data.title,
-                    synopsis: responseMangaById.data.data.synopsis,
-                    image_url: responseMangaById.data.data.images.jpg.image_url,
-                    status: responseMangaById.data.data.status,
-                    score: responseMangaById.data.data.score,
-                    rank: responseMangaById.data.data.rank,
-                });
-
-                await delay(2000);
-            }
+            let mal_id = manga.mal_id;
+            let mangaSearchURL = `https://api.jikan.moe/v4/manga/${mal_id}`;
+    
+            // Log the mal_id for debugging
+            logger.info(`Fetching details for manga with mal_id: ${mal_id}`);
+    
+            // Fetch manga details by mal_id
+            const responseMangaById = await axios.get(mangaSearchURL);
+    
+            // Push the necessary manga details to the recommendationMangas array
+            recommendationMangas.push({
+                title: responseMangaById.data.data.title,
+                synopsis: responseMangaById.data.data.synopsis,
+                image_url: responseMangaById.data.data.images.jpg.image_url,
+                status: responseMangaById.data.data.status,
+                score: responseMangaById.data.data.score,
+                rank: responseMangaById.data.data.rank,
+            });
         }
 
         return res.status(200).json({
