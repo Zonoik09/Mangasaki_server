@@ -296,8 +296,7 @@ const getPrevisualization = async (req, res, next) => {
                     rank: responseMangaById.data.data.rank,
                 });
 
-                // Add a delay of 500ms (or any other amount you prefer)
-                await delay(100);  // Delay in milliseconds (500ms = 0.5 segundos)
+                await delay(334);
             }
         }
 
