@@ -233,8 +233,8 @@ const getPrevisualization = async (req, res, next) => {
     try {
         logger.info("Se recibió una petición para obtener el top mangas");
 
-        let topMangaURL = "https://api.jikan.moe/v4/top/manga?limit=25";
-        let RecommendationMangaURL = "https://api.jikan.moe/v4/recommendations/manga?limit=25";
+        let topMangaURL = "https://api.jikan.moe/v4/top/manga?limit=24";
+        let RecommendationMangaURL = "https://api.jikan.moe/v4/recommendations/manga?limit=30";
 
         const responseTopMangas = await axios.get(topMangaURL);
         const responseRecommendationMangas = await axios.get(RecommendationMangaURL);
