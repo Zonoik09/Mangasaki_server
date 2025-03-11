@@ -8,6 +8,7 @@ const axios = require('axios');
 const crypto = require('crypto');
 const { logger } = require('../config/logger');
 const { Logger } = require('winston');
+const { log } = require('console');
 
 const OLLAMA_API_URL = process.env.CHAT_API_OLLAMA_URL;
 const CHAT_API_OLLAMA_MODEL = process.env.CHAT_API_OLLAMA_MODEL;
@@ -273,22 +274,9 @@ const getPrevisualization = async (req, res, next) => {
         // Function to delay between requests
         const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-        let counter = 0;  // Contador para limitar la iteración a 25 elementos
-        for (let mangaData of responseRecommendationMangas.data.data) {
+        for (let mangaData of responseRecommendationMangas.data.data.entry) {
 
-            if (counter >= 25) {
-                break;
-            }
-
-            for (let manga of mangaData.entry) {
-                if (counter >= 25) {
-                    break;
-                }
-
-                let mal_id = manga.mal_id;
-                logger.debug(mal_id);
-
-                // Descomenta el código si quieres procesar mangas
+                logger.debug(mangaData);
                 /*if (processedMangaIds.has(mal_id)) {
                     continue;  // Si ya fue procesado, saltamos al siguiente manga
                 }
@@ -308,12 +296,8 @@ const getPrevisualization = async (req, res, next) => {
                     rank: responseMangaById.data.data.rank,
                 });
 
-                await delay(1000);*/
-
-                counter++;  // Incrementamos el contador después de procesar un manga
+                awfait delay(1000);*/
             }
-        }
-
 
         return res.status(200).json({
             status: 'success',
