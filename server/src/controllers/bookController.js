@@ -28,7 +28,7 @@ const analyzeBook = async (req, res, next) => {
 
         logger.info("Se recibió una petición de análisis de libro");
 
-        if (!base64Image) {           
+        if (!base64Image) {
             return res.status(400).json({
                 status: 'ERROR',
                 message: 'El campo base64Image es obligatorio',
@@ -36,6 +36,7 @@ const analyzeBook = async (req, res, next) => {
             });
         }
 
+        // Mejoramos el prompt para asegurar que la respuesta esté siempre en formato JSON limpio
         const prompt = `
         Identify whether the input is an ISBN code or the cover of a manga. Respond **only** with a valid JSON object, following the exact structure below. Do not include explanations, text, or code block delimiters. The response must be **only JSON**.
         If it's an ISBN code, return:
@@ -50,19 +51,24 @@ const analyzeBook = async (req, res, next) => {
             "manga_name": "The name of the manga",
             "volume": "The volume number"
         }
-        **Ensure that the response is valid JSON and contains no additional text, markdown, or formatting.**`;
+        **Ensure that the response is valid JSON, and contains no additional text, markdown, or formatting. Ensure no other characters or text are included before or after the JSON response.**`;
 
+        // Generación de la respuesta desde Ollama
         const response = await generateResponse(prompt, [base64Image], CHAT_API_OLLAMA_MODEL);
 
-        logger.debug(response);
+        logger.debug('Respuesta cruda de Ollama:', response);
 
-        let parsedResponse = JSON.parse(response);
+        // Limpiar cualquier texto no relacionado con el JSON
+        const cleanResponse = response.replace(/^.*?(\{.*\})$/, '$1'); // Usamos una expresión regular para extraer solo el JSON válido
 
-        logger.debug("Respuesta de Ollama: ", parsedResponse);
+        let parsedResponse = JSON.parse(cleanResponse);
 
+        logger.debug("Respuesta de Ollama procesada:", parsedResponse);
+
+        // Procesar el tipo de respuesta recibido
         if (parsedResponse.type === "ISBN") {
 
-            // Llamar a la nueva función con reintentos
+            // Llamada a la función que busca el ISBN con reintentos
             const nameByISBN = await isbnSearchWithRetry(parsedResponse.isbn_code);
 
             // Si no se obtiene respuesta válida después de 3 intentos, devolver error
@@ -81,14 +87,14 @@ const analyzeBook = async (req, res, next) => {
 
             let result = await nameSearch(parsedResponse.manga_name + " ,Vol. " + parsedResponse.volume);
 
-            logger.info("Información del manga: " + JSON.stringify(result, null, 2));
+            logger.info("Información del manga:", JSON.stringify(result, null, 2));
 
             return res.status(201).json(buildResponse('OK', 'Análisis de portada de manga realizado correctamente', result));
 
         } else {
 
             return res.status(400).json({
-                status: 'Error',
+                status: 'ERROR',
                 message: 'Tipo de respuesta no reconocido',
             });
         }
@@ -107,6 +113,7 @@ const analyzeBook = async (req, res, next) => {
         });
     }
 };
+
 
 const generateResponse = async (prompt, images, model) => {
     try {
