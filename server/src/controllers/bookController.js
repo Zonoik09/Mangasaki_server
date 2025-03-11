@@ -26,9 +26,9 @@ const analyzeBook = async (req, res, next) => {
 
         const { base64Image } = req.body;
 
-        logger.info("Se recibió una petición de análisis de libro")
+        logger.info("Se recibió una petición de análisis de libro");
 
-        if ( !base64Image ) {           
+        if (!base64Image) {           
             return res.status(400).json({
                 status: 'ERROR',
                 message: 'El campo base64Image es obligatorio',
@@ -36,8 +36,8 @@ const analyzeBook = async (req, res, next) => {
             });
         }
 
-        const prompt = 
-        `Identify whether the input is an ISBN code or the cover of a manga. Respond **only** with a valid JSON object, following the exact structure below. Do not include explanations, text, or code block delimiters. The response must be **only JSON**.
+        const prompt = `
+        Identify whether the input is an ISBN code or the cover of a manga. Respond **only** with a valid JSON object, following the exact structure below. Do not include explanations, text, or code block delimiters. The response must be **only JSON**.
         If it's an ISBN code, return:
         {
             "type": "ISBN",
@@ -54,7 +54,7 @@ const analyzeBook = async (req, res, next) => {
 
         const response = await generateResponse(prompt, [base64Image], CHAT_API_OLLAMA_MODEL);
 
-        logger.debug(response)
+        logger.debug(response);
 
         let parsedResponse = JSON.parse(response);
 
@@ -62,10 +62,19 @@ const analyzeBook = async (req, res, next) => {
 
         if (parsedResponse.type === "ISBN") {
 
-            nameByISBN = await isbnSearch(parsedResponse.isbn_code);
+            // Llamar a la nueva función con reintentos
+            const nameByISBN = await isbnSearchWithRetry(parsedResponse.isbn_code);
 
-            result = await nameSearch(nameByISBN.book.title_long);
-            
+            // Si no se obtiene respuesta válida después de 3 intentos, devolver error
+            if (!nameByISBN || !nameByISBN.items || nameByISBN.items.length === 0) {
+                return res.status(400).json({
+                    status: 'ERROR',
+                    message: 'No se pudo encontrar información para el ISBN después de varios intentos.',
+                    data: null,
+                });
+            }
+
+            const result = await nameSearch(nameByISBN.items[0].volumeInfo.title);
             return res.status(201).json(buildResponse('OK', 'Análisis de portada de manga realizado correctamente', result));
 
         } else if (parsedResponse.type === "Manga Cover") {
@@ -78,7 +87,7 @@ const analyzeBook = async (req, res, next) => {
 
         } else {
 
-            res.status(400).json({
+            return res.status(400).json({
                 status: 'Error',
                 message: 'Tipo de respuesta no reconocido',
             });
@@ -86,14 +95,14 @@ const analyzeBook = async (req, res, next) => {
 
     } catch (error) {
 
-        logger.error('Error al registrar el prompt con imagenes', {
+        logger.error('Error al registrar el prompt con imágenes', {
             error: error.message,
             stack: error.stack,
         });
 
-        res.status(500).json({
+        return res.status(500).json({
             status: 'ERROR',
-            message: 'Error interno al registrar el prompt con imagenes',
+            message: 'Error interno al registrar el prompt con imágenes',
             data: null,
         });
     }
@@ -131,38 +140,82 @@ const generateResponse = async (prompt, images, model) => {
     }
 };
 
-const isbnSearch = async (isbn) => {
+const isbnSearchWithRetry = async (isbn, retries = 3) => {
     try {
-        logger.debug(`Buscando información para ISBN: ${isbn}`);
-        
-        const response = await axios.get(`${ISBN_URL}${isbn}`, {
-            headers: {
-                'Authorization': ISBN_API_KEY
-            }
-        });
+        let attempt = 0;
+        let response;
 
-        // Verificar que la respuesta contiene datos
-        if (!response.data) {
-            throw new Error('No se encontró información para este ISBN');
+        while (attempt < retries) {
+            attempt++;
+            logger.debug(`Intento ${attempt} para buscar información del ISBN: ${isbn}`);
+            
+            response = await axios.get(`${ISBN_URL}${isbn}`, {
+                headers: { 'Authorization': ISBN_API_KEY }
+            });
+
+            // Verificar si la respuesta contiene datos
+            if (response.data && response.data.items && response.data.items.length > 0) {
+                logger.debug('Información obtenida para el ISBN en intento ' + attempt);
+                return response.data; // Devuelve los datos si se encuentra información
+            }
+
+            logger.warn(`No se encontró información para el ISBN en el intento ${attempt}`);
+            
+            // Si la respuesta es inválida, esperar antes de reintentar
+            if (attempt < retries) {
+                await new Promise(resolve => setTimeout(resolve, 2000)); // Esperar 2 segundos entre intentos
+            }
         }
 
-        logger.debug('Respuesta recibida de la API', {
-            data: response.data
-        });
+        // Si después de los reintentos no se obtiene respuesta, pedir a Ollama que analice de nuevo
+        logger.warn('No se encontró información después de 3 intentos. Volveré a intentar con Ollama.');
+        return await handleOllamaAnalysis(isbn);  // Aquí se hace el análisis con Ollama
 
-        return response.data;
     } catch (error) {
         logger.error('Error en la búsqueda de ISBN', {
             error: error.message,
             isbn: isbn
         });
+        return { status: 'ERROR', message: 'Error al obtener información del ISBN', data: null };
+    }
+};
 
-        // Retornar un mensaje de error adecuado en caso de falla
-        return {
-            status: 'ERROR',
-            message: 'Error al obtener información del ISBN',
-            data: null
-        };
+const handleOllamaAnalysis = async (isbn) => {
+    try {
+        logger.debug('Solicitando a Ollama el análisis del ISBN');
+
+        const prompt = `
+        Identificar si el código ingresado es un código ISBN válido y proporcionar la información correspondiente.
+        Responder solo con un objeto JSON válido, siguiendo la estructura indicada a continuación. No incluir explicaciones, texto o delimitadores de bloques de código.
+        
+        Respuesta:
+        {
+            "type": "ISBN",
+            "isbn_code": "El código ISBN",
+            "title": "Título del libro",
+            "authors": "Autores del libro",
+            "publisher": "Editorial",
+            "publishedDate": "Fecha de publicación",
+            "description": "Descripción del libro"
+        }
+        `;
+
+        // Ejecutar la solicitud a Ollama con el ISBN
+        const response = await generateResponse(prompt, [isbn], CHAT_API_OLLAMA_MODEL);
+
+        // Parsear la respuesta y devolverla
+        const parsedResponse = JSON.parse(response);
+        logger.debug('Respuesta de Ollama: ', parsedResponse);
+
+        // Devolver la respuesta de Ollama
+        return parsedResponse;
+
+    } catch (error) {
+        logger.error('Error al obtener información de Ollama', {
+            error: error.message,
+            isbn: isbn
+        });
+        return { status: 'ERROR', message: 'Error al obtener información de Ollama', data: null };
     }
 };
 
