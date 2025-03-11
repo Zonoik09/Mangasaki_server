@@ -81,7 +81,7 @@ const analyzeBook = async (req, res, next) => {
 
             logger.debug("----- Se iniciar un nameSearch con " + nameByISBN + " -----")
 
-            const result = await nameSearch(nameByISBN.items[0].volumeInfo.title);
+            const result = await nameSearch(nameByISBN);
             return res.status(201).json(buildResponse('OK', 'Análisis de portada de manga realizado correctamente', result));
 
         } else if (parsedResponse.type === "Manga Cover") {
@@ -114,7 +114,6 @@ const analyzeBook = async (req, res, next) => {
         });
     }
 };
-
 
 const generateResponse = async (prompt, images, model) => {
     try {
