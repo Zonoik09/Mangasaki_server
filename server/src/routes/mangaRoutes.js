@@ -7,10 +7,10 @@ const {
 
 /**
  * @swagger
- * /api/book/analyzeBook:
+ * /api/manga/analyzeBook:
  *   post:
  *     summary: Analiza un libro basado en una imagen en Base64
- *     tags: [MANGA]
+ *     tags: [Manga]
  *     requestBody:
  *       required: true
  *       content:

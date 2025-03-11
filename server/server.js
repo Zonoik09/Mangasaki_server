@@ -50,7 +50,7 @@ app.use((req, res, next) => {
 app.use(expressLogger);
 
 app.use('/api/admin', adminRoutes);
-app.use('/api/book', bookRoutes);
+app.use('/api/manga', bookRoutes);
 app.use('/api/social', socialRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/validation', validationRoutes);

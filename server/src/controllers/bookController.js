@@ -252,7 +252,7 @@ const getPrevisualization = async (req, res, next) => {
             message: 'Lista de top mangas obtenida correctamente',
             topManga: topMangas
         });
-        
+
     } catch (error) {
         logger.error('Error al obtener el top de mangas', {
             error: error.message,
