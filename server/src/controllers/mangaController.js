@@ -273,17 +273,20 @@ const getPrevisualization = async (req, res, next) => {
         // Function to delay between requests
         const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
+        // Iterate through each recommended manga and fetch additional details
         for (let mangaData of responseRecommendationMangas.data.data) {
+            // Iterate over each entry inside the data object
             for (let manga of mangaData.entry) {
-                
                 let mal_id = manga.mal_id;
-
-                logger.log(mal_id)
-
-                // El resto del código sigue igual
                 let mangaSearchURL = `https://api.jikan.moe/v4/manga/${mal_id}`;
+        
+                // Log the mal_id for debugging
+                logger.info(`Fetching details for manga with mal_id: ${mal_id}`);
+        
+                // Fetch manga details by mal_id
                 const responseMangaById = await axios.get(mangaSearchURL);
-
+        
+                // Push the necessary manga details to the recommendationMangas array
                 recommendationMangas.push({
                     title: responseMangaById.data.data.title,
                     synopsis: responseMangaById.data.data.synopsis,
@@ -293,7 +296,7 @@ const getPrevisualization = async (req, res, next) => {
                     rank: responseMangaById.data.data.rank,
                 });
 
-                await delay(1000);
+                await delay(2000);
             }
         }
 
