@@ -273,20 +273,22 @@ const getPrevisualization = async (req, res, next) => {
         // Function to delay between requests
         const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-        // Iterate through each recommended manga and fetch additional details
+        const processedMangaIds = new Set();  // Para almacenar los IDs ya procesados
+
         for (let mangaData of responseRecommendationMangas.data.data) {
-            // Iterate over each entry inside the data object
             for (let manga of mangaData.entry) {
                 let mal_id = manga.mal_id;
+
+                if (processedMangaIds.has(mal_id)) {
+                    continue;  // Si ya fue procesado, saltamos al siguiente manga
+                }
+
+                processedMangaIds.add(mal_id);  // Marcamos este manga como procesado
+
+                // El resto del código sigue igual
                 let mangaSearchURL = `https://api.jikan.moe/v4/manga/${mal_id}`;
-        
-                // Log the mal_id for debugging
-                logger.info(`Fetching details for manga with mal_id: ${mal_id}`);
-        
-                // Fetch manga details by mal_id
                 const responseMangaById = await axios.get(mangaSearchURL);
-        
-                // Push the necessary manga details to the recommendationMangas array
+
                 recommendationMangas.push({
                     title: responseMangaById.data.data.title,
                     synopsis: responseMangaById.data.data.synopsis,
@@ -296,7 +298,7 @@ const getPrevisualization = async (req, res, next) => {
                     rank: responseMangaById.data.data.rank,
                 });
 
-                await delay(2000);
+                await delay(1000);
             }
         }
 
