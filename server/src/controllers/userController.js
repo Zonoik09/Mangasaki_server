@@ -232,8 +232,69 @@ const loginUser = async (req, res, next) => {
     }
 };
 
+/**
+ * Inicia sesión un usuario.
+ * @route POST /api/user/getUserInfo
+ */
+const getUserInfo = async (req, res, next) => {
+    try {
+        const { nickname } = req.body;
+
+        if (!nickname) {
+
+            return res.status(400).json({
+                status: 'ERROR',
+                message: 'El nickname es obligatorio',
+                data: null,
+            });
+        }
+
+        logger.info('Nueva solicitud de get para: ' + nickname);
+
+        const user = await User.findOne({
+            where: { nickname },
+        });
+
+        if (!user) {
+
+            logger.warn('Usuario no encontrado con nickname: ' +  nickname );
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'Usuario no encontrado',
+                data: null,
+            });
+        }
+
+        logger.info('Get user info exitoso con nickname: ' + user.nickname );
+
+        res.status(200).json({
+            status: 'OK',
+            message: 'Información del usuario con nickname: ' + user.nickname,
+            data: {
+                id: user.id,
+                nickname: user.nickname,
+                phone: user.phone,
+                image_url: user.image_url,
+            },
+        });
+    } catch (error) {
+
+        logger.error('Error al recuperar la información de usuario', {
+            error: error.message,
+            stack: error.stack,
+        });
+
+        res.status(500).json({
+            status: 'ERROR',
+            message: 'Error interno al recuperar la infromación de un usuario',
+            data: null,
+        });
+    }
+};
+
 module.exports = {
     registerUser,
     validateUser,
     loginUser,
+    getUserInfo,
 };

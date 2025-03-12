@@ -4,6 +4,7 @@ const {
     registerUser,
     validateUser,
     loginUser,
+    getUserInfo,
 } = require('../controllers/userController.js');
 
 /**
@@ -187,5 +188,8 @@ router.post('/validate', validateUser);
  *                   example: "Error interno al intentar iniciar sesión"
  */
 router.post('/login', loginUser);
+
+
+
 
 module.exports = router;

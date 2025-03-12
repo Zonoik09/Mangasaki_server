@@ -43,45 +43,4 @@ const {
  */
 router.post('/analyzeManga', analyzeManga);
 
-/**
- * @swagger
- * /api/manga/previsualization:
- *   get:
- *     summary: Obtiene tres listas de las vistas de información de mangas [ top manags , recomendaciones , 3 categorias ]
- *     tags: [Manga]
- *     responses:
- *       200:
- *         description: Listado de información de mangas
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: "success"
- *                 message:
- *                   type: string
- *                   example: "Lista de mangas obtenida correctamente"
- *                 top_mangas:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       title:
- *                         type: string
- *                         example: "Jujutsu Kaisen"
- *                       rank:
- *                         type: integer
- *                         example: 1
- *                       image_url:
- *                         type: string
- *                         example: "https://example.com/image.jpg"
- *       400:
- *         description: Error en la solicitud
- *       500:
- *         description: Error interno del servidor
- */
-router.get('/previsualization', getPrevisualization);
-
 module.exports = router;
