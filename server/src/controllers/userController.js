@@ -234,54 +234,50 @@ const loginUser = async (req, res, next) => {
 
 const getUserInfo = async (req, res, next) => {
     try {
-        const { nickname } = req.params;  // Access nickname from the URL parameter
+        const { nickname } = req.params; // Acceder al nickname de la URL
 
+        // Verificar si se ha proporcionado un nickname
         if (!nickname) {
             return res.status(400).json({
-                status: 'ERROR',
-                message: 'El nickname es obligatorio',
-                data: null,
+                ok: false,
+                missatge: 'El nickname es obligatorio',
+                resultat: null,
             });
         }
 
-        logger.info('Nueva solicitud de get para: ' + nickname);
+        logger.info(`Obteniendo información del usuario con nickname: ${nickname}`);
 
+        // Buscar al usuario por nickname
         const user = await User.findOne({
             where: { nickname },
         });
 
+        // Si el usuario no existe
         if (!user) {
-            logger.warn('Usuario no encontrado con nickname: ' + nickname);
             return res.status(404).json({
-                status: 'ERROR',
-                message: 'Usuario no encontrado',
-                data: null,
+                ok: false,
+                missatge: 'Usuario no encontrado',
+                resultat: null,
             });
         }
 
-        logger.info('Get user info exitoso con nickname: ' + user.nickname);
-
+        // Respuesta exitosa con los datos del usuario
         res.status(200).json({
-            status: 'OK',
-            message: 'Información del usuario con nickname: ' + user.nickname,
-            data: {
+            ok: true,
+            missatge: `Información del usuario con nickname: ${user.nickname}`,
+            resultat: {
                 id: user.id,
                 nickname: user.nickname,
                 phone: user.phone,
-                image_url: user.image_url,
+                image_url: user.image_url || null, // Asegurarse de que no sea undefined
             },
         });
     } catch (error) {
-        logger.error('Error al recuperar la información de usuario', {
+        logger.error('Error al recuperar la información del usuario', {
             error: error.message,
             stack: error.stack,
         });
-
-        res.status(500).json({
-            status: 'ERROR',
-            message: 'Error interno al recuperar la información de un usuario',
-            data: null,
-        });
+        next(error); // Delegar el error al middleware de manejo de errores
     }
 };
 

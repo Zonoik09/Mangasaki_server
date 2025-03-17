@@ -194,15 +194,16 @@ router.post('/login', loginUser);
  * /api/user/getUserInfo/{nickname}:
  *   get:
  *     summary: Obtiene la información del usuario a través del nickname
+ *     description: Endpoint para obtener la información de un usuario específico utilizando su nickname.
  *     tags: [User]
  *     parameters:
  *       - in: path
  *         name: nickname
  *         required: true
- *         description: El nickname del usuario
+ *         description: El nickname del usuario para obtener su información
  *         schema:
  *           type: string
- *           example: user
+ *           example: admin
  *     responses:
  *       200:
  *         description: Información del usuario obtenida correctamente
@@ -216,28 +217,67 @@ router.post('/login', loginUser);
  *                   example: "OK"
  *                 message:
  *                   type: string
- *                   example: "Información del usuario con nickname: user"
+ *                   example: "Información del usuario con nickname: admin"
  *                 data:
  *                   type: object
  *                   properties:
  *                     id:
- *                       type: string
- *                       example: "123456"
+ *                       type: integer
+ *                       example: 1
  *                     nickname:
  *                       type: string
- *                       example: "user"
+ *                       example: "admin"
  *                     phone:
  *                       type: string
- *                       example: "655179162"
+ *                       example: "658541674"
  *                     image_url:
  *                       type: string
- *                       example: "http://example.com/user-image.jpg"
+ *                       example: null
  *       400:
  *         description: El nickname es obligatorio
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "El nickname es obligatorio"
+ *                 data:
+ *                   type: null
  *       404:
  *         description: Usuario no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "Usuario no encontrado"
+ *                 data:
+ *                   type: null
  *       500:
  *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "Error interno al recuperar la información del usuario"
+ *                 data:
+ *                   type: null
  */
 router.get('/getUserInfo/:nickname', getUserInfo);
 
