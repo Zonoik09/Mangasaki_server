@@ -415,8 +415,6 @@ const changeUserImage = async (req, res, next) => {
     }
 };
 
-module.exports = changeUserImage;
-
 
 module.exports = {
     registerUser,
