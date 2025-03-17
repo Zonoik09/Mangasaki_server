@@ -31,7 +31,7 @@ const registerUser = async (req, res, next) => {
             password,
             phone,
             token: null,
-            image_url: "default_images\default0.jpg",
+            image_url: "default0.jpg",
         });
 
         logger.info('Usuario registrado correctamente', { newUser });
