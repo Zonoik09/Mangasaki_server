@@ -345,6 +345,6 @@ router.get('/getUserInfo/:nickname', getUserInfo);
  *                   type: string
  *                   example: "Error al intentar recuperar la imagen"
  */
-router.get('/getUserImage/:nickname', getUserImageByNickname);
+router.get('/getUserImage/:nickname', getUserImage);
 
 module.exports = router;
