@@ -428,6 +428,6 @@ router.get('/getUserImage/:nickname', getUserImage);
  *                   type: string
  *                   example: "Error al actualizar la imagen de perfil"
  */
-router.get('/changeUserProfileImage', changeUserImage);
+router.post('/changeUserProfileImage', changeUserImage);
 
 module.exports = router;
