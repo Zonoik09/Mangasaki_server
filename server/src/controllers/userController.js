@@ -283,8 +283,6 @@ const getUserInfo = async (req, res, next) => {
         next(error); // Delegar el error al middleware de manejo de errores
     }
 };
-const path = require('path');
-const fs = require('fs');
 
 const getUserImage = async (req, res, next) => {
     try {
