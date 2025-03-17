@@ -310,7 +310,7 @@ const getUserImage = async (req, res, next) => {
         // Si el usuario no tiene imagen, devolver la imagen por defecto
         let imagePath;
         if (!user.image_url) {
-            imagePath = path.resolve(__dirname, '../../user_images/default.jpg');
+            imagePath = path.resolve(__dirname, '../../user_images/default0.jpg');
         } else {
             imagePath = path.resolve(__dirname, '../../user_images', user.image_url);
         }
