@@ -191,12 +191,12 @@ router.post('/login', loginUser);
 
 /**
  * @swagger
- * /api/user/getUserInfo:
+ * /api/user/getUserInfo/{nickname}:
  *   get:
  *     summary: Obtiene la información del usuario a través del nickname
  *     tags: [User]
  *     parameters:
- *       - in: query
+ *       - in: path
  *         name: nickname
  *         required: true
  *         description: El nickname del usuario
@@ -239,6 +239,6 @@ router.post('/login', loginUser);
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/getUserInfo', getUserInfo);
+router.get('/getUserInfo/:nickname', getUserInfo);
 
 module.exports = router;
