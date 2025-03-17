@@ -28,7 +28,7 @@ const registerUser = async (req, res, next) => {
             password,
             phone,
             token: null,
-            image_url: null,
+            image_url: "default_images\default0.jpg",
         });
 
         logger.info('Usuario registrado correctamente', { newUser });
@@ -282,9 +282,48 @@ const getUserInfo = async (req, res, next) => {
 };
 
 
+const getUserImage = async (req, res, next) => {
+    try {
+        const { imageName } = req.params;
+
+        // Verificar si se ha proporcionado un nombre de imagen
+        if (!imageName) {
+            return res.status(400).json({
+                status: 'ERROR',
+                message: 'El nombre de la imagen es obligatorio',
+                data: null,
+            });
+        }
+
+        // Definir la ruta del archivo
+        const imagePath = path.join(__dirname, 'user_images', imageName);
+
+        // Verificar si el archivo existe
+        if (!fs.existsSync(imagePath)) {
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'Imagen no encontrada',
+                data: null,
+            });
+        }
+
+        // Leer el archivo de la imagen y devolverlo en la respuesta
+        res.sendFile(imagePath);
+    } catch (error) {
+        console.error('Error al intentar recuperar la imagen', error);
+        res.status(500).json({
+            status: 'ERROR',
+            message: 'Error al intentar recuperar la imagen',
+            data: null,
+        });
+    }
+};
+
+
 module.exports = {
     registerUser,
     validateUser,
     loginUser,
     getUserInfo,
+    getUserImage,
 };

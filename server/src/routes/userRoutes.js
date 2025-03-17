@@ -1,3 +1,5 @@
+const path = require('path');
+const fs = require('fs');
 const express = require('express');
 const router = express.Router();
 const {
@@ -5,6 +7,7 @@ const {
     validateUser,
     loginUser,
     getUserInfo,
+    getUserImage,
 } = require('../controllers/userController.js');
 
 /**
@@ -280,5 +283,71 @@ router.post('/login', loginUser);
  *                   type: null
  */
 router.get('/getUserInfo/:nickname', getUserInfo);
+
+
+/**
+ * @swagger
+ * /api/user/getUserImage/{imageName}:
+ *   get:
+ *     summary: Obtiene la imagen del usuario
+ *     description: Endpoint para obtener una imagen de usuario a través del nombre de la imagen.
+ *     tags: [User]
+ *     parameters:
+ *       - in: path
+ *         name: imageName
+ *         required: true
+ *         description: El nombre de la imagen que se quiere obtener
+ *         schema:
+ *           type: string
+ *           example: default0.jpg
+ *     responses:
+ *       200:
+ *         description: Imagen obtenida correctamente
+ *         content:
+ *           application/octet-stream:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       400:
+ *         description: El nombre de la imagen es obligatorio
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "El nombre de la imagen es obligatorio"
+ *       404:
+ *         description: Imagen no encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "Imagen no encontrada"
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "Error al intentar recuperar la imagen"
+ */
+router.get('/getUserImage/:imageName', getUserImage);
 
 module.exports = router;
