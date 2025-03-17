@@ -20,12 +20,27 @@ const registerUser = async (req, res, next) => {
     try {
         const { nickname, password, phone } = req.body;
 
-        logger.info('Nueva solicitud para registrar un usuario', { nickname, password, phone});
+        logger.info('Nueva solicitud para registrar un usuario', { nickname, password, phone });
 
         if (!nickname || !password || !phone) {
             return res.status(400).json({ status: 'ERROR', message: 'Todos los campos son obligatorios' });
         }
 
+        // Verifica si el nombre de usuario (nickname) ya está registrado
+        const existingNickname = await User.findOne({ where: { nickname } });
+        if (existingNickname) {
+            logger.info('El nombre de usuario que se quiere registrar ya existe');
+            return res.status(401).json({ status: 'ERROR', message: 'The nickname is already registered' });
+        }
+
+        // Verifica si el número de teléfono ya está registrado
+        const existingPhone = await User.findOne({ where: { phone } });
+        if (existingPhone) {
+            logger.info('El teléfono de usuario que se quiere registrar ya existe');
+            return res.status(402).json({ status: 'ERROR', message: 'The phone number is already registered'});
+        }
+
+        // Si no existe, crea un nuevo usuario
         const newUser = await User.create({
             nickname,
             password,
@@ -36,22 +51,24 @@ const registerUser = async (req, res, next) => {
 
         logger.info('Usuario registrado correctamente', { newUser });
 
-        const verificationCode = Math.floor(100000 + Math.random() * 900000);     
+        // Genera el código de verificación
+        const verificationCode = Math.floor(100000 + Math.random() * 900000);
 
+        // Crea un nuevo registro de verificación
         const newVerification = await Verification.create({
             user_id: newUser.id,
             code: verificationCode,
         });
 
+        // Envía el SMS con el código de verificación
         generateSMS(newUser.phone, verificationCode);
 
         res.status(201).json({
             status: 'OK',
             message: 'Usuario registrado correctamente',
-            data: {userId: newUser.id, nickname, phone},
+            data: { userId: newUser.id, nickname, phone },
         });
     } catch (error) {
-
         logger.error('Error al registrar el usuario', { error: error.message, stack: error.stack });
 
         res.status(500).json({
@@ -414,7 +431,6 @@ const changeUserImage = async (req, res, next) => {
         });
     }
 };
-
 
 module.exports = {
     registerUser,
