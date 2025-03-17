@@ -283,10 +283,11 @@ const getUserInfo = async (req, res, next) => {
         next(error); // Delegar el error al middleware de manejo de errores
     }
 };
+const path = require('path');
+const fs = require('fs');
 
 const getUserImage = async (req, res, next) => {
     try {
-
         const { imageName } = req.params;
 
         // Verificar si se ha proporcionado un nombre de imagen
@@ -298,14 +299,14 @@ const getUserImage = async (req, res, next) => {
             });
         }
 
-        // Definir la ruta del archivo
-        const imagePath = path.join(__dirname, 'user_images', imageName);
+        // Definir la ruta del archivo de manera relativa
+        const imagePath = path.resolve(__dirname, '../../user_images', imageName);
 
         // Verificar si el archivo existe
         if (!fs.existsSync(imagePath)) {
             return res.status(404).json({
                 status: 'ERROR',
-                message: 'Imagen no encontrada con path: ' + __dirname,
+                message: 'Imagen no encontrada con path: ' + imagePath,
                 data: null,
             });
         }
