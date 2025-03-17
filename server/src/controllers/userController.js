@@ -355,6 +355,7 @@ const getUserImage = async (req, res, next) => {
 
 const changeUserImage = async (req, res, next) => {
     try {
+        logger.log("--------------------")
         const { nickname } = req.params; // Ahora el nickname está en los parámetros de la ruta
         const image = req.file; // La imagen se recibe en FormData como archivo
 
