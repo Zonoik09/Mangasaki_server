@@ -285,72 +285,7 @@ router.get('/getUserInfo/:nickname', getUserInfo);
 
 /**
  * @swagger
- * /api/user/getUserImage/{nickname}:
- *   get:
- *     summary: Obtiene la imagen del usuario por su nickname
- *     description: Endpoint para obtener la imagen de un usuario a través de su nickname.
- *     tags: [User]
- *     parameters:
- *       - in: path
- *         name: nickname
- *         required: true
- *         description: El nickname del usuario cuya imagen se quiere obtener
- *         schema:
- *           type: string
- *           example: admin
- *     responses:
- *       200:
- *         description: Imagen obtenida correctamente
- *         content:
- *           application/octet-stream:
- *             schema:
- *               type: string
- *               format: binary
- *       400:
- *         description: El nickname es obligatorio
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: "ERROR"
- *                 message:
- *                   type: string
- *                   example: "El nickname es obligatorio"
- *       404:
- *         description: Imagen no encontrada
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: "ERROR"
- *                 message:
- *                   type: string
- *                   example: "Imagen no encontrada"
- *       500:
- *         description: Error interno del servidor
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: "ERROR"
- *                 message:
- *                   type: string
- *                   example: "Error al intentar recuperar la imagen"
- */
-router.get('/getUserImage/:nickname', getUserImage);
-
-/**
- * @swagger
- * /api/user/changeUserProfileImage:
+ * /api/user/changeUserProfileImage/{nickname}:
  *   post:
  *     summary: Cambia la imagen de perfil del usuario
  *     description: Endpoint para actualizar la imagen de perfil de un usuario.
@@ -358,7 +293,7 @@ router.get('/getUserImage/:nickname', getUserImage);
  *     consumes:
  *       - multipart/form-data
  *     parameters:
- *       - in: formData
+ *       - in: path
  *         name: nickname
  *         required: true
  *         description: El nickname del usuario cuyo avatar se actualizará
@@ -428,6 +363,7 @@ router.get('/getUserImage/:nickname', getUserImage);
  *                   type: string
  *                   example: "Error al actualizar la imagen de perfil"
  */
-router.post('/changeUserProfileImage', changeUserImage);
+router.get('/getUserImage/:nickname', getUserImage);
+
 
 module.exports = router;
