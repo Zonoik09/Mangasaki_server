@@ -367,7 +367,7 @@ router.get('/getUserImage/:nickname', getUserImage);
  *           example: juan123
  *       - in: formData
  *         name: image
- *         required: true
+ *         required: false
  *         description: La nueva imagen de perfil del usuario
  *         schema:
  *           type: file
