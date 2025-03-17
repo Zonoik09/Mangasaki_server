@@ -4,6 +4,7 @@ const Verification = require('../models/Verification');
 const axios = require('axios');
 const crypto = require('crypto');
 const { logger } = require('../config/logger');
+const path = require('path');
 
 const API_SMS_URL = process.env.API_SMS_URL;
 const SMS_API_TOKEN = process.env.SMS_API_TOKEN;
@@ -284,6 +285,7 @@ const getUserInfo = async (req, res, next) => {
 
 const getUserImage = async (req, res, next) => {
     try {
+
         const { imageName } = req.params;
 
         // Verificar si se ha proporcionado un nombre de imagen
