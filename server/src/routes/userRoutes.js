@@ -189,7 +189,56 @@ router.post('/validate', validateUser);
  */
 router.post('/login', loginUser);
 
-
-
+/**
+ * @swagger
+ * /api/user/getUserInfo:
+ *   get:
+ *     summary: Obtiene la información del usuario a través del nickname
+ *     tags: [User]
+ *     parameters:
+ *       - in: query
+ *         name: nickname
+ *         required: true
+ *         description: El nickname del usuario
+ *         schema:
+ *           type: string
+ *           example: user
+ *     responses:
+ *       200:
+ *         description: Información del usuario obtenida correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "OK"
+ *                 message:
+ *                   type: string
+ *                   example: "Información del usuario con nickname: user"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: "123456"
+ *                     nickname:
+ *                       type: string
+ *                       example: "user"
+ *                     phone:
+ *                       type: string
+ *                       example: "655179162"
+ *                     image_url:
+ *                       type: string
+ *                       example: "http://example.com/user-image.jpg"
+ *       400:
+ *         description: El nickname es obligatorio
+ *       404:
+ *         description: Usuario no encontrado
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get('/getUserInfo', getUserInfo);
 
 module.exports = router;
