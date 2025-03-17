@@ -6,6 +6,7 @@ const {
     loginUser,
     getUserInfo,
     getUserImage,
+    changeUserImage,
 } = require('../controllers/userController.js');
 
 /**
@@ -296,7 +297,7 @@ router.get('/getUserInfo/:nickname', getUserInfo);
  *         description: El nickname del usuario cuya imagen se quiere obtener
  *         schema:
  *           type: string
- *           example: juan123
+ *           example: admin
  *     responses:
  *       200:
  *         description: Imagen obtenida correctamente
@@ -346,5 +347,87 @@ router.get('/getUserInfo/:nickname', getUserInfo);
  *                   example: "Error al intentar recuperar la imagen"
  */
 router.get('/getUserImage/:nickname', getUserImage);
+
+/**
+ * @swagger
+ * /api/user/changeUserProfileImage:
+ *   post:
+ *     summary: Cambia la imagen de perfil del usuario
+ *     description: Endpoint para actualizar la imagen de perfil de un usuario.
+ *     tags: [User]
+ *     consumes:
+ *       - multipart/form-data
+ *     parameters:
+ *       - in: formData
+ *         name: nickname
+ *         required: true
+ *         description: El nickname del usuario cuyo avatar se actualizará
+ *         schema:
+ *           type: string
+ *           example: juan123
+ *       - in: formData
+ *         name: image
+ *         required: true
+ *         description: La nueva imagen de perfil del usuario
+ *         schema:
+ *           type: file
+ *     responses:
+ *       200:
+ *         description: Imagen de perfil actualizada correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "SUCCESS"
+ *                 message:
+ *                   type: string
+ *                   example: "Imagen actualizada correctamente"
+ *                 imageUrl:
+ *                   type: string
+ *                   example: "/uploads/1710456789-profile.jpg"
+ *       400:
+ *         description: El nickname o la imagen son obligatorios
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "El nickname y la imagen son obligatorios"
+ *       404:
+ *         description: Usuario no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "Usuario no encontrado"
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "Error al actualizar la imagen de perfil"
+ */
+router.get('/changeUserProfileImage', changeUserImage);
 
 module.exports = router;

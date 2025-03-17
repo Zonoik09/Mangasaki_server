@@ -31,7 +31,7 @@ const registerUser = async (req, res, next) => {
             password,
             phone,
             token: null,
-            image_url: "default0.jpg",
+            image_url: null,
         });
 
         logger.info('Usuario registrado correctamente', { newUser });
@@ -286,7 +286,6 @@ const getUserInfo = async (req, res, next) => {
 
 const getUserImage = async (req, res, next) => {
     try {
-        
         const { nickname } = req.params;
 
         if (!nickname) {
@@ -299,17 +298,22 @@ const getUserImage = async (req, res, next) => {
 
         // Buscar usuario por nickname en la base de datos
         const user = await User.findOne({ where: { nickname } });
-        
-        if (!user || !user.image_url) {
+
+        if (!user) {
             return res.status(404).json({
                 status: 'ERROR',
-                message: 'Imagen no encontrada para el usuario',
+                message: 'Usuario no encontrado',
                 data: null,
             });
         }
 
-        // Definir la ruta del archivo de manera relativa
-        const imagePath = path.resolve(__dirname, '../../user_images', user.image_url);
+        // Si el usuario no tiene imagen, devolver la imagen por defecto
+        let imagePath;
+        if (!user.image_url) {
+            imagePath = path.resolve(__dirname, '../../user_images/default.jpg');
+        } else {
+            imagePath = path.resolve(__dirname, '../../user_images', user.image_url);
+        }
 
         // Verificar si el archivo existe
         if (!fs.existsSync(imagePath)) {
@@ -320,7 +324,7 @@ const getUserImage = async (req, res, next) => {
             });
         }
 
-        // Leer el archivo de la imagen y devolverlo en la respuesta
+        // Enviar la imagen encontrada
         res.sendFile(imagePath);
     } catch (error) {
         console.error('Error al intentar recuperar la imagen', error);
@@ -332,10 +336,93 @@ const getUserImage = async (req, res, next) => {
     }
 };
 
+const changeUserImage = async (req, res, next) => {
+    try {
+        const { nickname } = req.params;
+        const image = req.file; // La imagen se recibe en FormData como archivo
+
+        if (!nickname) {
+            return res.status(400).json({
+                status: 'ERROR',
+                message: 'El nickname es obligatorio',
+                data: null,
+            });
+        }
+
+        const user = await User.findOne({ where: { nickname } });
+
+        if (!user) {
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'Usuario no encontrado',
+                data: null,
+            });
+        }
+
+        const userImagesPath = path.resolve(__dirname, '../../user_images');
+
+        // Si no existe el directorio de imágenes, crearlo
+        if (!fs.existsSync(userImagesPath)) {
+            fs.mkdirSync(userImagesPath, { recursive: true });
+        }
+
+        // 🔹 CASO 1: Si `image` es `null`, eliminar la imagen del usuario y actualizar en la BD
+        if (!image) {
+            if (user.image_url) {
+                const oldImagePath = path.join(userImagesPath, user.image_url);
+                if (fs.existsSync(oldImagePath)) {
+                    fs.unlinkSync(oldImagePath);
+                }
+            }
+
+            await user.update({ image_url: null });
+
+            return res.status(200).json({
+                status: 'SUCCESS',
+                message: 'Imagen eliminada correctamente',
+                data: { image_url: null },
+            });
+        }
+
+        // 🔹 CASO 2: Si `image` tiene un archivo, reemplazar la imagen anterior por la nueva
+        if (user.image_url) {
+            const oldImagePath = path.join(userImagesPath, user.image_url);
+            if (fs.existsSync(oldImagePath)) {
+                fs.unlinkSync(oldImagePath);
+            }
+        }
+
+        // Guardar la nueva imagen
+        const newImageName = `${nickname}_${Date.now()}${path.extname(image.originalname)}`;
+        const newImagePath = path.join(userImagesPath, newImageName);
+        fs.writeFileSync(newImagePath, image.buffer);
+
+        // Actualizar en la base de datos
+        await user.update({ image_url: newImageName });
+
+        res.status(200).json({
+            status: 'SUCCESS',
+            message: 'Imagen actualizada correctamente',
+            data: { image_url: newImageName },
+        });
+    } catch (error) {
+        console.error('Error al cambiar la imagen del usuario:', error);
+        res.status(500).json({
+            status: 'ERROR',
+            message: 'Error al cambiar la imagen del usuario',
+            data: null,
+        });
+    }
+};
+
+module.exports = changeUserImage;
+
+
 module.exports = {
     registerUser,
     validateUser,
     loginUser,
     getUserInfo,
     getUserImage,
+    changeUserImage,
 };
