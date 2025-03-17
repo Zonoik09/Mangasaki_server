@@ -355,8 +355,8 @@ const getUserImage = async (req, res, next) => {
 
 const changeUserImage = async (req, res, next) => {
     try {
-        const { nickname } = req.params;
-        const image = req.file; // La imagen se recibe en FormData como archivo
+        const { nickname } = req.body;
+        const image = req.file;
 
         if (!nickname) {
             return res.status(400).json({

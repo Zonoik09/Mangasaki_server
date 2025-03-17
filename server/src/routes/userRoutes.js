@@ -364,7 +364,7 @@ router.get('/getUserImage/:nickname', getUserImage);
  *         description: El nickname del usuario cuyo avatar se actualizará
  *         schema:
  *           type: string
- *           example: juan123
+ *           example: admin
  *       - in: formData
  *         name: image
  *         required: false
