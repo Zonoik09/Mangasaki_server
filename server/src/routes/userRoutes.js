@@ -1,5 +1,3 @@
-const path = require('path');
-const fs = require('fs');
 const express = require('express');
 const router = express.Router();
 const {
@@ -283,7 +281,6 @@ router.post('/login', loginUser);
  *                   type: null
  */
 router.get('/getUserInfo/:nickname', getUserInfo);
-
 
 /**
  * @swagger

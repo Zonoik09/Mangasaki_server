@@ -4,7 +4,9 @@ const Verification = require('../models/Verification');
 const axios = require('axios');
 const crypto = require('crypto');
 const { logger } = require('../config/logger');
+
 const path = require('path');
+const fs = require('fs');
 
 const API_SMS_URL = process.env.API_SMS_URL;
 const SMS_API_TOKEN = process.env.SMS_API_TOKEN;
@@ -281,7 +283,6 @@ const getUserInfo = async (req, res, next) => {
         next(error); // Delegar el error al middleware de manejo de errores
     }
 };
-
 
 const getUserImage = async (req, res, next) => {
     try {
