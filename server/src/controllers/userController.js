@@ -305,7 +305,7 @@ const getUserImage = async (req, res, next) => {
         if (!fs.existsSync(imagePath)) {
             return res.status(404).json({
                 status: 'ERROR',
-                message: 'Imagen no encontrada',
+                message: 'Imagen no encontrada con path: ' + __dirname,
                 data: null,
             });
         }
