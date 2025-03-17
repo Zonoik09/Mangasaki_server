@@ -284,19 +284,19 @@ router.get('/getUserInfo/:nickname', getUserInfo);
 
 /**
  * @swagger
- * /api/user/getUserImage/{imageName}:
+ * /api/user/getUserImage/{nickname}:
  *   get:
- *     summary: Obtiene la imagen del usuario
- *     description: Endpoint para obtener una imagen de usuario a través del nombre de la imagen.
+ *     summary: Obtiene la imagen del usuario por su nickname
+ *     description: Endpoint para obtener la imagen de un usuario a través de su nickname.
  *     tags: [User]
  *     parameters:
  *       - in: path
- *         name: imageName
+ *         name: nickname
  *         required: true
- *         description: El nombre de la imagen que se quiere obtener
+ *         description: El nickname del usuario cuya imagen se quiere obtener
  *         schema:
  *           type: string
- *           example: default0.jpg
+ *           example: juan123
  *     responses:
  *       200:
  *         description: Imagen obtenida correctamente
@@ -306,7 +306,7 @@ router.get('/getUserInfo/:nickname', getUserInfo);
  *               type: string
  *               format: binary
  *       400:
- *         description: El nombre de la imagen es obligatorio
+ *         description: El nickname es obligatorio
  *         content:
  *           application/json:
  *             schema:
@@ -317,7 +317,7 @@ router.get('/getUserInfo/:nickname', getUserInfo);
  *                   example: "ERROR"
  *                 message:
  *                   type: string
- *                   example: "El nombre de la imagen es obligatorio"
+ *                   example: "El nickname es obligatorio"
  *       404:
  *         description: Imagen no encontrada
  *         content:
@@ -345,6 +345,6 @@ router.get('/getUserInfo/:nickname', getUserInfo);
  *                   type: string
  *                   example: "Error al intentar recuperar la imagen"
  */
-router.get('/getUserImage/:imageName', getUserImage);
+router.get('/getUserImage/:nickname', getUserImageByNickname);
 
 module.exports = router;

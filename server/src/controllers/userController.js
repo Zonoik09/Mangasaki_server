@@ -286,19 +286,30 @@ const getUserInfo = async (req, res, next) => {
 
 const getUserImage = async (req, res, next) => {
     try {
-        const { imageName } = req.params;
+        
+        const { nickname } = req.params;
 
-        // Verificar si se ha proporcionado un nombre de imagen
-        if (!imageName) {
+        if (!nickname) {
             return res.status(400).json({
                 status: 'ERROR',
-                message: 'El nombre de la imagen es obligatorio',
+                message: 'El nickname es obligatorio',
+                data: null,
+            });
+        }
+
+        // Buscar usuario por nickname en la base de datos
+        const user = await User.findOne({ where: { nickname } });
+        
+        if (!user || !user.image_url) {
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'Imagen no encontrada para el usuario',
                 data: null,
             });
         }
 
         // Definir la ruta del archivo de manera relativa
-        const imagePath = path.resolve(__dirname, '../../user_images', imageName);
+        const imagePath = path.resolve(__dirname, '../../user_images', user.image_url);
 
         // Verificar si el archivo existe
         if (!fs.existsSync(imagePath)) {
@@ -320,7 +331,6 @@ const getUserImage = async (req, res, next) => {
         });
     }
 };
-
 
 module.exports = {
     registerUser,
