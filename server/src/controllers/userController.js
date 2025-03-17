@@ -5,8 +5,11 @@ const axios = require('axios');
 const crypto = require('crypto');
 const { logger } = require('../config/logger');
 
-const path = require('path');
-const fs = require('fs');
+const fs = require('fs');            // Para manipulación de archivos (leer, escribir, borrar)
+const path = require('path');        // Para trabajar con rutas de archivos
+
+const multer = require('multer');    // Para manejar la subida de archivos (multipart/form-data)
+
 
 const API_SMS_URL = process.env.API_SMS_URL;
 const SMS_API_TOKEN = process.env.SMS_API_TOKEN;
@@ -355,14 +358,10 @@ const getUserImage = async (req, res, next) => {
 
 const changeUserImage = async (req, res, next) => {
     try {
-        logger.log("--------------------")
-        const { nickname } = req.params; // Ahora el nickname está en los parámetros de la ruta
-        const image = req.file; // La imagen se recibe en FormData como archivo
+        const { nickname } = req.params;
+        const image = req.file; // Ahora la imagen está disponible en req.file
 
-        logger.log("--------------------")
-        logger.log(nickname)
-        logger.log(image)
-
+        // Validaciones
         if (!nickname) {
             return res.status(400).json({
                 status: 'ERROR',
@@ -371,8 +370,16 @@ const changeUserImage = async (req, res, next) => {
             });
         }
 
-        const user = await User.findOne({ where: { nickname } });
+        if (!image) {
+            return res.status(400).json({
+                status: 'ERROR',
+                message: 'La imagen es obligatoria',
+                data: null,
+            });
+        }
 
+        // Buscar usuario en la base de datos
+        const user = await User.findOne({ where: { nickname } });
         if (!user) {
             return res.status(404).json({
                 status: 'ERROR',
@@ -381,55 +388,27 @@ const changeUserImage = async (req, res, next) => {
             });
         }
 
+        // Guardar la imagen y actualizar la base de datos (como ya hemos hecho antes)
         const userImagesPath = path.resolve(__dirname, '../../user_images');
-
-        // Si no existe el directorio de imágenes, crearlo
         if (!fs.existsSync(userImagesPath)) {
             fs.mkdirSync(userImagesPath, { recursive: true });
         }
 
-        // 🔹 CASO 1: Si `image` es `null`, eliminar la imagen del usuario y actualizar en la BD
-        if (!image) {
-            if (user.image_url) {
-                const oldImagePath = path.join(userImagesPath, user.image_url);
-                if (fs.existsSync(oldImagePath)) {
-                    fs.unlinkSync(oldImagePath);
-                }
-            }
-
-            await user.update({ image_url: null });
-
-            return res.status(200).json({
-                status: 'SUCCESS',
-                message: 'Imagen eliminada correctamente',
-                data: { image_url: null },
-            });
-        }
-
-        // 🔹 CASO 2: Si `image` tiene un archivo, reemplazar la imagen anterior por la nueva
-        if (user.image_url) {
-            const oldImagePath = path.join(userImagesPath, user.image_url);
-            if (fs.existsSync(oldImagePath)) {
-                fs.unlinkSync(oldImagePath);
-            }
-        }
-
-        // Guardar la nueva imagen
         const newImageName = `${nickname}_${Date.now()}${path.extname(image.originalname)}`;
         const newImagePath = path.join(userImagesPath, newImageName);
         fs.writeFileSync(newImagePath, image.buffer);
 
-        // Actualizar en la base de datos
+        // Actualizar la base de datos con la nueva imagen
         await user.update({ image_url: newImageName });
 
-        res.status(200).json({
+        return res.status(200).json({
             status: 'SUCCESS',
             message: 'Imagen actualizada correctamente',
             data: { image_url: newImageName },
         });
     } catch (error) {
         console.error('Error al cambiar la imagen del usuario:', error);
-        res.status(500).json({
+        return res.status(500).json({
             status: 'ERROR',
             message: 'Error al cambiar la imagen del usuario',
             data: null,

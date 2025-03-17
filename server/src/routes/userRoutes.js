@@ -1,4 +1,24 @@
 const express = require('express');
+const multer = require('multer');
+
+// Configuración de multer para guardar la imagen en la carpeta correcta
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const userImagesPath = path.resolve(__dirname, '../../user_images');
+        if (!fs.existsSync(userImagesPath)) {
+            fs.mkdirSync(userImagesPath, { recursive: true });
+        }
+        cb(null, userImagesPath); // Definir la carpeta de destino
+    },
+    filename: (req, file, cb) => {
+        const { nickname } = req.params; // Usar el nickname del parámetro para el nombre del archivo
+        const fileExtension = path.extname(file.originalname); // Obtener la extensión del archivo
+        cb(null, `${nickname}_${Date.now()}${fileExtension}`); // Establecer el nombre del archivo
+    }
+});
+
+const upload = multer({ storage });  // Instancia de multer con la configuración definida
+
 const router = express.Router();
 const {
     registerUser,
@@ -285,6 +305,71 @@ router.get('/getUserInfo/:nickname', getUserInfo);
 
 /**
  * @swagger
+ * /api/user/getUserImage/{nickname}:
+ *   get:
+ *     summary: Obtiene la imagen del usuario por su nickname
+ *     description: Endpoint para obtener la imagen de un usuario a través de su nickname.
+ *     tags: [User]
+ *     parameters:
+ *       - in: path
+ *         name: nickname
+ *         required: true
+ *         description: El nickname del usuario cuya imagen se quiere obtener
+ *         schema:
+ *           type: string
+ *           example: admin
+ *     responses:
+ *       200:
+ *         description: Imagen obtenida correctamente
+ *         content:
+ *           application/octet-stream:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       400:
+ *         description: El nickname es obligatorio
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "El nickname es obligatorio"
+ *       404:
+ *         description: Imagen no encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "Imagen no encontrada"
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "Error al intentar recuperar la imagen"
+ */
+router.get('/getUserImage/:nickname', getUserImage);
+
+/**
+ * @swagger
  * /api/user/changeUserProfileImage/{nickname}:
  *   post:
  *     summary: Cambia la imagen de perfil del usuario
@@ -302,7 +387,7 @@ router.get('/getUserInfo/:nickname', getUserInfo);
  *           example: admin
  *       - in: formData
  *         name: image
- *         required: false
+ *         required: true
  *         description: La nueva imagen de perfil del usuario
  *         schema:
  *           type: file
@@ -363,7 +448,7 @@ router.get('/getUserInfo/:nickname', getUserInfo);
  *                   type: string
  *                   example: "Error al actualizar la imagen de perfil"
  */
-router.get('/getUserImage/:nickname', getUserImage);
+router.post('/api/user/changeUserProfileImage/:nickname', upload.single('image'), changeUserImage);
 
 
 module.exports = router;
