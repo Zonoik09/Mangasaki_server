@@ -398,7 +398,7 @@ const changeUserImage = async (req, res, next) => {
         }
 
         // Si base64 es null pero la imagen del usuario no lo es, se actualiza a null
-        if (base64 === null && user.image_url !== null) {
+        if (!base64 && user.image_url !== null) {
             console.log('Base64 es nulo, pero el usuario tiene una imagen. Se eliminará la imagen.');
             await user.update({ image_url: null });
             console.log('Imagen eliminada correctamente.');
