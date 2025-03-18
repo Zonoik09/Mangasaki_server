@@ -431,5 +431,4 @@ router.get('/getUserImage/:nickname', getUserImage);
  */
 router.post('/changeUserProfileImage', changeUserImage);
 
-
 module.exports = router;

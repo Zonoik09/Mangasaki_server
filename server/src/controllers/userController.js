@@ -356,12 +356,13 @@ const getUserImage = async (req, res, next) => {
     }
 };
 
+
 const changeUserImage = async (req, res, next) => {
     try {
         const { nickname } = req.params;
-        const image = req.file; // Ahora la imagen está disponible en req.file
+        const image = req.file; // Ahora la imagen está disponible en req.file si es un archivo de tipo multipart/form-data
 
-        // Validaciones
+        // Validaciones de entrada
         if (!nickname) {
             return res.status(400).json({
                 status: 'ERROR',
@@ -388,24 +389,29 @@ const changeUserImage = async (req, res, next) => {
             });
         }
 
-        // Guardar la imagen y actualizar la base de datos (como ya hemos hecho antes)
+        // Directorio donde se almacenarán las imágenes
         const userImagesPath = path.resolve(__dirname, '../../user_images');
         if (!fs.existsSync(userImagesPath)) {
             fs.mkdirSync(userImagesPath, { recursive: true });
         }
 
+        // Generar un nombre único para la imagen
         const newImageName = `${nickname}_${Date.now()}${path.extname(image.originalname)}`;
         const newImagePath = path.join(userImagesPath, newImageName);
+
+        // Guardar la imagen en el sistema de archivos
         fs.writeFileSync(newImagePath, image.buffer);
 
-        // Actualizar la base de datos con la nueva imagen
+        // Actualizar la base de datos con la nueva URL de la imagen
         await user.update({ image_url: newImageName });
 
+        // Devolver la respuesta
         return res.status(200).json({
             status: 'SUCCESS',
             message: 'Imagen actualizada correctamente',
             data: { image_url: newImageName },
         });
+
     } catch (error) {
         console.error('Error al cambiar la imagen del usuario:', error);
         return res.status(500).json({
