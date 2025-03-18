@@ -369,14 +369,6 @@ const changeUserImage = async (req, res, next) => {
             });
         }
 
-        if (!base64) {
-            return res.status(400).json({
-                status: 'ERROR',
-                message: 'La imagen en Base64 es obligatoria',
-                data: null,
-            });
-        }
-
         // Buscar usuario en la base de datos
         const user = await User.findOne({ where: { nickname } });
         if (!user) {
@@ -387,31 +379,53 @@ const changeUserImage = async (req, res, next) => {
             });
         }
 
-        // Directorio donde se almacenarán las imágenes
-        const userImagesPath = path.resolve(__dirname, '../../user_images');
-        if (!fs.existsSync(userImagesPath)) {
-            fs.mkdirSync(userImagesPath, { recursive: true });
+        // Si base64 es null y la imagen del usuario ya es null, no hacemos nada
+        if (base64 === null && user.image_url === null) {
+            return res.status(200).json({
+                status: 'SUCCESS',
+                message: 'No se realizó ningún cambio, ya que la imagen es nula',
+                data: null,
+            });
         }
 
-        // Decodificar la imagen en Base64
-        const buffer = Buffer.from(base64, 'base64');
+        // Si base64 es null pero la imagen del usuario no lo es, se actualiza a null
+        if (base64 === null && user.image_url !== null) {
+            await user.update({ image_url: null });
+            return res.status(200).json({
+                status: 'SUCCESS',
+                message: 'La imagen fue eliminada correctamente',
+                data: { image_url: null },
+            });
+        }
 
-        // Generar un nombre único para la imagen
-        const newImageName = `${nickname}_${Date.now()}.jpg`; // Asumimos que la imagen será en formato JPG
-        const newImagePath = path.join(userImagesPath, newImageName);
+        // Si la imagen en base64 es proporcionada, procesamos la imagen
+        if (base64) {
+            // Directorio donde se almacenarán las imágenes
+            const userImagesPath = path.resolve(__dirname, '../../user_images');
+            if (!fs.existsSync(userImagesPath)) {
+                fs.mkdirSync(userImagesPath, { recursive: true });
+            }
 
-        // Guardar la imagen en el sistema de archivos
-        fs.writeFileSync(newImagePath, buffer);
+            // Decodificar la imagen en Base64
+            const buffer = Buffer.from(base64, 'base64');
 
-        // Actualizar la base de datos con la nueva URL de la imagen
-        await user.update({ image_url: newImageName });
+            // Generar un nombre único para la imagen
+            const newImageName = `${nickname}_${Date.now()}.jpg`; // Asumimos que la imagen será en formato JPG
+            const newImagePath = path.join(userImagesPath, newImageName);
 
-        // Devolver la respuesta
-        return res.status(200).json({
-            status: 'SUCCESS',
-            message: 'Imagen actualizada correctamente',
-            data: { image_url: newImageName },
-        });
+            // Guardar la imagen en el sistema de archivos
+            fs.writeFileSync(newImagePath, buffer);
+
+            // Actualizar la base de datos con la nueva URL de la imagen
+            await user.update({ image_url: newImageName });
+
+            // Devolver la respuesta
+            return res.status(200).json({
+                status: 'SUCCESS',
+                message: 'Imagen actualizada correctamente',
+                data: { image_url: newImageName },
+            });
+        }
 
     } catch (error) {
         console.error('Error al cambiar la imagen del usuario:', error);
