@@ -358,29 +358,38 @@ const getUserImage = async (req, res, next) => {
 
 const changeUserImage = async (req, res, next) => {
     try {
+        console.log('Iniciando cambio de imagen del usuario...');
+
         const { nickname, base64 } = req.body; // Ahora obtenemos el nickname y la imagen Base64 desde el cuerpo de la solicitud
+        console.log('Datos recibidos:', { nickname, base64 });
 
         // Validaciones de entrada
         if (!nickname) {
+            console.error('Error: El nickname es obligatorio');
             return res.status(400).json({
                 status: 'ERROR',
                 message: 'El nickname es obligatorio',
                 data: null,
             });
         }
+        console.log('Nickname validado:', nickname);
 
         // Buscar usuario en la base de datos
+        console.log('Buscando usuario en la base de datos...');
         const user = await User.findOne({ where: { nickname } });
         if (!user) {
+            console.error('Error: Usuario no encontrado');
             return res.status(404).json({
                 status: 'ERROR',
                 message: 'Usuario no encontrado',
                 data: null,
             });
         }
+        console.log('Usuario encontrado:', user.nickname);
 
         // Si base64 es null y la imagen del usuario ya es null, no hacemos nada
         if (base64 === null && user.image_url === null) {
+            console.log('No se realiza ningún cambio, la imagen ya es nula.');
             return res.status(200).json({
                 status: 'SUCCESS',
                 message: 'No se realizó ningún cambio, ya que la imagen es nula',
@@ -390,7 +399,9 @@ const changeUserImage = async (req, res, next) => {
 
         // Si base64 es null pero la imagen del usuario no lo es, se actualiza a null
         if (base64 === null && user.image_url !== null) {
+            console.log('Base64 es nulo, pero el usuario tiene una imagen. Se eliminará la imagen.');
             await user.update({ image_url: null });
+            console.log('Imagen eliminada correctamente.');
             return res.status(200).json({
                 status: 'SUCCESS',
                 message: 'La imagen fue eliminada correctamente',
@@ -400,26 +411,38 @@ const changeUserImage = async (req, res, next) => {
 
         // Si la imagen en base64 es proporcionada, procesamos la imagen
         if (base64) {
+            console.log('Base64 recibido, procesando la imagen...');
+
             // Directorio donde se almacenarán las imágenes
             const userImagesPath = path.resolve(__dirname, '../../user_images');
+            console.log('Verificando existencia del directorio de imágenes:', userImagesPath);
             if (!fs.existsSync(userImagesPath)) {
+                console.log('El directorio no existe, creándolo...');
                 fs.mkdirSync(userImagesPath, { recursive: true });
             }
 
             // Decodificar la imagen en Base64
+            console.log('Decodificando la imagen Base64...');
             const buffer = Buffer.from(base64, 'base64');
+            console.log('Imagen decodificada correctamente.');
 
             // Generar un nombre único para la imagen
             const newImageName = `${nickname}_${Date.now()}.jpg`; // Asumimos que la imagen será en formato JPG
             const newImagePath = path.join(userImagesPath, newImageName);
+            console.log('Nuevo nombre de imagen generado:', newImageName);
 
             // Guardar la imagen en el sistema de archivos
+            console.log('Guardando la imagen en el sistema de archivos...');
             fs.writeFileSync(newImagePath, buffer);
+            console.log('Imagen guardada correctamente en:', newImagePath);
 
             // Actualizar la base de datos con la nueva URL de la imagen
+            console.log('Actualizando la base de datos con la nueva URL de la imagen...');
             await user.update({ image_url: newImageName });
+            console.log('Base de datos actualizada correctamente.');
 
             // Devolver la respuesta
+            console.log('Imagen actualizada correctamente.');
             return res.status(200).json({
                 status: 'SUCCESS',
                 message: 'Imagen actualizada correctamente',
@@ -436,7 +459,6 @@ const changeUserImage = async (req, res, next) => {
         });
     }
 };
-
 
 module.exports = {
     registerUser,
