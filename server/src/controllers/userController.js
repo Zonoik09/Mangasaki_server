@@ -356,11 +356,9 @@ const getUserImage = async (req, res, next) => {
     }
 };
 
-
 const changeUserImage = async (req, res, next) => {
     try {
-        const { nickname } = req.params;
-        const image = req.file; // Ahora la imagen está disponible en req.file si es un archivo de tipo multipart/form-data
+        const { nickname, base64 } = req.body; // Ahora obtenemos el nickname y la imagen Base64 desde el cuerpo de la solicitud
 
         // Validaciones de entrada
         if (!nickname) {
@@ -371,10 +369,10 @@ const changeUserImage = async (req, res, next) => {
             });
         }
 
-        if (!image) {
+        if (!base64) {
             return res.status(400).json({
                 status: 'ERROR',
-                message: 'La imagen es obligatoria',
+                message: 'La imagen en Base64 es obligatoria',
                 data: null,
             });
         }
@@ -395,12 +393,15 @@ const changeUserImage = async (req, res, next) => {
             fs.mkdirSync(userImagesPath, { recursive: true });
         }
 
+        // Decodificar la imagen en Base64
+        const buffer = Buffer.from(base64, 'base64');
+
         // Generar un nombre único para la imagen
-        const newImageName = `${nickname}_${Date.now()}${path.extname(image.originalname)}`;
+        const newImageName = `${nickname}_${Date.now()}.jpg`; // Asumimos que la imagen será en formato JPG
         const newImagePath = path.join(userImagesPath, newImageName);
 
         // Guardar la imagen en el sistema de archivos
-        fs.writeFileSync(newImagePath, image.buffer);
+        fs.writeFileSync(newImagePath, buffer);
 
         // Actualizar la base de datos con la nueva URL de la imagen
         await user.update({ image_url: newImageName });
@@ -421,6 +422,7 @@ const changeUserImage = async (req, res, next) => {
         });
     }
 };
+
 
 module.exports = {
     registerUser,

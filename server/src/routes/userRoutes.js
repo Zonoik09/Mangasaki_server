@@ -351,27 +351,26 @@ router.get('/getUserImage/:nickname', getUserImage);
 
 /**
  * @swagger
- * /api/user/changeUserProfileImage/{nickname}:
+ * /api/user/changeUserProfileImage:
  *   post:
- *     summary: Cambia la imagen de perfil del usuario
- *     description: Endpoint para actualizar la imagen de perfil de un usuario.
+ *     summary: Cambia la imagen de perfil de un usuario
+ *     description: Endpoint para actualizar la imagen de perfil de un usuario usando el nickname y la imagen en base64.
  *     tags: [User]
- *     consumes:
- *       - multipart/form-data
- *     parameters:
- *       - in: path
- *         name: nickname
- *         required: true
- *         description: El nickname del usuario cuyo avatar se actualizará
- *         schema:
- *           type: string
- *           example: admin
- *       - in: formData
- *         name: image
- *         required: true
- *         description: La nueva imagen de perfil del usuario
- *         schema:
- *           type: file
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nickname:
+ *                 type: string
+ *                 description: El nickname del usuario para cambiarle la imagen de perfil
+ *                 default: "admin"
+ *               base64:
+ *                 type: string
+ *                 description: La imagen en base64
+ *                 default: ""
  *     responses:
  *       200:
  *         description: Imagen de perfil actualizada correctamente
