@@ -4,6 +4,7 @@ const router = express.Router();
 const {
     registerUser,
     validateUser,
+    dropUser,
     loginUser,
     getUserInfo,
     getUserImage,
@@ -99,6 +100,77 @@ router.post('/register', registerUser);
  *         description: Error interno del servidor
  */
 router.post('/validate', validateUser);
+
+/**
+ * @swagger
+ * /api/user/dropUser/{nickname}:
+ *   delete:
+ *     summary: Elimina un usuario y su imagen asociada por su nickname
+ *     description: Endpoint para eliminar un usuario y la imagen asociada a él a través de su nickname.
+ *     tags: [User]
+ *     parameters:
+ *       - in: path
+ *         name: nickname
+ *         required: true
+ *         description: El nickname del usuario que se desea eliminar
+ *         schema:
+ *           type: string
+ *           example: admin
+ *     responses:
+ *       200:
+ *         description: Usuario y su imagen eliminados correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "SUCCESS"
+ *                 message:
+ *                   type: string
+ *                   example: "Usuario y su imagen eliminados correctamente"
+ *       400:
+ *         description: El nickname es obligatorio
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "El nickname es obligatorio"
+ *       404:
+ *         description: Usuario no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "Usuario no encontrado"
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "Error al intentar eliminar el usuario"
+ */
+router.delete('/dropUser/:nickname', dropUser);
 
 /**
  * @swagger

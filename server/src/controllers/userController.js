@@ -174,6 +174,74 @@ const generateToken = (length = 50) => {
     return crypto.randomBytes(length).toString('hex').slice(0, length);
 };
 
+const dropUser = async (req, res, next) => {
+    try {
+        console.log('Iniciando eliminación de usuario...');
+
+        const { nickname } = req.params;  // Obtenemos el nickname de los parámetros de la URL
+        console.log('Datos recibidos:', { nickname });
+
+        // Validación de existencia del nickname
+        if (!nickname) {
+            console.error('Error: El nickname es obligatorio');
+            return res.status(400).json({
+                status: 'ERROR',
+                message: 'El nickname es obligatorio',
+                data: null,
+            });
+        }
+        console.log('Nickname validado:', nickname);
+
+        // Buscar usuario en la base de datos
+        console.log('Buscando usuario en la base de datos...');
+        const user = await User.findOne({ where: { nickname } });
+        if (!user) {
+            console.error('Error: Usuario no encontrado');
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'Usuario no encontrado',
+                data: null,
+            });
+        }
+        console.log('Usuario encontrado:', user.nickname);
+
+        // Si el usuario tiene una imagen asociada, eliminar la imagen del sistema de archivos
+        if (user.image_url) {
+            const userImagesPath = path.resolve(__dirname, '../../user_images');
+            const imagePath = path.join(userImagesPath, user.image_url);
+            console.log('Eliminando imagen asociada:', imagePath);
+
+            // Verificar si el archivo existe y eliminarlo
+            if (fs.existsSync(imagePath)) {
+                fs.unlinkSync(imagePath);
+                console.log('Imagen eliminada correctamente.');
+            } else {
+                console.log('La imagen no existe en el sistema de archivos.');
+            }
+        }
+
+        // Eliminar el usuario de la base de datos
+        console.log('Eliminando usuario de la base de datos...');
+        await user.destroy();
+        console.log('Usuario eliminado correctamente.');
+
+        // Devolver la respuesta
+        return res.status(200).json({
+            status: 'SUCCESS',
+            message: 'Usuario y su imagen eliminados correctamente',
+            data: null,
+        });
+
+    } catch (error) {
+        console.error('Error al eliminar el usuario:', error);
+        return res.status(500).json({
+            status: 'ERROR',
+            message: 'Error al eliminar el usuario',
+            data: null,
+        });
+    }
+};
+
 /**
  * Inicia sesión un usuario.
  * @route POST /api/user/login
@@ -487,6 +555,7 @@ const changeUserImage = async (req, res, next) => {
 module.exports = {
     registerUser,
     validateUser,
+    dropUser,
     loginUser,
     getUserInfo,
     getUserImage,
