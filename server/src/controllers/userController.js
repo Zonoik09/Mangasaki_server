@@ -388,7 +388,7 @@ const changeUserImage = async (req, res, next) => {
         console.log('Usuario encontrado:', user.nickname);
 
         // Si base64 es null y la imagen del usuario ya es null, no hacemos nada
-        if (base64 === null && user.image_url === null) {
+        if (!base64 && user.image_url === null) {
             console.log('No se realiza ningún cambio, la imagen ya es nula.');
             return res.status(200).json({
                 status: 'SUCCESS',
