@@ -1,25 +1,6 @@
 const express = require('express');
-const multer = require('multer');
-
-// Configuración de multer para guardar la imagen en la carpeta correcta
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const userImagesPath = path.resolve(__dirname, '../../user_images');
-        if (!fs.existsSync(userImagesPath)) {
-            fs.mkdirSync(userImagesPath, { recursive: true });
-        }
-        cb(null, userImagesPath); // Definir la carpeta de destino
-    },
-    filename: (req, file, cb) => {
-        const { nickname } = req.params; // Usar el nickname del parámetro para el nombre del archivo
-        const fileExtension = path.extname(file.originalname); // Obtener la extensión del archivo
-        cb(null, `${nickname}_${Date.now()}${fileExtension}`); // Establecer el nombre del archivo
-    }
-});
-
-const upload = multer({ storage });  // Instancia de multer con la configuración definida
-
 const router = express.Router();
+
 const {
     registerUser,
     validateUser,
@@ -448,7 +429,7 @@ router.get('/getUserImage/:nickname', getUserImage);
  *                   type: string
  *                   example: "Error al actualizar la imagen de perfil"
  */
-router.post('/api/user/changeUserProfileImage/:nickname', upload.single('image'), changeUserImage);
+router.post('/changeUserProfileImage', changeUserImage);
 
 
 module.exports = router;
