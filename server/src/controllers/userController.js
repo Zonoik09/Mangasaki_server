@@ -397,11 +397,23 @@ const changeUserImage = async (req, res, next) => {
             });
         }
 
-        // Si base64 es null pero la imagen del usuario no lo es, se actualiza a null
+        // Si base64 es null pero la imagen del usuario no lo es, se actualiza a null y se elimina la imagen del servidor
         if (!base64 && user.image_url !== null) {
             console.log('Base64 es nulo, pero el usuario tiene una imagen. Se eliminará la imagen.');
+            
+            // Eliminar la imagen anterior del servidor
+            const oldImagePath = path.resolve(__dirname, '../../user_images', user.image_url);
+            if (fs.existsSync(oldImagePath)) {
+                console.log('Eliminando la imagen anterior:', oldImagePath);
+                fs.unlinkSync(oldImagePath);
+                console.log('Imagen anterior eliminada correctamente.');
+            } else {
+                console.log('No se encontró la imagen anterior para eliminar.');
+            }
+
+            // Actualizar la base de datos a null
             await user.update({ image_url: null });
-            console.log('Imagen eliminada correctamente.');
+            console.log('Imagen eliminada correctamente en la base de datos.');
             return res.status(200).json({
                 status: 'SUCCESS',
                 message: 'La imagen fue eliminada correctamente',
@@ -435,6 +447,18 @@ const changeUserImage = async (req, res, next) => {
             console.log('Guardando la imagen en el sistema de archivos...');
             fs.writeFileSync(newImagePath, buffer);
             console.log('Imagen guardada correctamente en:', newImagePath);
+
+            // Si el usuario ya tiene una imagen, eliminamos la anterior
+            if (user.image_url) {
+                const oldImagePath = path.resolve(__dirname, '../../user_images', user.image_url);
+                if (fs.existsSync(oldImagePath)) {
+                    console.log('Eliminando la imagen anterior:', oldImagePath);
+                    fs.unlinkSync(oldImagePath);
+                    console.log('Imagen anterior eliminada correctamente.');
+                } else {
+                    console.log('No se encontró la imagen anterior para eliminar.');
+                }
+            }
 
             // Actualizar la base de datos con la nueva URL de la imagen
             console.log('Actualizando la base de datos con la nueva URL de la imagen...');
