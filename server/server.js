@@ -27,7 +27,7 @@ const User_Manga = require('./src/models/User_Manga');
 const Verification = require('./src/models/Verification');
 
 // Importaciones WebSockets
-const webSockets = require('./src/webSockets/utilsWebSockets.js').default;
+const webSockets = require('./src/webSockets/utilsWebSockets.js');
 const ws = new webSockets();
 const ServerLogicClass = require('./src/webSockets/serverLogic.js');
 const serverLogic = new ServerLogicClass();

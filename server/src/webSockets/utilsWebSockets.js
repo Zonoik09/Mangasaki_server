@@ -108,5 +108,5 @@ class Obj {
     }
 }
 
-module.exports = Obj;
+module.exports = webSockets;
 
