@@ -3,18 +3,21 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 dotenv.config();
+
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./src/config/swagger');
 const errorHandler = require('./src/middleware/errorHandler');
+const { logger, expressLogger } = require('./src/config/logger');
+const { sequelize } = require('./src/config/database');
 
+// Importaciones de rutas
 const adminRoutes = require('./src/routes/adminRoutes');
 const mangaRoutes = require('./src/routes/mangaRoutes');
 const socialRoutes = require('./src/routes/socialRoutes');
 const userRoutes = require('./src/routes/userRoutes');
 const validationRoutes = require('./src/routes/validationRoutes');
 
-const { sequelize } = require('./src/config/database');
-
+// Importaciones de modelos
 const User = require('./src/models/User');
 const Manga = require('./src/models/Manga');
 const Friendship = require('./src/models/Friendship');
@@ -23,17 +26,24 @@ const Recommendation = require('./src/models/Recommendation');
 const User_Manga = require('./src/models/User_Manga');
 const Verification = require('./src/models/Verification');
 
-const { logger, expressLogger } = require('./src/config/logger');
-// Crear instància d'Express
+// Importaciones WebSockets
+const webSockets = require('./src/webSockets/utilsWebSockets.js').default;
+const ws = new webSockets();
+const ServerLogicClass = require('./src/webSockets/serverLogic.js');
+const serverLogic = new ServerLogicClass();
+
+// Crear instancia de Express
 const app = express();
 
+// Configuración de middleware
 app.use(cors());
-
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
+// Configuración de documentación
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
+// Middleware de logging
 app.use((req, res, next) => {
     logger.info('Petició HTTP rebuda', {
         method: req.method,
@@ -43,22 +53,26 @@ app.use((req, res, next) => {
         userAgent: req.get('user-agent')
     });
 
-    logger.debug("DEBUG","SERVER","Petición HTTP recibida")
+    logger.debug("Petición HTTP recibida");
     next();
 });
 
 app.use(expressLogger);
 
+// Configuración de rutas
 app.use('/api/admin', adminRoutes);
 app.use('/api/manga', mangaRoutes);
 app.use('/api/social', socialRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/validation', validationRoutes);
 
+// Middleware de manejo de errores
 app.use(errorHandler);
 
+// Configuración del puerto
 const PORT = process.env.PORT || 3000;
 
+// Función para iniciar el servidor
 async function startServer() {
     try {
         await sequelize.authenticate();
@@ -68,20 +82,15 @@ async function startServer() {
             port: process.env.MYSQL_PORT
         });
 
-        await sequelize.sync({
-            force: true,
-        });
-
+        await sequelize.sync({ force: true });
         logger.info('Models sincronitzats', {
             force: true,
             timestamp: new Date().toISOString()
         });
 
-        createAdminUser()
+        createAdminUser();
 
-        const PORT = process.env.PORT || 3000;
-
-        app.listen(PORT, '0.0.0.0', () => {
+        const httpServer = app.listen(PORT, '0.0.0.0', () => {
             logger.info('Servidor iniciat correctament', {
                 port: PORT,
                 mode: process.env.NODE_ENV,
@@ -89,8 +98,31 @@ async function startServer() {
             });
         });
 
-        logger.debug(`Servidor iniciado correctamente en: http://127.0.0.1:${PORT}/api-docs`)
-        
+        // Gestión de WebSockets
+        ws.init(httpServer, PORT);
+        logger.info('Servidor websockets iniciat correctament');
+
+        ws.onConnection = (socket, id) => {
+            logger.info("WebSocket client connected: " + id);
+            serverLogic.addClient(id);
+        };
+
+        ws.onMessage = (socket, id, msg) => {
+            serverLogic.handleMessage(id, msg);
+        };
+
+        ws.onClose = (socket, id) => {
+            logger.info("WebSocket client disconnected: " + id);
+            serverLogic.removeClient(id);
+            ws.broadcast(JSON.stringify({ type: "disconnected", from: "server" }));
+        };
+
+        ws.on('error', (err) => {
+            logger.error("Error en WebSocket:", err);
+        });
+
+        logger.debug(`Servidor iniciado correctamente en: http://127.0.0.1:${PORT}/api-docs`);
+
     } catch (error) {
         logger.error('Error fatal en iniciar el servidor', {
             error: error.message,
@@ -98,13 +130,12 @@ async function startServer() {
             timestamp: new Date().toISOString()
         });
 
-        logger.debug("Error fatal en iniciar el servidor")
-
+        logger.debug("Error fatal en iniciar el servidor");
         process.exit(1);
-
     }
 }
 
+// Manejo de eventos del proceso
 process.on('unhandledRejection', (error) => {
     logger.error('Error no controlat detectat', {
         error: error.message,
@@ -113,19 +144,17 @@ process.on('unhandledRejection', (error) => {
         timestamp: new Date().toISOString()
     });
 
-    logger.debug("SERVER","Error no controlado detectado")
-
+    logger.debug("SERVER", "Error no controlado detectado");
     process.exit(1);
 });
 
 process.on('SIGTERM', () => {
-    logger.info('Senyal SIGTERM rebut. Tancant el servidor...');
-
-    logger.info("Señal SIGTERM recibido. Cerrando el servidor...")
-
+    logger.info('Cerrando WebSocket y servidor...');
+    ws.end(); // Cierra todas las conexiones WebSocket
     process.exit(0);
 });
 
+// Función para crear usuario administrador
 async function createAdminUser() {
     try {
         if (process.env.CREATE_ADMIN_USER !== 'true') {
@@ -156,6 +185,7 @@ async function createAdminUser() {
     }
 }
 
+// Iniciar servidor
 startServer();
 
 module.exports = app;
