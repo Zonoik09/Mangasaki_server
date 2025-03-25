@@ -92,7 +92,7 @@ async function startServer() {
 
         createAdminUser();
 
-        const server = app.listen(PORT, '0.0.0.0', () => {
+        app.listen(PORT, '0.0.0.0', () => {
             logger.info('Servidor iniciat correctament', {
                 port: PORT,
                 mode: process.env.NODE_ENV,
@@ -101,7 +101,7 @@ async function startServer() {
         });
 
         // Gestión de WebSockets
-        ws.init(server);
+        ws.init(`0.0.0.0:${PORT}`);
         logger.info('Servidor websockets iniciat correctament');
 
         ws.onConnection = (socket, id) => {
