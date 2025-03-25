@@ -172,6 +172,7 @@ async function createAdminUser() {
                 phone: process.env.PHONE,
                 token: process.env.TOKEN,
                 image_url: null,
+                banner_url: null,
             });
 
             logger.info('Usuario administrador creado correctamente');

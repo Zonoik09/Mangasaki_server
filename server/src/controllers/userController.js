@@ -50,6 +50,7 @@ const registerUser = async (req, res, next) => {
             phone,
             token: null,
             image_url: null,
+            banner_url: null,
         });
 
         logger.info('Usuario registrado correctamente', { newUser });
