@@ -52,15 +52,20 @@ class Obj {
 
     closeConnection(con) {
         if (this.onClose && typeof this.onClose === "function") {
-            var id = this.socketsClients.get(con).id;
+            const client = this.socketsClients.get(con);
+            const id = client && client.id ? client.id : "unknown";
             this.onClose(con, id);
         }
-
+    
+        const client = this.socketsClients.get(con);
+        const clientId = client && client.id ? client.id : "unknown";
+    
         this.broadcast(JSON.stringify({
             type: "clientDisconnected",
-            id: this.socketsClients.get(con)?.id || "unknown"
+            id: clientId
         }));
     }
+    
 
     newMessage(ws, id, bufferedMessage) {
         var messageAsString = bufferedMessage.toString();
