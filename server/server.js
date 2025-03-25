@@ -18,14 +18,15 @@ const userRoutes = require('./src/routes/userRoutes');
 const validationRoutes = require('./src/routes/validationRoutes');
 
 // Importaciones de modelos
-const User = require('./src/models/User');
+const Book_Scan_Request = require('./src/models/Book_Scan_Request.js');
+const Friendship_Request = require('./src/models/Friendship_Request.js');
 const Friendship = require('./src/models/Friendship');
 const Gallery = require('./src/models/Gallery');
+const Gallery_Manga = require('./src/models/Gallery_Manga.js');
 const Recommendation_Request = require('./src/models/Recommendation_Request.js');
 const User_Manga = require('./src/models/User_Manga');
+const User = require('./src/models/User');
 const Verification = require('./src/models/Verification');
-const Friendship_Request = require('./src/models/Friendship_Request.js');
-const Book_Scan_Request = require('./src/models/Book_Scan_Request.js');
 
 // Impor  taciones WebSockets
 const WebSockets = require('./src/webSockets/utilsWebSockets.js');
