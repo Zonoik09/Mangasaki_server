@@ -117,10 +117,6 @@ async function startServer() {
             ws.broadcast(JSON.stringify({ type: "disconnected", from: "server" }));
         };
 
-        ws.on('error', (err) => {
-            logger.error("Error en WebSocket:", err);
-        });
-
         logger.debug(`Servidor iniciado correctamente en: http://127.0.0.1:${PORT}/api-docs`);
 
     } catch (error) {
