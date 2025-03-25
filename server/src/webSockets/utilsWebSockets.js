@@ -1,7 +1,7 @@
 const { Server, OPEN } = require('ws');
 const { v4: uuidv4 } = require('uuid');
 
-class Obj {
+class WebSockets {
     init(httpServer, port) {
         this.onConnection = (socket, id) => { };
         this.onMessage = (socket, id, obj) => { };
@@ -108,5 +108,5 @@ class Obj {
     }
 }
 
-module.exports = webSockets;
+module.exports = WebSockets;
 
