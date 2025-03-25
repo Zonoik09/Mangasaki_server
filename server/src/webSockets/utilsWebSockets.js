@@ -108,4 +108,5 @@ class Obj {
     }
 }
 
-export default Obj;
+module.exports = Obj;
+
