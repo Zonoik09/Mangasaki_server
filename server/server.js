@@ -101,7 +101,7 @@ async function startServer() {
         });
 
         // Gestión de WebSockets
-        ws.init('ws://127.0.0.1', PORT);
+        ws.init(`0.0.0.0:${PORT}`);
         logger.info('Servidor websockets iniciat correctament');
 
         ws.onConnection = (socket, id) => {
