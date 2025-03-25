@@ -19,13 +19,11 @@ const validationRoutes = require('./src/routes/validationRoutes');
 
 // Importaciones de modelos
 const User = require('./src/models/User');
-const Manga = require('./src/models/Manga');
 const Friendship = require('./src/models/Friendship');
 const Gallery = require('./src/models/Gallery');
-const Recommendation = require('./src/models/Recommendation');
+const Recommendation_Request = require('./src/models/Recommendation_Request.js');
 const User_Manga = require('./src/models/User_Manga');
 const Verification = require('./src/models/Verification');
-const Notification = require('./src/models/Notification.js');
 const Friendship_Request = require('./src/models/Friendship_Request.js');
 const Book_Scan_Request = require('./src/models/Book_Scan_Request.js');
 

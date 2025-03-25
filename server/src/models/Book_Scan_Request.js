@@ -17,7 +17,7 @@ const Book_Scan_Request = sequelize.define('Book_Scan_Request', {
         onDelete: 'CASCADE',
         unique: true
     },
-    name: {
+    manga_name: {
         type: DataTypes.STRING(50),
         allowNull: false
     },

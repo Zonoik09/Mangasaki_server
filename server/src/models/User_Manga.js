@@ -16,14 +16,9 @@ const User_Manga = sequelize.define('User_Manga', {
         },
         onDelete: 'CASCADE'
     },
-    manga_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: 'Manga',
-            key: 'id'
-        },
-        onDelete: 'CASCADE'
+    manga_name: {
+        type: DataTypes.STRING(50),
+        allowNull: false
     },
     status: {
         type: DataTypes.ENUM('PENDING', 'READING', 'COMPLETED', 'ABANDONED'),
@@ -37,7 +32,7 @@ const User_Manga = sequelize.define('User_Manga', {
     indexes: [
         {
             unique: true,
-            fields: ['user_id', 'manga_id']
+            fields: ['user_id', 'manga_name']
         }
     ]
 });

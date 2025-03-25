@@ -1,6 +1,6 @@
 const Manga = require('../models/Manga');
 const Gallery = require('../models/Gallery');
-const Recommendation = require('../models/Recommendation');
+const Recommendation = require('../models/Recommendation_Request');
 const User_Manga = require('../models/User_Manga');
 const User = require('../models/User');
 

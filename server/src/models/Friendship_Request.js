@@ -7,7 +7,17 @@ const Friendship_Request = sequelize.define('Friendship_Request', {
         autoIncrement: true,
         primaryKey: true
     },
-    user_id: {
+    user_id_1: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'User',
+            key: 'id'
+        },
+        onDelete: 'CASCADE',
+        unique: true
+    },
+    user_id_2: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
@@ -24,8 +34,14 @@ const Friendship_Request = sequelize.define('Friendship_Request', {
     },
 }, {
     timestamps: true,
-    tableName: 'Friendship_Request',
-    underscored: true
+    tableName: 'Friendship',
+    underscored: true,
+    indexes: [
+        {
+            unique: true,
+            fields: ['user_id_1', 'user_id_2']
+        }
+    ]
 });
 
 module.exports = Friendship_Request;

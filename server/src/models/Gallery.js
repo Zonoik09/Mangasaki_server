@@ -20,15 +20,6 @@ const Gallery = sequelize.define('Gallery', {
         },
         onDelete: 'CASCADE'
     },
-    manga_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: 'Manga',
-            key: 'id'
-        },
-        onDelete: 'CASCADE'
-    },
     likes: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -37,7 +28,13 @@ const Gallery = sequelize.define('Gallery', {
 }, {
     timestamps: true,
     tableName: 'Gallery',
-    underscored: true
+    underscored: true,
+    indexes: [
+        {
+            unique: true,
+            fields: ['name', 'user_id']
+        }
+    ]
 });
 
 module.exports = Gallery;

@@ -1,34 +1,37 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
+const Gallery = require('./Gallery');
 
-const Notification = sequelize.define('Notification', {
+const Gallery_Manga = sequelize.define('Gallery_Manga', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
     },
-    user_id: {
+    gallery_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'User',
+            model: 'Gallery',
             key: 'id'
         },
         onDelete: 'CASCADE'
     },
-    type: {
-        type: DataTypes.ENUM('DEFAULT', 'FRIENDSHIP_REQUEST'),
-        allowNull: false,
-        defaultValue: 'DEFAULT'
-    },
-    notification_body: {
-        type: DataTypes.STRING(255),
+    manga_name: {
+        type: DataTypes.STRING(50),
         allowNull: false
     },
+
 }, {
     timestamps: true,
-    tableName: 'Notification',
-    underscored: true
+    tableName: 'Gallery_Manga',
+    underscored: true,
+    indexes: [
+        {
+            unique: true,
+            fields: ['manga_name', 'vol']
+        }
+    ]
 });
 
-module.exports = Notification;
+module.exports = Gallery_Manga;
