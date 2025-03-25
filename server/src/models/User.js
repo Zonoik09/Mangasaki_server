@@ -32,6 +32,11 @@ const User = sequelize.define('User', {
         allowNull: true,
         unique: true
     },
+    banner_url: {
+        type: DataTypes.STRING(100),
+        allowNull: true,
+        unique: true
+    },
 }, {
     timestamps: true,
     tableName: 'User',

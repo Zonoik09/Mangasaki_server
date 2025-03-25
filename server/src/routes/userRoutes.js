@@ -8,7 +8,9 @@ const {
     loginUser,
     getUserInfo,
     getUserImage,
+    getUserBanner,
     changeUserImage,
+    changeUserBanner,
 } = require('../controllers/userController.js');
 
 /**
@@ -421,6 +423,72 @@ router.get('/getUserInfo/:nickname', getUserInfo);
  */
 router.get('/getUserImage/:nickname', getUserImage);
 
+
+/**
+ * @swagger
+ * /api/user/getUserBanner/{nickname}:
+ *   get:
+ *     summary: Obtiene el banner del usuario por su nickname
+ *     description: Endpoint para obtener el banner de un usuario a través de su nickname.
+ *     tags: [User]
+ *     parameters:
+ *       - in: path
+ *         name: nickname
+ *         required: true
+ *         description: El nickname del usuario cuya banner se quiere obtener
+ *         schema:
+ *           type: string
+ *           example: admin
+ *     responses:
+ *       200:
+ *         description: Banner obtenido correctamente
+ *         content:
+ *           application/octet-stream:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       400:
+ *         description: El nickname es obligatorio
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "El nickname es obligatorio"
+ *       404:
+ *         description: Banner no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "Banner no encontrado"
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "Error al intentar recuperar el banner"
+ */
+router.get('/getUserBanner/:nickname', getUserBanner); 
+
 /**
  * @swagger
  * /api/user/changeUserProfileImage:
@@ -501,5 +569,86 @@ router.get('/getUserImage/:nickname', getUserImage);
  *                   example: "Error al actualizar la imagen de perfil"
  */
 router.post('/changeUserProfileImage', changeUserImage);
+
+/**
+ * @swagger
+ * /api/user/changeUserProfileBanner:
+ *   post:
+ *     summary: Cambia el banner de perfil de un usuario
+ *     description: Endpoint para actualizar el banner de perfil de un usuario usando el nickname y el banner en base64.
+ *     tags: [User]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nickname:
+ *                 type: string
+ *                 description: El nickname del usuario para cambiarle el banner de perfil
+ *                 default: "admin"
+ *               base64:
+ *                 type: string
+ *                 description: El banner en base64
+ *                 default: ""
+ *     responses:
+ *       200:
+ *         description: Banner de perfil actualizado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "SUCCESS"
+ *                 message:
+ *                   type: string
+ *                   example: "Banner actualizado correctamente"
+ *                 bannerUrl:
+ *                   type: string
+ *                   example: "/uploads/1710456789-profile.jpg"
+ *       400:
+ *         description: El nickname o el banner son obligatorios
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "El nickname y el banner son obligatorios"
+ *       404:
+ *         description: Usuario no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "Usuario no encontrado"
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "Error al actualizar el banner de perfil"
+ */
+router.post('/changeUserProfileBanner', changeUserBanner);
 
 module.exports = router;

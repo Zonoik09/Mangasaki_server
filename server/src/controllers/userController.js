@@ -424,6 +424,59 @@ const getUserImage = async (req, res, next) => {
     }
 };
 
+
+const getUserBanner = async (req, res, next) => {
+    try {
+        const { nickname } = req.params;
+
+        if (!nickname) {
+            return res.status(400).json({
+                status: 'ERROR',
+                message: 'El nickname es obligatorio',
+                data: null,
+            });
+        }
+
+        // Buscar usuario por nickname en la base de datos
+        const user = await User.findOne({ where: { nickname } });
+
+        if (!user) {
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'Usuario no encontrado',
+                data: null,
+            });
+        }
+
+        // Si el usuario no tiene banner, devolver el banner por defecto
+        let bannerPath;
+        if (!user.banner_url) {
+            bannerPath = path.resolve(__dirname, '../../user_banners/default0.jpg');
+        } else {
+            bannerPath = path.resolve(__dirname, '../../user_banners', user.banner_url);
+        }
+
+        // Verificar si el archivo existe
+        if (!fs.existsSync(bannerPath)) {
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'Banner no encontrado con path: ' + bannerPath,
+                data: null,
+            });
+        }
+
+        // Enviar el banner encontrado
+        res.sendFile(bannerPath);
+    } catch (error) {
+        console.error('Error al intentar recuperar el banner', error);
+        res.status(500).json({
+            status: 'ERROR',
+            message: 'Error al intentar recuperar el banner',
+            data: null,
+        });
+    }
+};
+
 const changeUserImage = async (req, res, next) => {
     try {
         console.log('Iniciando cambio de imagen del usuario...');
@@ -552,6 +605,134 @@ const changeUserImage = async (req, res, next) => {
     }
 };
 
+const changeUserBanner = async (req, res, next) => {
+    try {
+        console.log('Iniciando cambio de banner del usuario...');
+
+        const { nickname, base64 } = req.body; // Ahora obtenemos el nickname y el banner Base64 desde el cuerpo de la solicitud
+        console.log('Datos recibidos:', { nickname, base64 });
+
+        // Validaciones de entrada
+        if (!nickname) {
+            console.error('Error: El nickname es obligatorio');
+            return res.status(400).json({
+                status: 'ERROR',
+                message: 'El nickname es obligatorio',
+                data: null,
+            });
+        }
+        console.log('Nickname validado:', nickname);
+
+        // Buscar usuario en la base de datos
+        console.log('Buscando usuario en la base de datos...');
+        const user = await User.findOne({ where: { nickname } });
+        if (!user) {
+            console.error('Error: Usuario no encontrado');
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'Usuario no encontrado',
+                data: null,
+            });
+        }
+        console.log('Usuario encontrado:', user.nickname);
+
+        // Si base64 es null y el banner del usuario ya es null, no hacemos nada
+        if (!base64 && user.banner_url === null) {
+            console.log('No se realiza ningún cambio, el banner ya es nulo.');
+            return res.status(200).json({
+                status: 'SUCCESS',
+                message: 'No se realizó ningún cambio, ya que el banner es nulo',
+                data: null,
+            });
+        }
+
+        // Si base64 es null pero el banner del usuario no lo es, se actualiza a null y se elimina el banner del servidor
+        if (!base64 && user.banner_url !== null) {
+            console.log('Base64 es nulo, pero el usuario tiene un banner. Se eliminará el banner.');
+            
+            // Eliminar el banner anterior del servidor
+            const oldBannerPath = path.resolve(__dirname, '../../user_banners', user.banner_url);
+            if (fs.existsSync(oldBannerPath)) {
+                console.log('Eliminando el banner anterior:', oldBannerPath);
+                fs.unlinkSync(oldBannerPath);
+                console.log('Banner anterior eliminado correctamente.');
+            } else {
+                console.log('No se encontró el Banner anterior para eliminar.');
+            }
+
+            // Actualizar la base de datos a null
+            await user.update({ banner_url: null });
+            console.log('Banner eliminado correctamente en la base de datos.');
+            return res.status(200).json({
+                status: 'SUCCESS',
+                message: 'El banner fue eliminado correctamente',
+                data: { banner_url: null },
+            });
+        }
+
+        // Si el banner en base64 es proporcionada, procesamos el banner
+        if (base64) {
+            console.log('Base64 recibido, procesando el banner...');
+
+            // Directorio donde se almacenarán las imágenes
+            const userBannersPath = path.resolve(__dirname, '../../user_banners');
+            console.log('Verificando existencia del directorio de banners:', userBannersPath);
+            if (!fs.existsSync(userBannersPath)) {
+                console.log('El directorio no existe, creándolo...');
+                fs.mkdirSync(userBannersPath, { recursive: true });
+            }
+
+            // Decodificar el banner en Base64
+            console.log('Decodificando el banner Base64...');
+            const buffer = Buffer.from(base64, 'base64');
+            console.log('Banner decodificado correctamente.');
+
+            // Generar un nombre único para el banner
+            const newBannerName = `${nickname}_${Date.now()}.jpg`; // Asumimos que el banner será en formato JPG
+            const newBannerPath = path.join(userBannersPath, newBannerName);
+            console.log('Nuevo nombre de banner generado:', newBannerName);
+
+            // Guardar el banner en el sistema de archivos
+            console.log('Guardando el banner en el sistema de archivos...');
+            fs.writeFileSync(newBannerPath, buffer);
+            console.log('Banner guardado correctamente en:', newBannerPath);
+
+            // Si el usuario ya tiene una banner, eliminamos el anterior
+            if (user.banner_url) {
+                const oldBannerPath = path.resolve(__dirname, '../../user_banners', user.banner_url);
+                if (fs.existsSync(oldBannerPath)) {
+                    console.log('Eliminando el banner anterior:', oldBannerPath);
+                    fs.unlinkSync(oldBannerPath);
+                    console.log('Banner anterior eliminada correctamente.');
+                } else {
+                    console.log('No se encontró el banner anterior para eliminar.');
+                }
+            }
+
+            // Actualizar la base de datos con la nueva URL de el banner
+            console.log('Actualizando la base de datos con la nueva URL de el banner...');
+            await user.update({ banner_url: newBannerName });
+            console.log('Base de datos actualizada correctamente.');
+
+            // Devolver la respuesta
+            console.log('Banner actualizado correctamente.');
+            return res.status(200).json({
+                status: 'SUCCESS',
+                message: 'Banner actualizado correctamente',
+                data: { banner_url: newBannerName },
+            });
+        }
+
+    } catch (error) {
+        console.error('Error al cambiar el banner del usuario:', error);
+        return res.status(500).json({
+            status: 'ERROR',
+            message: 'Error al cambiar el banner del usuario',
+            data: null,
+        });
+    }
+};
+
 module.exports = {
     registerUser,
     validateUser,
@@ -559,5 +740,7 @@ module.exports = {
     loginUser,
     getUserInfo,
     getUserImage,
+    getUserBanner,
     changeUserImage,
+    changeUserBanner,
 };
