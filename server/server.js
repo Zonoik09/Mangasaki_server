@@ -25,8 +25,11 @@ const Gallery = require('./src/models/Gallery');
 const Recommendation = require('./src/models/Recommendation');
 const User_Manga = require('./src/models/User_Manga');
 const Verification = require('./src/models/Verification');
+const Notification = require('./src/models/Notification.js');
+const Friendship_Request = require('./src/models/Friendship_Request.js');
+const Book_Scan_Request = require('./src/models/Book_Scan_Request.js');
 
-// Importaciones WebSockets
+// Impor  taciones WebSockets
 const WebSockets = require('./src/webSockets/utilsWebSockets.js');
 const ws = new WebSockets();
 const ServerLogicClass = require('./src/webSockets/serverLogic.js');

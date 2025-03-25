@@ -1,13 +1,13 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
 
-const Friendship = sequelize.define('Friendship', {
+const Notification = sequelize.define('Notification', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
     },
-    user_id_1: {
+    user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
@@ -16,25 +16,19 @@ const Friendship = sequelize.define('Friendship', {
         },
         onDelete: 'CASCADE'
     },
-    user_id_2: {
-        type: DataTypes.INTEGER,
+    type: {
+        type: DataTypes.ENUM('DEFAULT', 'FRIENDSHIP_REQUEST'),
         allowNull: false,
-        references: {
-            model: 'User',
-            key: 'id'
-        },
-        onDelete: 'CASCADE'
+        defaultValue: 'DEFAULT'
+    },
+    notification_body: {
+        type: DataTypes.TEXT(255),
+        allowNull: false
     },
 }, {
     timestamps: true,
-    tableName: 'Friendship',
-    underscored: true,
-    indexes: [
-        {
-            unique: true,
-            fields: ['user_id_1', 'user_id_2']
-        }
-    ]
+    tableName: 'Notification',
+    underscored: true
 });
 
-module.exports = Friendship;
+module.exports = Notification;

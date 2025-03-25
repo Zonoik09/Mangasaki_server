@@ -27,7 +27,7 @@ class ServerLogic {
             if (!obj.type) return;
             console.log("Mensaje de tipo: " + obj.type + " recibido")
             switch (obj.type) {
-                case "notification":
+                case "friendship_notification":
                     break;
                 default:
                     break;
