@@ -1,5 +1,5 @@
-import { Server, OPEN } from 'ws';
-import { v4 as uuidv4 } from 'uuid';
+const { Server, OPEN } = require('ws');
+const { v4: uuidv4 } = require('uuid');
 
 class Obj {
     init(httpServer, port) {
