@@ -1,8 +1,8 @@
-// Importaciones principales
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const http = require('http');
+const WebSocket = require('ws');
 dotenv.config();
 
 const swaggerUi = require('swagger-ui-express');
@@ -29,14 +29,10 @@ const User_Manga = require('./src/models/User_Manga');
 const User = require('./src/models/User');
 const Verification = require('./src/models/Verification');
 
-// Impor  taciones WebSockets
-const WebSockets = require('./src/webSockets/utilsWebSockets.js');
-const ws = new WebSockets();
-const ServerLogicClass = require('./src/webSockets/serverLogic.js');
-const serverLogic = new ServerLogicClass();
-
 // Crear instancia de Express
 const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
 
 // Configuración de middleware
 app.use(cors());
@@ -75,6 +71,18 @@ app.use(errorHandler);
 // Configuración del puerto
 const PORT = process.env.PORT || 3000;
 
+// Manejo de conexiones WebSocket
+wss.on('connection', (ws) => {
+    console.log('Cliente WebSocket conectado');
+    ws.on('message', (message) => {
+        console.log(`Mensaje recibido: ${message}`);
+        ws.send(`Servidor recibió: ${message}`);
+    });
+    ws.on('close', () => {
+        console.log('Cliente WebSocket desconectado');
+    });
+});
+
 // Función para iniciar el servidor
 async function startServer() {
     try {
@@ -93,9 +101,7 @@ async function startServer() {
 
         createAdminUser();
 
-        const server = http.createServer(app);
-
-        app.listen(PORT, '0.0.0.0', () => {
+        server.listen(PORT, '0.0.0.0', () => {
             logger.info('Servidor iniciat correctament', {
                 port: PORT,
                 mode: process.env.NODE_ENV,
@@ -103,27 +109,9 @@ async function startServer() {
             });
         });
 
-        // Gestión de WebSockets
-        ws.init(server,PORT);
-        logger.info('Servidor websockets iniciat correctament');
-
-        ws.onConnection = (socket, id) => {
-            logger.info("WebSocket client connected: " + id);
-            serverLogic.addClient(id);
-        };
-
-        ws.onMessage = (socket, id, msg) => {
-            serverLogic.handleMessage(id, msg);
-        };
-
-        ws.onClose = (socket, id) => {
-            logger.info("WebSocket client disconnected: " + id);
-            serverLogic.removeClient(id);
-            ws.broadcast(JSON.stringify({ type: "disconnected", from: "server" }));
-        };
+        logger.info('Servidor WebSocket iniciat correctament');
 
         logger.debug(`Servidor iniciado correctamente en: http://127.0.0.1:${PORT}/api-docs`);
-
     } catch (error) {
         logger.error('Error fatal en iniciar el servidor', {
             error: error.message,
@@ -151,8 +139,8 @@ process.on('unhandledRejection', (error) => {
 
 process.on('SIGTERM', () => {
     logger.info('Cerrando WebSocket y servidor...');
-    ws.end(); // Cierra todas las conexiones WebSocket
-    process.exit(0);
+    wss.clients.forEach(client => client.close()); // Cierra todas las conexiones WebSocket
+    server.close(() => process.exit(0));
 });
 
 // Función para crear usuario administrador
