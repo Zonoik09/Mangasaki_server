@@ -1,9 +1,3 @@
-const Manga = require('../models/Manga');
-const Gallery = require('../models/Gallery');
-const Recommendation = require('../models/Recommendation_Request');
-const User_Manga = require('../models/User_Manga');
-const User = require('../models/User');
-
 const axios = require('axios');
 const crypto = require('crypto');
 const { logger } = require('../config/logger');
