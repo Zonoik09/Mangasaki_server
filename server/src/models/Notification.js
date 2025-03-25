@@ -22,7 +22,7 @@ const Notification = sequelize.define('Notification', {
         defaultValue: 'DEFAULT'
     },
     notification_body: {
-        type: DataTypes.TEXT(255),
+        type: DataTypes.STRING(255),
         allowNull: false
     },
 }, {
