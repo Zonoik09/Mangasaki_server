@@ -21,7 +21,6 @@ const Gallery_Manga = sequelize.define('Gallery_Manga', {
         type: DataTypes.STRING(50),
         allowNull: false
     },
-
 }, {
     timestamps: true,
     tableName: 'Gallery_Manga',
@@ -29,7 +28,7 @@ const Gallery_Manga = sequelize.define('Gallery_Manga', {
     indexes: [
         {
             unique: true,
-            fields: ['manga_name', 'vol']
+            fields: ['gallery_id', 'manga_name']
         }
     ]
 });
