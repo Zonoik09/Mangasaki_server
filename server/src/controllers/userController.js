@@ -5,6 +5,8 @@ const axios = require('axios');
 const crypto = require('crypto');
 const { logger } = require('../config/logger');
 
+const bcrypt = require('bcrypt'); // Sirve para encriptar la contraseña del usuario
+
 const fs = require('fs');            // Para manipulación de archivos (leer, escribir, borrar)
 const path = require('path');        // Para trabajar con rutas de archivos
 
@@ -43,10 +45,13 @@ const registerUser = async (req, res, next) => {
             return res.status(402).json({ status: 'ERROR', message: 'The phone number is already registered'});
         }
 
+        const hashedPassword = await bcrypt.hash(password, 12); //2^12 = 4096 iteraciones
+
+
         // Si no existe, crea un nuevo usuario
         const newUser = await User.create({
             nickname,
-            password,
+            hashedPassword,
             phone,
             token: null,
             image_url: null,
@@ -285,7 +290,9 @@ const loginUser = async (req, res, next) => {
             });
         }
 
-        if (user.password !== password) {
+        const isPasswordValid = await bcrypt.compare(password,user.password); // Se comparán las contraseñas para saber si son la misma
+
+        if (isPasswordValid) {
             logger.warn(`Contraseña incorrecta para el usuario ${nickname}`);
             return res.status(401).json({
                 status: 'ERROR',
