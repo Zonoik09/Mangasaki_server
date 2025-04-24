@@ -51,7 +51,7 @@ const registerUser = async (req, res, next) => {
         // Si no existe, crea un nuevo usuario
         const newUser = await User.create({
             nickname,
-            hashedPassword,
+            password: hashedPassword,
             phone,
             token: null,
             image_url: null,
@@ -292,7 +292,7 @@ const loginUser = async (req, res, next) => {
 
         const isPasswordValid = await bcrypt.compare(password,user.password); // Se comparán las contraseñas para saber si son la misma
 
-        if (isPasswordValid) {
+        if (!isPasswordValid) {
             logger.warn(`Contraseña incorrecta para el usuario ${nickname}`);
             return res.status(401).json({
                 status: 'ERROR',
