@@ -3,6 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const http = require('http');
 const WebSocket = require('ws');
+const bcrypt = require('bcrypt'); // Sirve para encriptar la contraseña del usuario
 dotenv.config();
 
 const swaggerUi = require('swagger-ui-express');
@@ -17,6 +18,7 @@ const mangaRoutes = require('./src/routes/mangaRoutes');
 const socialRoutes = require('./src/routes/socialRoutes');
 const userRoutes = require('./src/routes/userRoutes');
 const validationRoutes = require('./src/routes/validationRoutes');
+const galleryRoutes = require('./src/routes/galleryRoutes.js');
 
 // Importaciones de modelos
 const Book_Scan_Request = require('./src/models/Book_Scan_Request.js');
@@ -28,6 +30,7 @@ const Recommendation_Request = require('./src/models/Recommendation_Request.js')
 const User_Manga = require('./src/models/User_Manga');
 const User = require('./src/models/User');
 const Verification = require('./src/models/Verification');
+const { hash } = require('crypto');
 
 // Crear instancia de Express
 const app = express();
@@ -64,6 +67,7 @@ app.use('/api/manga', mangaRoutes);
 app.use('/api/social', socialRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/validation', validationRoutes);
+app.use('/api/gallery', galleryRoutes);
 
 // Middleware de manejo de errores
 app.use(errorHandler);
@@ -152,11 +156,13 @@ async function createAdminUser() {
         }
 
         const userExists = await User.findOne({ where: { nickname: process.env.NICKNAME } });
-
+        
+        const hashedPassword = await bcrypt.hash(process.env.PASSWORD, 12); //2^12 = 4096 iteraciones
+        
         if (!userExists) {
             await User.create({
                 nickname: process.env.NICKNAME,
-                password: process.env.PASSWORD,
+                password: hashedPassword,
                 phone: process.env.PHONE,
                 token: process.env.TOKEN,
                 image_url: null,

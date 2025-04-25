@@ -11,6 +11,8 @@ const fs = require('fs');            // Para manipulación de archivos (leer, es
 const path = require('path');        // Para trabajar con rutas de archivos
 
 const multer = require('multer');    // Para manejar la subida de archivos (multipart/form-data)
+const Gallery = require('../models/Gallery');
+const Gallery_Manga = require('../models/Gallery_Manga');
 
 
 const API_SMS_URL = process.env.API_SMS_URL;
@@ -741,6 +743,214 @@ const changeUserBanner = async (req, res, next) => {
     }
 };
 
+/**
+ * Crea una galeria de manga.
+ * @route POST /api/gallery/create_gallery
+ */
+const createGallery = async (req, res, next) => {
+    try {
+        const { name, nickname } = req.body;
+        
+        logger.info('Nueva solicitud de creación de una galeria de', { nickname });
+
+        if (!nickname || !name ) {
+            return res.status(400).json({
+                status: 'ERROR',
+                message: 'El nickname y el nombre son obligatorios.',
+                data: null,
+            });
+        }
+
+        const user = await User.findOne({ where: { nickname } });
+
+        if (!user) {
+            logger.warn('Usuario no encontrado', { nickname });
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'Usuario no encontrado',
+                data: null,
+            });
+        }
+
+        const gallery = await Gallery.create({
+            name,
+            user_id: user.id,
+        });
+
+        logger.info('Creación de una galería exitosa', { userId: user.id, galleryId: gallery.id });
+
+        res.set('Authorization', user.token);
+
+        res.status(200).json({
+            status: 'OK',
+            message: 'Galería creada exitosamente',
+            data: {
+                userId: user.id,
+                nickname: user.nickname,
+                galleryId: gallery.id,
+                galleryName: gallery.name,
+            },
+        });
+    } catch (error) {
+        logger.error('Error al crear la galería', {
+            error: error.message,
+            stack: error.stack,
+        });
+
+        res.status(500).json({
+            status: 'ERROR',
+            message: 'Error interno al crear la galería',
+            data: null,
+        });
+    }
+};
+
+const dropGallery = async (req, res, next) => {
+    try {
+        const { nickname, name } = req.body;
+        console.log('Iniciando eliminación de galería...', { nickname, name });
+
+        // Validación de entrada
+        if (!nickname || !name) {
+            return res.status(400).json({
+                status: 'ERROR',
+                message: 'El nickname y el nombre de la galería son obligatorios',
+                data: null,
+            });
+        }
+
+        // Buscar al usuario
+        const user = await User.findOne({ where: { nickname } });
+        if (!user) {
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'Usuario no encontrado',
+                data: null,
+            });
+        }
+
+        // Buscar la galería asociada al usuario
+        const gallery = await Gallery.findOne({
+            where: {
+                name,
+                user_id: user.id
+            }
+        });
+
+        if (!gallery) {
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'Galería no encontrada para este usuario',
+                data: null,
+            });
+        }
+
+        // Eliminar la galería
+        await gallery.destroy();
+        console.log('Galería eliminada:', name);
+
+        return res.status(200).json({
+            status: 'SUCCESS',
+            message: 'Galería eliminada correctamente',
+            data: {
+                galleryId: gallery.id,
+                galleryName: gallery.name
+            },
+        });
+
+    } catch (error) {
+        console.error('Error al eliminar la galería:', error);
+        return res.status(500).json({
+            status: 'ERROR',
+            message: 'Error interno al eliminar la galería',
+            data: null,
+        });
+    }
+};
+
+/**
+ * Añade un manga a una galería de un usuario.
+ * @route POST /api/gallery/add_In_Gallery
+ */
+const addInGallery = async (req, res, next) => {
+    try {
+        const { nickname, galleryName, manganame } = req.body;
+
+        logger.info('Nueva solicitud de añadir un manga a la galería', { nickname, galleryName, manganame });
+
+        // Validación básica
+        if (!nickname || !galleryName || !manganame) {
+            return res.status(400).json({
+                status: 'ERROR',
+                message: 'El nickname, el nombre de la galería y el nombre del manga son obligatorios.',
+                data: null,
+            });
+        }
+
+        // Buscar al usuario
+        const user = await User.findOne({ where: { nickname } });
+        if (!user) {
+            logger.warn('Usuario no encontrado', { nickname });
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'Usuario no encontrado',
+                data: null,
+            });
+        }
+
+        // Buscar la galería del usuario
+        const gallery = await Gallery.findOne({
+            where: {
+                user_id: user.id,
+                name: galleryName
+            }
+        });
+
+        if (!gallery) {
+            logger.warn('Galería no encontrada para el usuario', { nickname });
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'Galería no encontrada para este usuario',
+                data: null,
+            });
+        }
+
+        // Crear relación galería-manga
+        const galleryManga = await Gallery_Manga.create({
+            gallery_id: gallery.id,
+            manga_name: manganame,
+        });
+
+        logger.info('Manga añadido a galería exitosamente', { galleryId: gallery.id, manganame });
+
+        res.set('Authorization', user.token);
+
+        res.status(200).json({
+            status: 'OK',
+            message: 'Manga añadido correctamente a la galería',
+            data: {
+                userId: user.id,
+                nickname: user.nickname,
+                galleryId: gallery.id,
+                galleryName: gallery.name,
+                mangaAdded: manganame
+            },
+        });
+    } catch (error) {
+        logger.error('Error al añadir manga a galería', {
+            error: error.message,
+            stack: error.stack,
+        });
+
+        res.status(500).json({
+            status: 'ERROR',
+            message: 'Error interno al añadir el manga a la galería',
+            data: null,
+        });
+    }
+};
+
+
 module.exports = {
     registerUser,
     validateUser,
@@ -751,4 +961,7 @@ module.exports = {
     getUserBanner,
     changeUserImage,
     changeUserBanner,
+    createGallery,
+    dropGallery,
+    addInGallery,
 };
