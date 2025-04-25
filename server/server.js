@@ -18,6 +18,7 @@ const mangaRoutes = require('./src/routes/mangaRoutes');
 const socialRoutes = require('./src/routes/socialRoutes');
 const userRoutes = require('./src/routes/userRoutes');
 const validationRoutes = require('./src/routes/validationRoutes');
+const galleryRoutes = require('./src/routes/galleryRoutes.js');
 
 // Importaciones de modelos
 const Book_Scan_Request = require('./src/models/Book_Scan_Request.js');
@@ -66,6 +67,7 @@ app.use('/api/manga', mangaRoutes);
 app.use('/api/social', socialRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/validation', validationRoutes);
+app.use('/api/gallery', galleryRoutes);
 
 // Middleware de manejo de errores
 app.use(errorHandler);
