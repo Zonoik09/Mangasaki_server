@@ -71,6 +71,8 @@ const registerUser = async (req, res, next) => {
             code: verificationCode,
         });
 
+        logger.info('Codigo de verificación: ', {verificationCode})
+
         // Envía el SMS con el código de verificación
         generateSMS(newUser.phone, verificationCode);
 
