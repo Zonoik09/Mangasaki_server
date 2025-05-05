@@ -29,6 +29,10 @@ class ServerLogic {
             console.log(`Mensaje de tipo: ${obj.type} recibido de ${id}`);
 
             switch (obj.type) {
+                case "joinedClientWithInfo":
+                    handleJoinedClientWithInfo(id, obj);
+                    break;
+
                 case "friendship_notification":
                     // ejemplo: reenvía a otro cliente
                     const targetId = obj.targetId;
@@ -59,6 +63,21 @@ class ServerLogic {
 
     removeClient(id) {
         this.clients.delete(id);
+    }
+
+    handleJoinedClientWithInfo(id, obj) {
+        console.log(`Cliente ${id} se unió con la siguiente información:`, obj);
+
+        // Ejemplo de almacenar la información del cliente en un mapa o base de datos
+        this.clients.set(id, { ...this.clients.get(id), info: obj });
+
+        // Podrías enviar una confirmación al cliente de que la información fue recibida
+        const response = JSON.stringify({
+            type: "joinedClientWithInfoResponse",
+            message: "Información del cliente recibida correctamente"
+        });
+
+        this.webSockets.sendToClient(id, response);
     }
 }
 
