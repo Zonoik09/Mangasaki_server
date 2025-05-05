@@ -974,10 +974,19 @@ const getUsersByCombination = async (req, res) => {
             attributes: ['id', 'nickname', 'image_url']
         });
 
+        // Reemplaza image_url por default0.jpg solo si es null
+        const processedUsers = users.map(user => {
+            return {
+                id: user.id,
+                nickname: user.nickname,
+                image_url: user.image_url || 'default0.jpg'
+            };
+        });
+
         return res.status(200).json({
             status: 'SUCCESS',
             message: 'Usuarios encontrados',
-            data: users,
+            data: processedUsers,
         });
     } catch (error) {
         console.error('Error al buscar usuarios:', error);
@@ -988,7 +997,6 @@ const getUsersByCombination = async (req, res) => {
         });
     }
 };
-
 
 module.exports = {
     registerUser,
