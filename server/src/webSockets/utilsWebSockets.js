@@ -106,6 +106,18 @@ class WebSockets {
         }
         return clients;
     }
+
+    sendToClient(id, message) {
+        for (let [client, metadata] of this.socketsClients.entries()) {
+            if (metadata.id === id && client.readyState === OPEN) {
+                client.send(message);
+                return true;
+            }
+        }
+    
+        console.warn(`No se pudo enviar mensaje: cliente con id "${id}" no encontrado o no conectado.`);
+        return false;
+    }    
 }
 
 module.exports = WebSockets;
