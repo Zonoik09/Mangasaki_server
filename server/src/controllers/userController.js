@@ -952,9 +952,6 @@ const addInGallery = async (req, res, next) => {
     }
 };
 
-const { Op } = require('sequelize');
-const User = require('../models/User');
-
 const getUsersByCombination = async (req, res) => {
     try {
         const { combination } = req.params;
