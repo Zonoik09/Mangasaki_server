@@ -36,8 +36,8 @@ const { hash } = require('crypto');
 const app = express();
 const server = http.createServer(app);
 
-const WebSockets = require('./utilsWebSockets');
-const ServerLogic = require('./ServerLogic');
+const WebSockets = require('./src/webSockets/utilsWebSockets.js');
+const ServerLogic = require('./src/webSockets/serverLogic.js');
 
 const webSocketManager = new WebSockets();
 
