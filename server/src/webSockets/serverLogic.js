@@ -1,38 +1,64 @@
-const fs = require('fs');
-const webSockets = require('./utilsWebSockets.js').default;
 'use strict';
 
 class ServerLogic {
-    constructor() {
+    constructor(webSockets) {
         this.clients = new Map();
+        this.webSockets = webSockets;
+
+        // Asigna funciones de evento
+        this.webSockets.onConnection = this.handleConnection.bind(this);
+        this.webSockets.onMessage = this.handleMessage.bind(this);
+        this.webSockets.onClose = this.handleClose.bind(this);
     }
 
-    // Es connecta un client
-    addClient(id) {
-        this.clients.set(id, {
-            id,
-        });
-        return this.clients.get(id);
+    handleConnection(socket, id) {
+        console.log(`Conexión nueva: ${id}`);
+        this.addClient(id);
     }
 
-    // Es desconnecta un client
-    removeClient(id) {
-        this.clients.delete(id);
+    handleClose(socket, id) {
+        console.log(`Cliente desconectado: ${id}`);
+        this.removeClient(id);
     }
 
-    // Tractar un missatge d'un client
-    handleMessage(id, msg) {
+    handleMessage(socket, id, msg) {
         try {
-            let obj = JSON.parse(msg);
+            const obj = JSON.parse(msg);
             if (!obj.type) return;
-            console.log("Mensaje de tipo: " + obj.type + " recibido")
+
+            console.log(`Mensaje de tipo: ${obj.type} recibido de ${id}`);
+
             switch (obj.type) {
                 case "friendship_notification":
+                    // ejemplo: reenvía a otro cliente
+                    const targetId = obj.targetId;
+                    const messageToSend = JSON.stringify({
+                        type: "friendship_notification",
+                        from: id,
+                        message: obj.message || "Tienes una nueva solicitud"
+                    });
+
+                    const targetClient = this.webSockets.getClientsIds().includes(targetId);
+                    if (targetClient) {
+                        this.webSockets.broadcast(messageToSend); // O enviar a uno si implementas `sendToClient`
+                    }
                     break;
+
                 default:
+                    console.log(`Tipo de mensaje no reconocido: ${obj.type}`);
                     break;
             }
-        } catch (error) {}
+        } catch (err) {
+            console.error("Error al procesar mensaje:", err.message);
+        }
+    }
+
+    addClient(id) {
+        this.clients.set(id, { id });
+    }
+
+    removeClient(id) {
+        this.clients.delete(id);
     }
 }
 

@@ -35,7 +35,17 @@ const { hash } = require('crypto');
 // Crear instancia de Express
 const app = express();
 const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
+
+const WebSockets = require('./utilsWebSockets');
+const ServerLogic = require('./ServerLogic');
+
+const webSocketManager = new WebSockets();
+
+const PORT = process.env.PORT || 3000;
+
+webSocketManager.init(server, PORT);
+
+const socketLogic = new ServerLogic(webSocketManager);
 
 // Configuración de middleware
 app.use(cors());
@@ -71,21 +81,6 @@ app.use('/api/gallery', galleryRoutes);
 
 // Middleware de manejo de errores
 app.use(errorHandler);
-
-// Configuración del puerto
-const PORT = process.env.PORT || 3000;
-
-// Manejo de conexiones WebSocket
-wss.on('connection', (ws) => {
-    console.log('Cliente WebSocket conectado');
-    ws.on('message', (message) => {
-        console.log(`Mensaje recibido: ${message}`);
-        ws.send(`Servidor recibió: ${message}`);
-    });
-    ws.on('close', () => {
-        console.log('Cliente WebSocket desconectado');
-    });
-});
 
 // Función para iniciar el servidor
 async function startServer() {
@@ -143,7 +138,7 @@ process.on('unhandledRejection', (error) => {
 
 process.on('SIGTERM', () => {
     logger.info('Cerrando WebSocket y servidor...');
-    wss.clients.forEach(client => client.close()); // Cierra todas las conexiones WebSocket
+    webSocketManager.end(); // Cierra el WebSocket server correctamente
     server.close(() => process.exit(0));
 });
 
