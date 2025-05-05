@@ -30,7 +30,7 @@ class ServerLogic {
 
             switch (obj.type) {
                 case "joinedClientWithInfo":
-                    handleJoinedClientWithInfo(id, obj);
+                    this.handleJoinedClientWithInfo(id, obj);
                     break;
 
                 case "friendship_notification":
