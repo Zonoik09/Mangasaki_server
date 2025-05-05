@@ -952,6 +952,45 @@ const addInGallery = async (req, res, next) => {
     }
 };
 
+const { Op } = require('sequelize');
+const User = require('../models/User');
+
+const getUsersByCombination = async (req, res) => {
+    try {
+        const { combination } = req.params;
+
+        if (!combination) {
+            return res.status(400).json({
+                status: 'ERROR',
+                message: 'La combinación es obligatoria',
+                data: null,
+            });
+        }
+
+        const users = await User.findAll({
+            where: {
+                nickname: {
+                    [Op.like]: `%${combination}%`
+                }
+            },
+            attributes: ['id', 'nickname', 'image_url']
+        });
+
+        return res.status(200).json({
+            status: 'SUCCESS',
+            message: 'Usuarios encontrados',
+            data: users,
+        });
+    } catch (error) {
+        console.error('Error al buscar usuarios:', error);
+        return res.status(500).json({
+            status: 'ERROR',
+            message: 'Error interno al buscar usuarios',
+            data: null,
+        });
+    }
+};
+
 
 module.exports = {
     registerUser,
@@ -966,4 +1005,5 @@ module.exports = {
     createGallery,
     dropGallery,
     addInGallery,
+    getUsersByCombination,
 };

@@ -11,6 +11,7 @@ const {
     getUserBanner,
     changeUserImage,
     changeUserBanner,
+    getUsersByCombination
 } = require('../controllers/userController.js');
 
 /**
@@ -651,5 +652,80 @@ router.post('/changeUserProfileImage', changeUserImage);
  */
 router.post('/changeUserProfileBanner', changeUserBanner);
 
+/**
+ * @swagger
+ * /api/user/search/{combination}:
+ *   get:
+ *     summary: Busca usuarios por coincidencia parcial del nickname
+ *     description: Devuelve una lista de usuarios cuyos nicknames coincidan parcialmente con la combinación proporcionada.
+ *     tags: [User]
+ *     parameters:
+ *       - in: path
+ *         name: combination
+ *         required: true
+ *         description: Parte del nickname que se desea buscar
+ *         schema:
+ *           type: string
+ *           example: pa
+ *     responses:
+ *       200:
+ *         description: Lista de usuarios encontrados
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "SUCCESS"
+ *                 message:
+ *                   type: string
+ *                   example: "Usuarios encontrados"
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                         example: 1
+ *                       nickname:
+ *                         type: string
+ *                         example: "pablito"
+ *                       image_url:
+ *                         type: string
+ *                         example: "pablito.jpg"
+ *       400:
+ *         description: La combinación es obligatoria
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "La combinación es obligatoria"
+ *                 data:
+ *                   type: null
+ *       500:
+ *         description: Error interno al buscar usuarios
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "Error interno al buscar usuarios"
+ *                 data:
+ *                   type: null
+ */
+router.get('/search/:combination', getUsersByCombination);
 
 module.exports = router;
