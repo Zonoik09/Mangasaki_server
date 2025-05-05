@@ -47,6 +47,14 @@ class ServerLogic {
                         this.webSockets.broadcast(messageToSend); // O enviar a uno si implementas `sendToClient`
                     }
                     break;
+                
+                case "sendNotification":
+                    const notificationType = obj.notificationType;
+                    const message = obj.message;
+                    const receiver = obj.message;
+
+
+                    break;
 
                 default:
                     console.log(`Tipo de mensaje no reconocido: ${obj.type}`);
@@ -68,10 +76,8 @@ class ServerLogic {
     handleJoinedClientWithInfo(id, obj) {
         console.log(`Cliente ${id} se unió con la siguiente información:`, obj);
 
-        // Ejemplo de almacenar la información del cliente en un mapa o base de datos
-        this.clients.set(id, { ...this.clients.get(id), info: obj });
+        this.clients.set(id, { ...this.clients.get(id), username: obj.username });
 
-        // Podrías enviar una confirmación al cliente de que la información fue recibida
         const response = JSON.stringify({
             type: "joinedClientWithInfoResponse",
             message: "Información del cliente recibida correctamente"
@@ -82,3 +88,4 @@ class ServerLogic {
 }
 
 module.exports = ServerLogic;
+
