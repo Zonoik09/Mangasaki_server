@@ -978,7 +978,7 @@ const getGallery = async (req, res, next) => {
         }
 
         const galleries = await Gallery.findAll({
-            where: { userId: user.id },
+            where: { user_id: user.id },
         });
 
         res.status(200).json({
