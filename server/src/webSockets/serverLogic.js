@@ -1,8 +1,8 @@
 'use strict';
 
-const User = require('./src/models/User');
-const Friendship_Request = require('./src/models/Friendship_Request.js');
-const Friendship = require('./src/models/Friendship');
+const User = require('../models/User');
+const Friendship_Request = require('../models/Friendship_Request.js');
+const Friendship = require('../models/Friendship');
 
 class ServerLogic {
     constructor(webSockets) {
