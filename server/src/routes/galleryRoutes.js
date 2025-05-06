@@ -5,6 +5,7 @@ const {
     createGallery,
     dropGallery,
     addInGallery,
+    getGallery,
 } = require('../controllers/userController.js');
 
 
@@ -287,6 +288,97 @@ router.delete('/delete_gallery', dropGallery);
  *                   example: "Error interno al añadir el manga a la galería"
  */
 router.post('/add_In_Gallery', addInGallery);
+
+/**
+ * @swagger
+ * /api/gallery/getGallery/{nickname}:
+ *   get:
+ *     summary: Obtiene las galerías del usuario por su nickname
+ *     description: Devuelve todas las galerías asociadas a un usuario específico, identificado por su nickname.
+ *     tags: [User]
+ *     parameters:
+ *       - in: path
+ *         name: nickname
+ *         required: true
+ *         description: Nickname del usuario cuyas galerías se desean obtener
+ *         schema:
+ *           type: string
+ *           example: admin
+ *     responses:
+ *       200:
+ *         description: Galerías del usuario obtenidas correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                   example: true
+ *                 missatge:
+ *                   type: string
+ *                   example: "Galerías de admin"
+ *                 resultat:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                         example: 1
+ *                       title:
+ *                         type: string
+ *                         example: "Vacaciones en la playa"
+ *                       userId:
+ *                         type: integer
+ *                         example: 5
+ *       400:
+ *         description: El nickname es obligatorio
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                   example: false
+ *                 missatge:
+ *                   type: string
+ *                   example: "El nickname es obligatorio"
+ *                 resultat:
+ *                   type: null
+ *       404:
+ *         description: Usuario no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                   example: false
+ *                 missatge:
+ *                   type: string
+ *                   example: "Usuario no encontrado"
+ *                 resultat:
+ *                   type: null
+ *       500:
+ *         description: Error interno al recuperar las galerías
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                   example: false
+ *                 missatge:
+ *                   type: string
+ *                   example: "Error al recuperar las galerías del usuario"
+ *                 resultat:
+ *                   type: null
+ */
+router.get('/getGallery/:nickname', getGallery);
 
 module.exports = router;
 

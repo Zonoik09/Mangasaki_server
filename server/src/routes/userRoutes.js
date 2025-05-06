@@ -11,7 +11,7 @@ const {
     getUserBanner,
     changeUserImage,
     changeUserBanner,
-    getUsersByCombination
+    getUsersByCombination,
 } = require('../controllers/userController.js');
 
 /**
