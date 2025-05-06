@@ -777,7 +777,7 @@ const createGallery = async (req, res, next) => {
         const gallery = await Gallery.create({
             name,
             user_id: user.id,
-            image_url: "default.jpg",
+            image_url: "default0.jpg",
         });
 
         logger.info('Creación de una galería exitosa', { userId: user.id, galleryId: gallery.id });
