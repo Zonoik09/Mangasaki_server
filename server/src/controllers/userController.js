@@ -437,7 +437,6 @@ const getUserImage = async (req, res, next) => {
     }
 };
 
-
 const getUserBanner = async (req, res, next) => {
     try {
         const { nickname } = req.params;
@@ -995,6 +994,57 @@ const getGallery = async (req, res, next) => {
     }
 };
 
+const getGalleryImage = async (req, res, next) => {
+    try {
+        const { galleryId } = req.params;
+
+        if (!galleryId) {
+            return res.status(400).json({
+                status: 'ERROR',
+                message: 'El ID de la galería es obligatorio',
+                data: null,
+            });
+        }
+
+        // Buscar galería por ID
+        const gallery = await Gallery.findByPk(galleryId);
+
+        if (!gallery) {
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'Galería no encontrada',
+                data: null,
+            });
+        }
+
+        // Si la galería no tiene imagen, usar imagen por defecto
+        let imagePath;
+        if (!gallery.image_url) {
+            imagePath = path.resolve(__dirname, '../../gallery_images/default0.jpg');
+        } else {
+            imagePath = path.resolve(__dirname, '../../gallery_images', gallery.image_url);
+        }
+
+        if (!fs.existsSync(imagePath)) {
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'Imagen no encontrada con path: ' + imagePath,
+                data: null,
+            });
+        }
+
+        // Enviar la imagen
+        res.sendFile(imagePath);
+    } catch (error) {
+        console.error('Error al intentar recuperar la imagen de la galería', error);
+        res.status(500).json({
+            status: 'ERROR',
+            message: 'Error al intentar recuperar la imagen de la galería',
+            data: null,
+        });
+    }
+};
+
 
 const getUsersByCombination = async (req, res) => {
     try {
@@ -1055,5 +1105,6 @@ module.exports = {
     dropGallery,
     addInGallery,
     getGallery,
+    getGalleryImage,
     getUsersByCombination,
 };

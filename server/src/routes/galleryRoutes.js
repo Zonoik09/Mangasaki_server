@@ -6,6 +6,7 @@ const {
     dropGallery,
     addInGallery,
     getGallery,
+    getGalleryImage,
 } = require('../controllers/userController.js');
 
 
@@ -379,6 +380,71 @@ router.post('/add_In_Gallery', addInGallery);
  *                   type: null
  */
 router.get('/getGallery/:nickname', getGallery);
+
+/**
+ * @swagger
+ * /api/gallery/getGalleryImage/{galleryId}:
+ *   get:
+ *     summary: Obtiene la imagen de una galería por su ID
+ *     description: Endpoint para obtener la imagen de una galería a través de su ID. Si no tiene imagen, se devuelve una por defecto.
+ *     tags: [Gallery]
+ *     parameters:
+ *       - in: path
+ *         name: galleryId
+ *         required: true
+ *         description: El ID de la galería cuya imagen se quiere obtener
+ *         schema:
+ *           type: integer
+ *           example: 5
+ *     responses:
+ *       200:
+ *         description: Imagen obtenida correctamente
+ *         content:
+ *           application/octet-stream:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       400:
+ *         description: El ID de la galería es obligatorio
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "El ID de la galería es obligatorio"
+ *       404:
+ *         description: Imagen o galería no encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "Imagen no encontrada"
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "Error al intentar recuperar la imagen de la galería"
+ */
+router.get('/getGalleryImage/:galleryId', getGalleryImage);
 
 module.exports = router;
 
