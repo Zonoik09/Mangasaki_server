@@ -295,7 +295,7 @@ router.post('/add_In_Gallery', addInGallery);
  *   get:
  *     summary: Obtiene las galerías del usuario por su nickname
  *     description: Devuelve todas las galerías asociadas a un usuario específico, identificado por su nickname.
- *     tags: [User]
+ *     tags: [Gallery]
  *     parameters:
  *       - in: path
  *         name: nickname
