@@ -27,6 +27,8 @@ class ServerLogic {
 
     async handleMessage(socket, id, msg) {
         try {
+
+            console.log(msg)
             const obj = JSON.parse(msg);
             if (!obj.type) return;
 
