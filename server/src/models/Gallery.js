@@ -24,7 +24,12 @@ const Gallery = sequelize.define('Gallery', {
         type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 0
-    }
+    },
+    image_url: {
+        type: DataTypes.STRING(100),
+        allowNull: true,
+        unique: true
+    },
 }, {
     timestamps: true,
     tableName: 'Gallery',

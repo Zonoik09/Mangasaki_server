@@ -953,6 +953,47 @@ const addInGallery = async (req, res, next) => {
     }
 };
 
+const getGallery = async (req, res, next) => {
+    try {
+        const { nickname } = req.params;
+
+        if (!nickname) {
+            return res.status(400).json({
+                ok: false,
+                missatge: 'El nickname es obligatorio',
+                resultat: null,
+            });
+        }
+
+        const user = await User.findOne({ where: { nickname } });
+
+        if (!user) {
+            return res.status(404).json({
+                ok: false,
+                missatge: 'Usuario no encontrado',
+                resultat: null,
+            });
+        }
+
+        const galleries = await Gallery.findAll({
+            where: { userId: user.id },
+        });
+
+        res.status(200).json({
+            ok: true,
+            missatge: `Galerías de ${user.nickname}`,
+            resultat: galleries,
+        });
+    } catch (error) {
+        logger.error('Error al recuperar las galerías del usuario', {
+            error: error.message,
+            stack: error.stack,
+        });
+        next(error);
+    }
+};
+
+
 const getUsersByCombination = async (req, res) => {
     try {
         const { combination } = req.params;
@@ -1011,5 +1052,6 @@ module.exports = {
     createGallery,
     dropGallery,
     addInGallery,
+    getGallery,
     getUsersByCombination,
 };
