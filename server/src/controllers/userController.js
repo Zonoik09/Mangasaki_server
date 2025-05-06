@@ -1012,7 +1012,7 @@ const getUsersByCombination = async (req, res) => {
                     [Op.like]: `%${combination}%`
                 }
             },
-            attributes: ['id', 'nickname', 'image_url']
+            attributes: ['id', 'nickname']
         });
 
         // Reemplaza image_url por default0.jpg solo si es null

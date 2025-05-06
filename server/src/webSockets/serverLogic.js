@@ -1,5 +1,9 @@
 'use strict';
 
+const User = require('./src/models/User');
+const Friendship_Request = require('./src/models/Friendship_Request.js');
+const Friendship = require('./src/models/Friendship');
+
 class ServerLogic {
     constructor(webSockets) {
         this.clients = new Map();
@@ -21,7 +25,7 @@ class ServerLogic {
         this.removeClient(id);
     }
 
-    handleMessage(socket, id, msg) {
+    async handleMessage(socket, id, msg) {
         try {
             const obj = JSON.parse(msg);
             if (!obj.type) return;
@@ -41,6 +45,14 @@ class ServerLogic {
                         from: id,
                         message: obj.message || "Tienes una nueva solicitud"
                     });
+
+                    const newFriendshipRequest = await Friendship_Request.create({
+                        user_id_1: id,
+                        user_id_2: targetId,
+                        status: "PENDING",
+                    });
+
+                    console.log(newFriendshipRequest);
 
                     const targetClient = this.webSockets.getClientsIds().includes(targetId);
                     if (targetClient) {
