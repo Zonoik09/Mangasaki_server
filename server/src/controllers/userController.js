@@ -1171,6 +1171,134 @@ const removeFromGallery = async (req, res, next) => {
     }
 };
 
+const changeGalleryImage = async (req, res, next) => {
+    try {
+        console.log('Iniciando cambio de imagen de la galeria...');
+
+        const { id, base64 } = req.body;
+        console.log('Datos recibidos:', { id, base64 });
+
+        // Validaciones de entrada
+        if (!id) {
+            console.error('Error: El id es obligatorio');
+            return res.status(400).json({
+                status: 'ERROR',
+                message: 'El id es obligatorio',
+                data: null,
+            });
+        }
+        console.log('id validado:', id);
+
+        // Buscar usuario en la base de datos
+        console.log('Buscando galeria en la base de datos...');
+        const gallery = await Gallery.findOne({ where: { id } });
+        if (!gallery) {
+            console.error('Error: gallery no encontrada');
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'gallery no encontrada',
+                data: null,
+            });
+        }
+        console.log('gallery encontrada:', gallery.name);
+
+        // Si base64 es null y la imagen del usuario ya es null, no hacemos nada
+        if (!base64 && gallery.image_url === null) {
+            console.log('No se realiza ningún cambio, la imagen ya es nula.');
+            return res.status(200).json({
+                status: 'SUCCESS',
+                message: 'No se realizó ningún cambio, ya que la imagen es nula',
+                data: null,
+            });
+        }
+
+        // Si base64 es null pero la imagen del usuario no lo es, se actualiza a null y se elimina la imagen del servidor
+        if (!base64 && gallery.image_url !== null) {
+            console.log('Base64 es nulo, pero el usuario tiene una imagen. Se eliminará la imagen.');
+            
+            // Eliminar la imagen anterior del servidor
+            const oldImagePath = path.resolve(__dirname, '../../gallery_images', gallery.image_url);
+            if (fs.existsSync(oldImagePath)) {
+                console.log('Eliminando la imagen anterior:', oldImagePath);
+                fs.unlinkSync(oldImagePath);
+                console.log('Imagen anterior eliminada correctamente.');
+            } else {
+                console.log('No se encontró la imagen anterior para eliminar.');
+            }
+
+            // Actualizar la base de datos a null
+            await gallery.update({ image_url: null });
+            console.log('Imagen eliminada correctamente en la base de datos.');
+            return res.status(200).json({
+                status: 'SUCCESS',
+                message: 'La imagen fue eliminada correctamente',
+                data: { image_url: null },
+            });
+        }
+
+        // Si la imagen en base64 es proporcionada, procesamos la imagen
+        if (base64) {
+            console.log('Base64 recibido, procesando la imagen...');
+
+            // Directorio donde se almacenarán las imágenes
+            const galleryImagesPath = path.resolve(__dirname, '../../gallery_images');
+            console.log('Verificando existencia del directorio de imágenes:', galleryImagesPath);
+            if (!fs.existsSync(galleryImagesPath)) {
+                console.log('El directorio no existe, creándolo...');
+                fs.mkdirSync(galleryImagesPath, { recursive: true });
+            }
+
+            // Decodificar la imagen en Base64
+            console.log('Decodificando la imagen Base64...');
+            const buffer = Buffer.from(base64, 'base64');
+            console.log('Imagen decodificada correctamente.');
+
+            // Generar un nombre único para la imagen
+            const newImageName = `${id}_${Date.now()}.jpg`; // Asumimos que la imagen será en formato JPG
+            const newImagePath = path.join(galleryImagesPath, newImageName);
+            console.log('Nuevo nombre de imagen generado:', newImageName);
+
+            // Guardar la imagen en el sistema de archivos
+            console.log('Guardando la imagen en el sistema de archivos...');
+            fs.writeFileSync(newImagePath, buffer);
+            console.log('Imagen guardada correctamente en:', newImagePath);
+
+            // Si el usuario ya tiene una imagen, eliminamos la anterior
+            if (gallery.image_url) {
+                const oldImagePath = path.resolve(__dirname, '../../gallery_images', gallery.image_url);
+                if (fs.existsSync(oldImagePath)) {
+                    console.log('Eliminando la imagen anterior:', oldImagePath);
+                    fs.unlinkSync(oldImagePath);
+                    console.log('Imagen anterior eliminada correctamente.');
+                } else {
+                    console.log('No se encontró la imagen anterior para eliminar.');
+                }
+            }
+
+            // Actualizar la base de datos con la nueva URL de la imagen
+            console.log('Actualizando la base de datos con la nueva URL de la imagen...');
+            await gallery.update({ image_url: newImageName });
+            console.log('Base de datos actualizada correctamente.');
+
+            // Devolver la respuesta
+            console.log('Imagen actualizada correctamente.');
+            return res.status(200).json({
+                status: 'SUCCESS',
+                message: 'Imagen actualizada correctamente',
+                data: { image_url: newImageName },
+            });
+        }
+
+    } catch (error) {
+        console.error('Error al cambiar la imagen de la galeria:', error);
+        return res.status(500).json({
+            status: 'ERROR',
+            message: 'Error al cambiar la imagen de la galeria',
+            data: null,
+        });
+    }
+};
+
 
 const getUsersByCombination = async (req, res) => {
     try {
@@ -1235,4 +1363,5 @@ module.exports = {
     getMangasGallery,
     removeFromGallery,
     getUsersByCombination,
+    changeGalleryImage,
 };

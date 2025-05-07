@@ -9,6 +9,7 @@ const {
     getGalleryImage,
     getMangasGallery,
     removeFromGallery,
+    changeGalleryImage,
 } = require('../controllers/userController.js');
 
 
@@ -642,6 +643,96 @@ router.delete('/remove_From_Gallery', removeFromGallery);
  *                   example: "Error al intentar recuperar la imagen de la galería"
  */
 router.get('/getGalleryImage/:galleryId', getGalleryImage);
+
+/**
+ * @swagger
+ * /api/gallery/changeImage:
+ *   post:
+ *     summary: Cambia o elimina la imagen de una galería
+ *     description: Permite actualizar la imagen de una galería mediante una cadena en base64 o eliminarla si se pasa como null.
+ *     tags: [Gallery]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id
+ *             properties:
+ *               id:
+ *                 type: integer
+ *                 description: ID de la galería
+ *                 example: 5
+ *               base64:
+ *                 type: string
+ *                 nullable: true
+ *                 description: Cadena base64 de la imagen (puede ser null para eliminar)
+ *                 example: "iVBORw0KGgoAAAANSUhEUgAA..."
+ *     responses:
+ *       200:
+ *         description: Imagen actualizada o eliminada correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "SUCCESS"
+ *                 message:
+ *                   type: string
+ *                   example: "Imagen actualizada correctamente"
+ *                 data:
+ *                   type: object
+ *                   nullable: true
+ *                   properties:
+ *                     image_url:
+ *                       type: string
+ *                       nullable: true
+ *                       example: "5_1715104109930.jpg"
+ *       400:
+ *         description: El ID es obligatorio
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "El id es obligatorio"
+ *       404:
+ *         description: Galería no encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "gallery no encontrada"
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "Error al cambiar la imagen de la galeria"
+ */
+router.post('/changeImage', changeGalleryImage);
+
 
 module.exports = router;
 
