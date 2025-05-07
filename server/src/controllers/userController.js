@@ -1045,6 +1045,132 @@ const getGalleryImage = async (req, res, next) => {
     }
 };
 
+const getMangasGallery = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        if (!id) {
+            return res.status(400).json({
+                ok: false,
+                missatge: 'El id es obligatorio',
+                resultat: null,
+            });
+        }
+
+        const galleries = await Gallery_Manga.findAll({
+            where: { gallery_id: id },
+        });
+
+        res.status(200).json({
+            ok: true,
+            missatge: `Mangas de la galeria de ${user.nickname}`,
+            resultat: galleries,
+        });
+    } catch (error) {
+        logger.error('Error al recuperar los mangas de la galeria del usuario', {
+            error: error.message,
+            stack: error.stack,
+        });
+        next(error);
+    }
+};
+
+/**
+ * Elimina un manga de una galería de un usuario.
+ * @route DELETE /api/gallery/remove_From_Gallery
+ */
+const removeFromGallery = async (req, res, next) => {
+    try {
+        const { nickname, galleryName, manganame } = req.body;
+
+        logger.info('Nueva solicitud para eliminar un manga de la galería', { nickname, galleryName, manganame });
+
+        // Validación básica
+        if (!nickname || !galleryName || !manganame) {
+            return res.status(400).json({
+                status: 'ERROR',
+                message: 'El nickname, el nombre de la galería y el nombre del manga son obligatorios.',
+                data: null,
+            });
+        }
+
+        // Buscar al usuario
+        const user = await User.findOne({ where: { nickname } });
+        if (!user) {
+            logger.warn('Usuario no encontrado', { nickname });
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'Usuario no encontrado',
+                data: null,
+            });
+        }
+
+        // Buscar la galería del usuario
+        const gallery = await Gallery.findOne({
+            where: {
+                user_id: user.id,
+                name: galleryName
+            }
+        });
+
+        if (!gallery) {
+            logger.warn('Galería no encontrada para el usuario', { nickname });
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'Galería no encontrada para este usuario',
+                data: null,
+            });
+        }
+
+        // Buscar la relación entre la galería y el manga
+        const galleryManga = await Gallery_Manga.findOne({
+            where: {
+                gallery_id: gallery.id,
+                manga_name: manganame,
+            },
+        });
+
+        if (!galleryManga) {
+            logger.warn('Manga no encontrado en la galería', { galleryId: gallery.id, manganame });
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'Manga no encontrado en la galería',
+                data: null,
+            });
+        }
+
+        // Eliminar la relación galería-manga
+        await galleryManga.destroy();
+
+        logger.info('Manga eliminado de la galería exitosamente', { galleryId: gallery.id, manganame });
+
+        res.set('Authorization', user.token);
+
+        res.status(200).json({
+            status: 'OK',
+            message: 'Manga eliminado correctamente de la galería',
+            data: {
+                userId: user.id,
+                nickname: user.nickname,
+                galleryId: gallery.id,
+                galleryName: gallery.name,
+                mangaRemoved: manganame
+            },
+        });
+    } catch (error) {
+        logger.error('Error al eliminar manga de la galería', {
+            error: error.message,
+            stack: error.stack,
+        });
+
+        res.status(500).json({
+            status: 'ERROR',
+            message: 'Error interno al eliminar el manga de la galería',
+            data: null,
+        });
+    }
+};
+
 
 const getUsersByCombination = async (req, res) => {
     try {
@@ -1106,5 +1232,7 @@ module.exports = {
     addInGallery,
     getGallery,
     getGalleryImage,
+    getMangasGallery,
+    removeFromGallery,
     getUsersByCombination,
 };

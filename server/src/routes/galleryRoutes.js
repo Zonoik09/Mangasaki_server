@@ -7,6 +7,8 @@ const {
     addInGallery,
     getGallery,
     getGalleryImage,
+    getMangasGallery,
+    removeFromGallery,
 } = require('../controllers/userController.js');
 
 
@@ -380,6 +382,201 @@ router.post('/add_In_Gallery', addInGallery);
  *                   type: null
  */
 router.get('/getGallery/:nickname', getGallery);
+
+/**
+ * @swagger
+ * /api/gallery/getMangasGallery/{id}:
+ *   get:
+ *     summary: Obtiene los mangas de una galería por su ID
+ *     description: Devuelve todos los mangas asociados a una galería específica, identificada por su ID.
+ *     tags: [Gallery]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID de la galería cuyos mangas se desean obtener
+ *         schema:
+ *           type: string
+ *           example: 1
+ *     responses:
+ *       200:
+ *         description: Mangas de la galería obtenidos correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                   example: true
+ *                 missatge:
+ *                   type: string
+ *                   example: "Mangas de la galería de admin"
+ *                 resultat:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                         example: 10
+ *                       title:
+ *                         type: string
+ *                         example: "Manga A"
+ *                       description:
+ *                         type: string
+ *                         example: "Un manga de acción"
+ *       400:
+ *         description: El ID es obligatorio
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                   example: false
+ *                 missatge:
+ *                   type: string
+ *                   example: "El ID es obligatorio"
+ *                 resultat:
+ *                   type: null
+ *       404:
+ *         description: Galería no encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                   example: false
+ *                 missatge:
+ *                   type: string
+ *                   example: "Galería no encontrada"
+ *                 resultat:
+ *                   type: null
+ *       500:
+ *         description: Error interno al recuperar los mangas de la galería
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                   example: false
+ *                 missatge:
+ *                   type: string
+ *                   example: "Error al recuperar los mangas de la galería"
+ *                 resultat:
+ *                   type: null
+ */
+router.get('/getMangasGallery/:id', getMangasGallery);
+
+/**
+ * @swagger
+ * /api/gallery/remove_From_Gallery:
+ *   delete:
+ *     summary: Elimina un manga de una galería de un usuario
+ *     description: Elimina un manga de la galería asociada a un usuario, identificada por su nombre de galería y manga.
+ *     tags: [Gallery]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nickname:
+ *                 type: string
+ *                 example: "admin"
+ *               galleryName:
+ *                 type: string
+ *                 example: "Mi galería"
+ *               manganame:
+ *                 type: string
+ *                 example: "Manga A"
+ *     responses:
+ *       200:
+ *         description: Manga eliminado de la galería correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "OK"
+ *                 message:
+ *                   type: string
+ *                   example: "Manga eliminado correctamente de la galería"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     userId:
+ *                       type: integer
+ *                       example: 1
+ *                     nickname:
+ *                       type: string
+ *                       example: "admin"
+ *                     galleryId:
+ *                       type: integer
+ *                       example: 2
+ *                     galleryName:
+ *                       type: string
+ *                       example: "Mi galería"
+ *                     mangaRemoved:
+ *                       type: string
+ *                       example: "Manga A"
+ *       400:
+ *         description: El nickname, el nombre de la galería y el nombre del manga son obligatorios
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "El nickname, el nombre de la galería y el nombre del manga son obligatorios"
+ *                 data:
+ *                   type: null
+ *       404:
+ *         description: Galería o manga no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "Manga no encontrado en la galería"
+ *                 data:
+ *                   type: null
+ *       500:
+ *         description: Error interno al eliminar el manga de la galería
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "Error interno al eliminar el manga de la galería"
+ *                 data:
+ *                   type: null
+ */
+router.delete('/remove_From_Gallery', removeFromGallery);
+
 
 /**
  * @swagger
