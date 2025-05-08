@@ -55,7 +55,8 @@ class ServerLogic {
                     }
                 
                     receiverSocket = receiverClient.socket;
-                    handleRequestNotification(sender_user_id,receiver_username,status,socket,receiverSocket);
+                    receiver_user_id = receiverClient.id;
+                    handleRequestNotification(sender_user_id,receiver_user_id,status,socket,receiverSocket);
                     status = "PENDING"
                     break;
 
@@ -70,7 +71,8 @@ class ServerLogic {
                     }
                 
                     receiverSocket = receiverClient.socket;
-                    handleFriendNotification(sender_user_id,receiver_username,socket,receiverSocket);
+                    receiver_user_id = receiverClient.id;
+                    handleFriendNotification(sender_user_id,receiver_user_id,socket,receiverSocket);
                     break;
                 
                 case "like_notification":
@@ -85,7 +87,8 @@ class ServerLogic {
                     }
                 
                     receiverSocket = receiverClient.socket;
-                    handleLikeNotification(sender_user_id,receiver_username,gallery_id,socket,receiverSocket);
+                    receiver_user_id = receiverClient.id;
+                    handleLikeNotification(sender_user_id,receiver_user_id,gallery_id,socket,receiverSocket);
                     break;
 
                 case "recommendation_notification":
@@ -100,7 +103,8 @@ class ServerLogic {
                     }
                 
                     receiverSocket = receiverClient.socket;
-                    handleRecommendationNotification(sender_user_id,receiver_username,manga_name,socket,receiverSocket);
+                    receiver_user_id = receiverClient.id;
+                    handleRecommendationNotification(sender_user_id,receiver_user_id,manga_name,socket,receiverSocket);
                     break;
 
                 default:

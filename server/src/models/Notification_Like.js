@@ -34,10 +34,20 @@ const Notification_Like = sequelize.define('Notification_Like', {
         },
         onDelete: 'CASCADE',
     },
+    message: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+    },
 }, {
     timestamps: true,
     tableName: 'Notification_Like',
     underscored: true,
+    indexes: [
+        {
+            unique: true,
+            fields: ['sender_user_id', 'receiver_user_id', 'gallery_id']
+        }
+    ]
 });
 
 module.exports = Notification_Like;

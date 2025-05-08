@@ -29,6 +29,10 @@ const Notification_Recommendation = sequelize.define('Notification_Recommendatio
         type: DataTypes.STRING(100),
         allowNull: false,
     },
+    message: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+    },
 }, {
     timestamps: true,
     tableName: 'Notification_Recommendation',
