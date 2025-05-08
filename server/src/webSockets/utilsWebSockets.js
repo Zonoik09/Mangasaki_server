@@ -34,7 +34,7 @@ class WebSockets {
                 con.send(JSON.stringify({ type: 'ping', message: 'ping' }));
                 console.log(`Ping enviado a cliente ${id}`);
             }
-        }, 100000); // 100 segundos
+        }, 1000); // 100 segundos
 
     
         // Manejar la respuesta pong del cliente
