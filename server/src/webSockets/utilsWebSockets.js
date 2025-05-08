@@ -10,8 +10,8 @@ class WebSockets {
         this.ws = new Server({
             server: httpServer,
             clientTracking: true,
-            pingInterval: 0,
-            pingTimeout: 0,
+            pingInterval: 3000,
+            pingTimeout: 3000,
         });
         this.socketsClients = new Map();
         console.log(`Listening for WebSocket queries on ${port}`);
