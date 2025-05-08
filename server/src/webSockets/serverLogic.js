@@ -37,18 +37,25 @@ class ServerLogic {
 
             console.log(`Mensaje de tipo: ${obj.type} recibido de ${id}`);
 
-            let receiver_user_id, status, gallery_id, manga_name = obj.receiver_user_id;
+            let receiver_user_id, status, gallery_id, manga_name, receiverClient, receiverSocket;
 
             switch (obj.type) {
                 case "joinedClientWithInfo":
-                    this.handleJoinedClientWithInfo(id, obj);
+                    this.handleJoinedClientWithInfo(id, obj, socket);
                     break;
 
                 case "friend_request_notification": 
                     console.log(this.clients);
                     sender_user_id = obj.sender_user_id;
                     receiver_user_id = obj.receiver_user_id;
-                    handleRequestNotification(sender_user_id,receiver_user_id,status,socket);
+                    receiverClient = [...this.clients.values()].find(client => client.username === receiver_user_id);
+                    if (!receiverClient || !receiverClient.socket) {
+                        console.log(`Socket no encontrado para usuario receptor: ${receiver_user_id}`);
+                        return;
+                    }
+                
+                    receiverSocket = receiverClient.socket;
+                    handleRequestNotification(sender_user_id,receiver_user_id,status,socket,receiverSocket);
                     status = "PENDING"
                     break;
 
@@ -56,7 +63,14 @@ class ServerLogic {
                     console.log(this.clients);
                     sender_user_id = obj.sender_user_id;
                     receiver_user_id = obj.receiver_user_id;
-                    handleFriendNotification(sender_user_id,receiver_user_id,socket);
+                    receiverClient = [...this.clients.values()].find(client => client.username === receiver_user_id);
+                    if (!receiverClient || !receiverClient.socket) {
+                        console.log(`Socket no encontrado para usuario receptor: ${receiver_user_id}`);
+                        return;
+                    }
+                
+                    receiverSocket = receiverClient.socket;
+                    handleFriendNotification(sender_user_id,receiver_user_id,socket,receiverSocket);
                     break;
                 
                 case "like_notification":
@@ -64,7 +78,14 @@ class ServerLogic {
                     sender_user_id = obj.sender_user_id;
                     receiver_user_id = obj.receiver_user_id;
                     gallery_id = obj.gallery_id;
-                    handleLikeNotification(sender_user_id,receiver_user_id,gallery_id,socket);
+                    receiverClient = [...this.clients.values()].find(client => client.username === receiver_user_id);
+                    if (!receiverClient || !receiverClient.socket) {
+                        console.log(`Socket no encontrado para usuario receptor: ${receiver_user_id}`);
+                        return;
+                    }
+                
+                    receiverSocket = receiverClient.socket;
+                    handleLikeNotification(sender_user_id,receiver_user_id,gallery_id,socket,receiverSocket);
                     break;
 
                 case "recommendation_notification":
@@ -72,7 +93,14 @@ class ServerLogic {
                     sender_user_id = obj.sender_user_id;
                     receiver_user_id = obj.receiver_user_id;
                     manga_name = obj.manga_name;
-                    handleRecommendationNotification(sender_user_id,receiver_user_id,manga_name,socket);
+                    receiverClient = [...this.clients.values()].find(client => client.username === receiver_user_id);
+                    if (!receiverClient || !receiverClient.socket) {
+                        console.log(`Socket no encontrado para usuario receptor: ${receiver_user_id}`);
+                        return;
+                    }
+                
+                    receiverSocket = receiverClient.socket;
+                    handleRecommendationNotification(sender_user_id,receiver_user_id,manga_name,socket,receiverSocket);
                     break;
 
                 default:
@@ -93,10 +121,10 @@ class ServerLogic {
         this.clients.delete(id);
     }
 
-    handleJoinedClientWithInfo(id, obj) {
+    handleJoinedClientWithInfo(id, obj, socket) {
         console.log(`Cliente ${id} se unió con la siguiente información:`, obj);
 
-        this.clients.set(id, { ...this.clients.get(id), username: obj.username });
+        this.clients.set(id, { ...this.clients.get(id), username: obj.username, socket: socket});
 
         const response = JSON.stringify({
             type: "joinedClientWithInfoResponse",
