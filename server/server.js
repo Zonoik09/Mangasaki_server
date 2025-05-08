@@ -22,14 +22,18 @@ const galleryRoutes = require('./src/routes/galleryRoutes.js');
 
 // Importaciones de modelos
 const Book_Scan_Request = require('./src/models/Book_Scan_Request.js');
-const Friendship_Request = require('./src/models/Friendship_Request.js');
 const Friendship = require('./src/models/Friendship');
 const Gallery = require('./src/models/Gallery');
 const Gallery_Manga = require('./src/models/Gallery_Manga.js');
-const Recommendation_Request = require('./src/models/Recommendation_Request.js');
 const User_Manga = require('./src/models/User_Manga');
 const User = require('./src/models/User');
 const Verification = require('./src/models/Verification');
+
+const Notification_Friend_Request = require('./src/models/Notification_Friend_Request.js');
+const Notification_Friend = require('./src/models/Notification_Friend.js');
+const Notification_Like = require('./src/models/Notification_Like.js');
+const Notification_Recommendation = require('./src/models/Notification_Recommendation.js');
+
 const { hash } = require('crypto');
 
 // Crear instancia de Express

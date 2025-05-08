@@ -1,47 +1,39 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
 
-const Friendship_Request = sequelize.define('Friendship_Request', {
+const Notification_Friend_Request = sequelize.define('Notification_Friend_Request', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
-        primaryKey: true
+        primaryKey: true,
     },
-    user_id_1: {
+    sender_user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
             model: 'User',
-            key: 'id'
+            key: 'id',
         },
         onDelete: 'CASCADE',
-        unique: true
     },
-    user_id_2: {
+    receiver_user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
             model: 'User',
-            key: 'id'
+            key: 'id',
         },
         onDelete: 'CASCADE',
-        unique: true
     },
     status: {
         type: DataTypes.ENUM('PENDING', 'ACCEPTED', 'DECLINED'),
         allowNull: false,
-        defaultValue: 'PENDING'
+        defaultValue: 'PENDING',
     },
 }, {
     timestamps: true,
-    tableName: 'Friendship',
+    tableName: 'Notification_Friend_Request',
     underscored: true,
-    indexes: [
-        {
-            unique: true,
-            fields: ['user_id_1', 'user_id_2']
-        }
-    ]
 });
 
-module.exports = Friendship_Request;
+module.exports = Notification_Friend_Request;
