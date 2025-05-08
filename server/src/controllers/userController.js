@@ -1063,7 +1063,7 @@ const getMangasGallery = async (req, res, next) => {
 
         res.status(200).json({
             ok: true,
-            missatge: `Mangas de la galeria de ${user.nickname}`,
+            missatge: `Mangas de la galeria de ${id}`,
             resultat: galleries,
         });
     } catch (error) {
@@ -1081,43 +1081,16 @@ const getMangasGallery = async (req, res, next) => {
  */
 const removeFromGallery = async (req, res, next) => {
     try {
-        const { nickname, galleryName, manganame } = req.body;
+        const { id, manganame } = req.body;
 
-        logger.info('Nueva solicitud para eliminar un manga de la galería', { nickname, galleryName, manganame });
+        // Registro de la solicitud con los datos recibidos
+        logger.info('Nueva solicitud para eliminar un manga de la galería', { id, manganame });
 
-        // Validación básica
-        if (!nickname || !galleryName || !manganame) {
+        // Validación de parámetros obligatorios
+        if (!id || !manganame) {
             return res.status(400).json({
                 status: 'ERROR',
-                message: 'El nickname, el nombre de la galería y el nombre del manga son obligatorios.',
-                data: null,
-            });
-        }
-
-        // Buscar al usuario
-        const user = await User.findOne({ where: { nickname } });
-        if (!user) {
-            logger.warn('Usuario no encontrado', { nickname });
-            return res.status(404).json({
-                status: 'ERROR',
-                message: 'Usuario no encontrado',
-                data: null,
-            });
-        }
-
-        // Buscar la galería del usuario
-        const gallery = await Gallery.findOne({
-            where: {
-                user_id: user.id,
-                name: galleryName
-            }
-        });
-
-        if (!gallery) {
-            logger.warn('Galería no encontrada para el usuario', { nickname });
-            return res.status(404).json({
-                status: 'ERROR',
-                message: 'Galería no encontrada para este usuario',
+                message: 'El id y el nombre del manga son obligatorios.',
                 data: null,
             });
         }
@@ -1125,13 +1098,14 @@ const removeFromGallery = async (req, res, next) => {
         // Buscar la relación entre la galería y el manga
         const galleryManga = await Gallery_Manga.findOne({
             where: {
-                gallery_id: gallery.id,
+                gallery_id: id,
                 manga_name: manganame,
             },
         });
 
+        // Si no se encuentra la relación, devolver error 404
         if (!galleryManga) {
-            logger.warn('Manga no encontrado en la galería', { galleryId: gallery.id, manganame });
+            logger.warn('Manga no encontrado en la galería', { galleryId: id, manganame });
             return res.status(404).json({
                 status: 'ERROR',
                 message: 'Manga no encontrado en la galería',
@@ -1142,27 +1116,26 @@ const removeFromGallery = async (req, res, next) => {
         // Eliminar la relación galería-manga
         await galleryManga.destroy();
 
-        logger.info('Manga eliminado de la galería exitosamente', { galleryId: gallery.id, manganame });
+        // Registro de éxito
+        logger.info('Manga eliminado de la galería exitosamente', { galleryId: id, manganame });
 
-        res.set('Authorization', user.token);
-
+        // Respuesta de éxito
         res.status(200).json({
             status: 'OK',
             message: 'Manga eliminado correctamente de la galería',
             data: {
-                userId: user.id,
-                nickname: user.nickname,
-                galleryId: gallery.id,
-                galleryName: gallery.name,
+                galleryId: id,
                 mangaRemoved: manganame
             },
         });
     } catch (error) {
+        // Registro de error en caso de fallos
         logger.error('Error al eliminar manga de la galería', {
             error: error.message,
             stack: error.stack,
         });
 
+        // Respuesta en caso de error interno
         res.status(500).json({
             status: 'ERROR',
             message: 'Error interno al eliminar el manga de la galería',
@@ -1170,6 +1143,7 @@ const removeFromGallery = async (req, res, next) => {
         });
     }
 };
+
 
 const changeGalleryImage = async (req, res, next) => {
     try {
