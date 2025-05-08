@@ -37,7 +37,7 @@ class ServerLogic {
 
             console.log(`Mensaje de tipo: ${obj.type} recibido de ${id}`);
 
-            let sender_user_id, receiver_user_id, status, gallery_id, manga_name, receiverClient, receiverSocket;
+            let sender_user_id, receiver_username, status, gallery_id, manga_name, receiverClient, receiverSocket;
 
             switch (obj.type) {
                 case "joinedClientWithInfo":
@@ -47,60 +47,60 @@ class ServerLogic {
                 case "friend_request_notification": 
                     console.log(this.clients);
                     sender_user_id = obj.sender_user_id;
-                    receiver_user_id = obj.receiver_user_id;
-                    receiverClient = [...this.clients.values()].find(client => client.username === receiver_user_id);
+                    receiver_username = obj.receiver_username;
+                    receiverClient = [...this.clients.values()].find(client => client.username === receiver_username);
                     if (!receiverClient || !receiverClient.socket) {
-                        console.log(`Socket no encontrado para usuario receptor: ${receiver_user_id}`);
+                        console.log(`Socket no encontrado para usuario receptor: ${receiver_username}`);
                         return;
                     }
                 
                     receiverSocket = receiverClient.socket;
-                    handleRequestNotification(sender_user_id,receiver_user_id,status,socket,receiverSocket);
+                    handleRequestNotification(sender_user_id,receiver_username,status,socket,receiverSocket);
                     status = "PENDING"
                     break;
 
                 case "friend_notification":
                     console.log(this.clients);
                     sender_user_id = obj.sender_user_id;
-                    receiver_user_id = obj.receiver_user_id;
-                    receiverClient = [...this.clients.values()].find(client => client.username === receiver_user_id);
+                    receiver_username = obj.receiver_username;
+                    receiverClient = [...this.clients.values()].find(client => client.username === receiver_username);
                     if (!receiverClient || !receiverClient.socket) {
-                        console.log(`Socket no encontrado para usuario receptor: ${receiver_user_id}`);
+                        console.log(`Socket no encontrado para usuario receptor: ${receiver_username}`);
                         return;
                     }
                 
                     receiverSocket = receiverClient.socket;
-                    handleFriendNotification(sender_user_id,receiver_user_id,socket,receiverSocket);
+                    handleFriendNotification(sender_user_id,receiver_username,socket,receiverSocket);
                     break;
                 
                 case "like_notification":
                     console.log(this.clients);
                     sender_user_id = obj.sender_user_id;
-                    receiver_user_id = obj.receiver_user_id;
+                    receiver_username = obj.receiver_username;
                     gallery_id = obj.gallery_id;
-                    receiverClient = [...this.clients.values()].find(client => client.username === receiver_user_id);
+                    receiverClient = [...this.clients.values()].find(client => client.username === receiver_username);
                     if (!receiverClient || !receiverClient.socket) {
-                        console.log(`Socket no encontrado para usuario receptor: ${receiver_user_id}`);
+                        console.log(`Socket no encontrado para usuario receptor: ${receiver_username}`);
                         return;
                     }
                 
                     receiverSocket = receiverClient.socket;
-                    handleLikeNotification(sender_user_id,receiver_user_id,gallery_id,socket,receiverSocket);
+                    handleLikeNotification(sender_user_id,receiver_username,gallery_id,socket,receiverSocket);
                     break;
 
                 case "recommendation_notification":
                     console.log(this.clients);
                     sender_user_id = obj.sender_user_id;
-                    receiver_user_id = obj.receiver_user_id;
+                    receiver_username = obj.receiver_username;
                     manga_name = obj.manga_name;
-                    receiverClient = [...this.clients.values()].find(client => client.username === receiver_user_id);
+                    receiverClient = [...this.clients.values()].find(client => client.username === receiver_username);
                     if (!receiverClient || !receiverClient.socket) {
-                        console.log(`Socket no encontrado para usuario receptor: ${receiver_user_id}`);
+                        console.log(`Socket no encontrado para usuario receptor: ${receiver_username}`);
                         return;
                     }
                 
                     receiverSocket = receiverClient.socket;
-                    handleRecommendationNotification(sender_user_id,receiver_user_id,manga_name,socket,receiverSocket);
+                    handleRecommendationNotification(sender_user_id,receiver_username,manga_name,socket,receiverSocket);
                     break;
 
                 default:
