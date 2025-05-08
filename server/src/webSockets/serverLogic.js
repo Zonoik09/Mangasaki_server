@@ -37,7 +37,7 @@ class ServerLogic {
 
             console.log(`Mensaje de tipo: ${obj.type} recibido de ${id}`);
 
-            let sender_user_id, receiver_username, status, gallery_id, manga_name, receiverClient, receiverSocket;
+            let sender_user_id, receiver_username, status, gallery_id, manga_name, receiverClient, receiverSocket, receiver_user_id;
 
             switch (obj.type) {
                 case "joinedClientWithInfo":
