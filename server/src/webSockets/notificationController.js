@@ -10,8 +10,8 @@ const Notification_Recommendation = require('../models/Notification_Recommendati
 
 async function handleRequestNotification(sender_user_id, receiver_user_id, status, socket, receiverSocket) {
     try {
-        const sender = await User.findById(sender_user_id);
-        const receiver = await User.findById(receiver_user_id);
+        const sender = await User.findByPk(sender_user_id);
+        const receiver = await User.findByPk(receiver_user_id);
 
         if (!sender || !receiver) {
             console.warn("Usuario emisor o receptor no encontrado.");
@@ -19,8 +19,7 @@ async function handleRequestNotification(sender_user_id, receiver_user_id, statu
         }
 
         const existing = await Notification_Friend_Request.findOne({
-            sender_user_id,
-            receiver_user_id
+            where: { sender_user_id, receiver_user_id }
         });
 
         if (existing) {
@@ -28,14 +27,42 @@ async function handleRequestNotification(sender_user_id, receiver_user_id, statu
             return;
         }
 
+        const message = `${sender.username} te ha enviado una solicitud de amistad.`;
+
         const notification = await Notification_Friend_Request.create({
             sender_user_id,
             receiver_user_id,
             status,
+            message,
             created_at: new Date()
         });
 
         console.log("Notificación de solicitud de amistad creada:", notification);
+
+        // Enviar notificación al receptor
+        if (receiverSocket && receiverSocket.readyState === OPEN) {
+            receiverSocket.send(JSON.stringify({
+                type: 'notification',
+                subtype: 'friend_request',
+                data: {
+                    id: notification.id,
+                    sender_user_id,
+                    receiver_user_id,
+                    status,
+                    message,
+                    created_at: notification.created_at
+                }
+            }));
+        }
+
+        // Confirmación al emisor
+        if (socket && socket.readyState === 1) {
+            socket.send(JSON.stringify({
+                type: 'notificationSent',
+                message: 'Friend request notification sent successfully.'
+            }));
+        }
+
     } catch (error) {
         console.error("Error creando notificación de solicitud de amistad:", error.message);
     }
@@ -43,8 +70,8 @@ async function handleRequestNotification(sender_user_id, receiver_user_id, statu
 
 async function handleFriendNotification(sender_user_id, receiver_user_id, socket, receiverSocket) {
     try {
-        const sender = await User.findById(sender_user_id);
-        const receiver = await User.findById(receiver_user_id);
+        const sender = await User.findByPk(sender_user_id);
+        const receiver = await User.findByPk(receiver_user_id);
 
         if (!sender || !receiver) {
             console.warn("Usuario emisor o receptor no encontrado.");
@@ -52,8 +79,7 @@ async function handleFriendNotification(sender_user_id, receiver_user_id, socket
         }
 
         const existing = await Notification_Friend.findOne({
-            sender_user_id,
-            receiver_user_id
+            where: { sender_user_id, receiver_user_id }
         });
 
         if (existing) {
@@ -61,13 +87,40 @@ async function handleFriendNotification(sender_user_id, receiver_user_id, socket
             return;
         }
 
+        const message = `${sender.username} ha aceptado tu solicitud de amistad.`;
+
         const notification = await Notification_Friend.create({
             sender_user_id,
             receiver_user_id,
+            message,
             created_at: new Date()
         });
 
         console.log("Notificación de amistad creada:", notification);
+
+        // Enviar notificación al receptor (quien recibió la solicitud)
+        if (receiverSocket && receiverSocket.readyState === 1) {
+            receiverSocket.send(JSON.stringify({
+                type: 'notification',
+                subtype: 'friend',
+                data: {
+                    id: notification.id,
+                    sender_user_id,
+                    receiver_user_id,
+                    message,
+                    created_at: notification.created_at
+                }
+            }));
+        }
+
+        // Confirmación al emisor (quien la acepta)
+        if (socket && socket.readyState === 1) {
+            socket.send(JSON.stringify({
+                type: 'notificationSent',
+                message: 'Friend notification sent successfully.'
+            }));
+        }
+
     } catch (error) {
         console.error("Error creando notificación de amistad:", error.message);
     }
@@ -75,9 +128,9 @@ async function handleFriendNotification(sender_user_id, receiver_user_id, socket
 
 async function handleLikeNotification(sender_user_id, receiver_user_id, gallery_id, socket, receiverSocket) {
     try {
-        const sender = await User.findById(sender_user_id);
-        const receiver = await User.findById(receiver_user_id);
-        const gallery = await Gallery.findByPk(gallery_id); // usar findByPk para clave primaria
+        const sender = await User.findByPk(sender_user_id);
+        const receiver = await User.findByPk(receiver_user_id);
+        const gallery = await Gallery.findByPk(gallery_id);
 
         if (!sender || !receiver || !gallery) {
             console.warn("Usuario emisor, receptor o galería no encontrado.");
@@ -97,42 +150,98 @@ async function handleLikeNotification(sender_user_id, receiver_user_id, gallery_
             return;
         }
 
+        const message = `${sender.username} te ha dado like a tu historia.`;
+
         const notification = await Notification_Like.create({
             sender_user_id,
             receiver_user_id,
             gallery_id,
+            message,
             created_at: new Date()
         });
 
         console.log("Notificación de like creada:", notification);
+
+        // Notificación al receptor
+        if (receiverSocket && receiverSocket.readyState === 1) {
+            receiverSocket.send(JSON.stringify({
+                type: 'notification',
+                subtype: 'like',
+                data: {
+                    id: notification.id,
+                    sender_user_id,
+                    receiver_user_id,
+                    gallery_id,
+                    message,
+                    created_at: notification.created_at
+                }
+            }));
+        }
+
+        // Confirmación al emisor
+        if (socket && socket.readyState === 1) {
+            socket.send(JSON.stringify({
+                type: 'notificationSent',
+                message: 'Like notification sent successfully.'
+            }));
+        }
+
     } catch (error) {
         console.error("Error creando notificación de like:", error.message);
     }
 }
 
+
 async function handleRecommendationNotification(sender_user_id, receiver_user_id, manga_name, socket, receiverSocket) {
     try {
-        const sender = await User.findById(sender_user_id);
-        const receiver = await User.findById(receiver_user_id);
+        const sender = await User.findByPk(sender_user_id);
+        const receiver = await User.findByPk(receiver_user_id);
 
         if (!sender || !receiver) {
             console.warn("Usuario emisor o receptor no encontrado.");
             return;
         }
 
+        const message = `${sender.username} te ha recomendado el libro "${manga_name}".`;
+
         const notification = await Notification_Recommendation.create({
             sender_user_id,
             receiver_user_id,
             manga_name,
+            message,
             created_at: new Date()
         });
 
         console.log("Notificación de recomendación creada:", notification);
+
+        // Notificación al receptor
+        if (receiverSocket && receiverSocket.readyState === 1) {
+            receiverSocket.send(JSON.stringify({
+                type: 'notification',
+                subtype: 'recommendation',
+                data: {
+                    id: notification.id,
+                    sender_user_id,
+                    receiver_user_id,
+                    manga_name,
+                    message,
+                    created_at: notification.created_at
+                }
+            }));
+        }
+
+        // Confirmación al emisor
+        if (socket && socket.readyState === 1) {
+            socket.send(JSON.stringify({
+                type: 'notificationSent',
+                message: 'Recommendation notification sent successfully.'
+            }));
+        }
+
     } catch (error) {
         console.error("Error creando notificación de recomendación:", error.message);
     }
 }
-
 
 module.exports = {
     handleRequestNotification,
