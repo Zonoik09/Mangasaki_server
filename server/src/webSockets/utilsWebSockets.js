@@ -28,12 +28,14 @@ class WebSockets {
         this.socketsClients.set(con, metadata);
     
         // Enviar ping al cliente cada 100 segundos
+        // Enviar ping personalizado cada 100 segundos
         const pingInterval = setInterval(() => {
             if (con.readyState === WebSocket.OPEN) {
-                con.ping();  // Enviar ping al cliente
+                con.send(JSON.stringify({ type: 'ping', message: 'ping' }));
                 console.log(`Ping enviado a cliente ${id}`);
             }
         }, 100000); // 100 segundos
+
     
         // Manejar la respuesta pong del cliente
         con.on('pong', () => {
