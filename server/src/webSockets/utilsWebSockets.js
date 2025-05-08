@@ -9,9 +9,6 @@ class WebSockets {
 
         this.ws = new Server({
             server: httpServer,
-            clientTracking: true,
-            pingInterval: 3000,
-            pingTimeout: 3000,
         });
         this.socketsClients = new Map();
         console.log(`Listening for WebSocket queries on ${port}`);
@@ -25,6 +22,8 @@ class WebSockets {
 
     newConnection(con) {
         console.log("Client connected");
+
+        con.setTimeout(0);
 
         const id = "C" + uuidv4().substring(0, 5).toUpperCase();
         const metadata = { id };
