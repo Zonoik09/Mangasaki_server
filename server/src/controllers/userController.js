@@ -1214,27 +1214,34 @@ const changeGalleryImage = async (req, res, next) => {
 
         // Si base64 es null pero la imagen del usuario no lo es, se actualiza a null y se elimina la imagen del servidor
         if (!base64 && gallery.image_url !== null) {
-            console.log('Base64 es nulo, pero el usuario tiene una imagen. Se eliminará la imagen.');
-            
-            // Eliminar la imagen anterior del servidor
-            const oldImagePath = path.resolve(__dirname, '../../gallery_images', gallery.image_url);
-            if (fs.existsSync(oldImagePath)) {
-                console.log('Eliminando la imagen anterior:', oldImagePath);
-                fs.unlinkSync(oldImagePath);
-                console.log('Imagen anterior eliminada correctamente.');
+            console.log('Base64 es nulo, pero el usuario tiene una imagen. Se evaluará si se elimina.');
+
+            // Evitar eliminar imágenes por defecto
+            if (gallery.image_url !== 'default0.jpg') {
+                // Eliminar la imagen anterior del servidor
+                const oldImagePath = path.resolve(__dirname, '../../gallery_images', gallery.image_url);
+                if (fs.existsSync(oldImagePath)) {
+                    console.log('Eliminando la imagen anterior:', oldImagePath);
+                    fs.unlinkSync(oldImagePath);
+                    console.log('Imagen anterior eliminada correctamente.');
+                } else {
+                    console.log('No se encontró la imagen anterior para eliminar.');
+                }
             } else {
-                console.log('No se encontró la imagen anterior para eliminar.');
+                console.log('La imagen es default0.jpg, no se eliminará.');
             }
 
             // Actualizar la base de datos a null
             await gallery.update({ image_url: null });
             console.log('Imagen eliminada correctamente en la base de datos.');
+
             return res.status(200).json({
                 status: 'SUCCESS',
                 message: 'La imagen fue eliminada correctamente',
                 data: { image_url: null },
             });
         }
+
 
         // Si la imagen en base64 es proporcionada, procesamos la imagen
         if (base64) {
