@@ -45,7 +45,7 @@ class ServerLogic {
                     break;
 
                 case "friend_request_notification": 
-                    console.log(JSON.stringify(this.clients));
+                    console.log(this.clients);
                     sender_user_id = obj.sender_user_id;
                     receiver_user_id = obj.receiver_user_id;
                     handleRequestNotification(sender_user_id,receiver_user_id,status,socket);
@@ -53,14 +53,14 @@ class ServerLogic {
                     break;
 
                 case "friend_notification":
-                    console.log(JSON.stringify(this.clients));
+                    console.log(this.clients);
                     sender_user_id = obj.sender_user_id;
                     receiver_user_id = obj.receiver_user_id;
                     handleFriendNotification(sender_user_id,receiver_user_id,socket);
                     break;
                 
                 case "like_notification":
-                    console.log(JSON.stringify(this.clients));
+                    console.log(this.clients);
                     sender_user_id = obj.sender_user_id;
                     receiver_user_id = obj.receiver_user_id;
                     gallery_id = obj.gallery_id;
@@ -68,7 +68,7 @@ class ServerLogic {
                     break;
 
                 case "recommendation_notification":
-                    console.log(JSON.stringify(this.clients));
+                    console.log(this.clients);
                     sender_user_id = obj.sender_user_id;
                     receiver_user_id = obj.receiver_user_id;
                     manga_name = obj.manga_name;
