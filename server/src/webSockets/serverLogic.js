@@ -1,7 +1,6 @@
 'use strict';
 
 const User = require('../models/User');
-const Friendship_Request = require('../models/Friendship_Request.js');
 const Friendship = require('../models/Friendship');
 
 class ServerLogic {
