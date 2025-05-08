@@ -5,7 +5,7 @@ const {
     handleFriendNotification,
     handleLikeNotification,
     handleRecommendationNotification,
-} = require('../controllers/notificationController.js');
+} = require('../webSockets/notificationController');
 
 class ServerLogic {
     constructor(webSockets) {
