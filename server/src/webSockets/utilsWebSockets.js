@@ -7,7 +7,12 @@ class WebSockets {
         this.onMessage = (socket, id, obj) => { };
         this.onClose = (socket, id) => { };
 
-        this.ws = new Server({ server: httpServer });
+        this.ws = new Server({
+            server: httpServer,
+            clientTracking: true,
+            pingInterval: 0,
+            pingTimeout: 0,
+        });
         this.socketsClients = new Map();
         console.log(`Listening for WebSocket queries on ${port}`);
 
