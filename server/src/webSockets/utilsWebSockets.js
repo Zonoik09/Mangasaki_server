@@ -22,37 +22,54 @@ class WebSockets {
 
     newConnection(con) {
         console.log("Client connected");
-
-        con.setTimeout(0);
-
+    
         const id = "C" + uuidv4().substring(0, 5).toUpperCase();
         const metadata = { id };
         this.socketsClients.set(con, metadata);
-
+    
+        // Enviar ping al cliente cada 100 segundos
+        const pingInterval = setInterval(() => {
+            if (con.readyState === WebSocket.OPEN) {
+                con.ping();  // Enviar ping al cliente
+                console.log(`Ping enviado a cliente ${id}`);
+            }
+        }, 100000); // 100 segundos
+    
+        // Manejar la respuesta pong del cliente
+        con.on('pong', () => {
+            console.log(`Recibido pong de cliente ${id}`);
+        });
+    
+        // Enviar un mensaje de bienvenida al cliente
         con.send(JSON.stringify({
             type: "welcome",
             id: id,
             message: "Welcome to the server"
         }));
-
+    
+        // Broadcast de nuevo cliente a todos los clientes
         this.broadcast(JSON.stringify({
             type: "newClient",
             id: id
         }));
-
+    
+        // Si se define la función onConnection, la ejecutamos
         if (this.onConnection && typeof this.onConnection === "function") {
             this.onConnection(con, id);
         }
-
+    
+        // Manejar cierre de la conexión
         con.on("close", () => {
+            clearInterval(pingInterval);  // Detener el ping cuando el cliente se desconecta
             this.closeConnection(con);
             this.socketsClients.delete(con);
         });
-
+    
+        // Manejar mensaje entrante del cliente
         con.on('message', (bufferedMessage) => { 
             this.newMessage(con, id, bufferedMessage);
         });
-    }
+    }    
 
     closeConnection(con) {
         if (this.onClose && typeof this.onClose === "function") {
