@@ -2,6 +2,7 @@
 
 const User = require('../models/User.js');
 const Gallery = require('../models/Gallery.js');
+const Friendship = require('../models/Friendship.js')
 
 const Notification_Friend_Request = require('../models/Notification_Friend_Request.js');
 const Notification_Friend = require('../models/Notification_Friend.js');
@@ -98,6 +99,14 @@ async function handleFriendNotification(sender_user_id, receiver_user_id, socket
 
         console.log("Notificación de amistad creada:", notification);
 
+        // Crear la amistad entre los usuarios (Friendship)
+        const friendship = await Friendship.create({
+            user_id_1: sender_user_id,
+            user_id_2: receiver_user_id
+        });
+
+        console.log("Amistad creada entre los usuarios:", friendship);
+
         // Enviar notificación al receptor (quien recibió la solicitud)
         if (receiverSocket && receiverSocket.readyState === 1) {
             receiverSocket.send(JSON.stringify({
@@ -126,6 +135,7 @@ async function handleFriendNotification(sender_user_id, receiver_user_id, socket
     }
 }
 
+
 async function handleLikeNotification(sender_user_id, receiver_user_id, gallery_id, socket, receiverSocket) {
     try {
         const sender = await User.findByPk(sender_user_id);
@@ -149,6 +159,10 @@ async function handleLikeNotification(sender_user_id, receiver_user_id, gallery_
             console.log("Ya existe una notificación de like para esta combinación.");
             return;
         }
+
+        // Sumar 1 al contador de likes
+        gallery.likes += 1;
+        await gallery.save();
 
         const message = `${sender.username} te ha dado like a tu historia.`;
 
@@ -190,7 +204,6 @@ async function handleLikeNotification(sender_user_id, receiver_user_id, gallery_
         console.error("Error creando notificación de like:", error.message);
     }
 }
-
 
 async function handleRecommendationNotification(sender_user_id, receiver_user_id, manga_name, socket, receiverSocket) {
     try {
