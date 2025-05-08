@@ -86,6 +86,7 @@ class ServerLogic {
 
     addClient(id) {
         this.clients.set(id, { id });
+        console.log(this.clients)
     }
 
     removeClient(id) {
