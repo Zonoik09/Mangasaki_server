@@ -1075,75 +1075,80 @@ const getMangasGallery = async (req, res, next) => {
     }
 };
 
-/**
- * Elimina un manga de una galería de un usuario.
- * @route DELETE /api/gallery/remove_From_Gallery
- */
-const removeFromGallery = async (req, res, next) => {
+const removeFromGallery = async (req, res) => {
     try {
-        const { id, manganame } = req.body;
+        const { nickname, galleryName, manganame } = req.body;
 
-        // Registro de la solicitud con los datos recibidos
-        logger.info('Nueva solicitud para eliminar un manga de la galería', { id, manganame });
-
-        // Validación de parámetros obligatorios
-        if (!id || !manganame) {
+        if (!nickname || !galleryName || !manganame) {
             return res.status(400).json({
                 status: 'ERROR',
-                message: 'El id y el nombre del manga son obligatorios.',
+                message: 'Faltan datos requeridos: nickname, galleryName o manganame.',
                 data: null,
             });
         }
 
-        // Buscar la relación entre la galería y el manga
-        const galleryManga = await Gallery_Manga.findOne({
-            where: {
-                gallery_id: id,
-                manga_name: manganame,
-            },
-        });
-
-        // Si no se encuentra la relación, devolver error 404
-        if (!galleryManga) {
-            logger.warn('Manga no encontrado en la galería', { galleryId: id, manganame });
+        // Buscar al usuario por nickname
+        const user = await User.findOne({ where: { nickname } });
+        if (!user) {
             return res.status(404).json({
                 status: 'ERROR',
-                message: 'Manga no encontrado en la galería',
+                message: 'Usuario no encontrado.',
                 data: null,
             });
         }
 
-        // Eliminar la relación galería-manga
+        // Buscar galería por nombre y usuario
+        const gallery = await Gallery.findOne({
+            where: {
+                name: galleryName,
+                user_id: user.id
+            }
+        });
+
+        if (!gallery) {
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'Galería no encontrada.',
+                data: null,
+            });
+        }
+
+        // Buscar relación en Gallery_Manga
+        const galleryManga = await Gallery_Manga.findOne({
+            where: {
+                gallery_id: gallery.id,
+                manga_name: manganame
+            }
+        });
+
+        if (!galleryManga) {
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'El manga no está en esta galería.',
+                data: null,
+            });
+        }
+
         await galleryManga.destroy();
 
-        // Registro de éxito
-        logger.info('Manga eliminado de la galería exitosamente', { galleryId: id, manganame });
-
-        // Respuesta de éxito
-        res.status(200).json({
+        return res.status(200).json({
             status: 'OK',
-            message: 'Manga eliminado correctamente de la galería',
+            message: 'Manga eliminado correctamente de la galería.',
             data: {
-                galleryId: id,
+                galleryId: gallery.id,
                 mangaRemoved: manganame
-            },
-        });
-    } catch (error) {
-        // Registro de error en caso de fallos
-        logger.error('Error al eliminar manga de la galería', {
-            error: error.message,
-            stack: error.stack,
+            }
         });
 
-        // Respuesta en caso de error interno
-        res.status(500).json({
+    } catch (error) {
+        console.error('Error al eliminar el manga:', error);
+        return res.status(500).json({
             status: 'ERROR',
-            message: 'Error interno al eliminar el manga de la galería',
+            message: 'Error interno del servidor.',
             data: null,
         });
     }
 };
-
 
 const changeGalleryImage = async (req, res, next) => {
     try {
@@ -1251,7 +1256,6 @@ const changeGalleryImage = async (req, res, next) => {
         });
     }
 };
-
 
 const getUsersByCombination = async (req, res) => {
     try {
