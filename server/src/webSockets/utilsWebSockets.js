@@ -30,7 +30,7 @@ class WebSockets {
         // Enviar ping al cliente cada 100 segundos
         // Enviar ping personalizado cada 100 segundos
         const pingInterval = setInterval(() => {
-            if (con.readyState === WebSocket.OPEN) {
+            if (con.readyState === OPEN) {
                 con.send(JSON.stringify({ type: 'ping', message: 'ping' }));
                 console.log(`Ping enviado a cliente ${id}`);
             }
