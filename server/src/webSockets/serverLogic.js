@@ -1,7 +1,11 @@
 'use strict';
 
-const User = require('../models/User');
-const Friendship = require('../models/Friendship');
+const {
+    handleRequestNotification,
+    handleFriendNotification,
+    handleLikeNotification,
+    handleRecommendationNotification,
+} = require('../controllers/notificationController.js');
 
 class ServerLogic {
     constructor(webSockets) {
@@ -33,40 +37,42 @@ class ServerLogic {
 
             console.log(`Mensaje de tipo: ${obj.type} recibido de ${id}`);
 
+            let receiver_user_id, status, gallery_id, manga_name = obj.receiver_user_id;
+
             switch (obj.type) {
                 case "joinedClientWithInfo":
                     this.handleJoinedClientWithInfo(id, obj);
                     break;
 
-                case "friendship_notification":
-                    // ejemplo: reenvía a otro cliente
-                    const targetId = obj.targetId;
-                    const messageToSend = JSON.stringify({
-                        type: "friendship_notification",
-                        from: id,
-                        message: obj.message || "Tienes una nueva solicitud"
-                    });
+                case "friend_request_notification": 
+                    console.log(JSON.stringify(clients));
+                    sender_user_id = obj.sender_user_id;
+                    receiver_user_id = obj.receiver_user_id;
+                    handleRequestNotification(sender_user_id,receiver_user_id,status,socket);
+                    status = "PENDING"
+                    break;
 
-                    const newFriendshipRequest = await Friendship_Request.create({
-                        user_id_1: id,
-                        user_id_2: targetId,
-                        status: "PENDING",
-                    });
-
-                    console.log(newFriendshipRequest);
-
-                    const targetClient = this.webSockets.getClientsIds().includes(targetId);
-                    if (targetClient) {
-                        this.webSockets.broadcast(messageToSend); // O enviar a uno si implementas `sendToClient`
-                    }
+                case "friend_notification":
+                    console.log(JSON.stringify(clients));
+                    sender_user_id = obj.sender_user_id;
+                    receiver_user_id = obj.receiver_user_id;
+                    handleFriendNotification(sender_user_id,receiver_user_id,socket);
                     break;
                 
-                case "sendNotification":
-                    const notificationType = obj.notificationType;
-                    const message = obj.message;
-                    const receiver = obj.message;
+                case "like_notification":
+                    console.log(JSON.stringify(clients));
+                    sender_user_id = obj.sender_user_id;
+                    receiver_user_id = obj.receiver_user_id;
+                    gallery_id = obj.gallery_id;
+                    handleLikeNotification(sender_user_id,receiver_user_id,gallery_id,socket);
+                    break;
 
-
+                case "recommendation_notification":
+                    console.log(JSON.stringify(clients));
+                    sender_user_id = obj.sender_user_id;
+                    receiver_user_id = obj.receiver_user_id;
+                    manga_name = obj.manga_name;
+                    handleRecommendationNotification(sender_user_id,receiver_user_id,manga_name,socket);
                     break;
 
                 default:
