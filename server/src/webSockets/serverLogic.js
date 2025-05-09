@@ -37,7 +37,7 @@ class ServerLogic {
 
             console.log(`Mensaje de tipo: ${obj.type} recibido de ${id}`);
 
-            let sender_user_id, receiver_username, status, gallery_id, manga_name, receiverClient, receiverSocket, receiver_user_id;
+            let sender_user_id, receiver_username, status, gallery_id, manga_name, receiverClient, receiverSocket;
 
             switch (obj.type) {
                 case "joinedClientWithInfo":
@@ -73,8 +73,9 @@ class ServerLogic {
                     }
                 
                     receiverSocket = receiverClient.socket;
-                    receiver_user_id = receiverClient.id;
-                    handleFriendNotification(sender_user_id,receiver_user_id,socket,receiverSocket);
+                    receiver_username = receiverClient.username;
+
+                    handleFriendNotification(sender_user_id,receiver_username,socket,receiverSocket);
                     break;
                 
                 case "like_notification":
@@ -89,8 +90,9 @@ class ServerLogic {
                     }
                 
                     receiverSocket = receiverClient.socket;
-                    receiver_user_id = receiverClient.id;
-                    handleLikeNotification(sender_user_id,receiver_user_id,gallery_id,socket,receiverSocket);
+                    receiver_username = receiverClient.username;
+
+                    handleLikeNotification(sender_user_id,receiver_username,gallery_id,socket,receiverSocket);
                     break;
 
                 case "recommendation_notification":
@@ -105,8 +107,9 @@ class ServerLogic {
                     }
                 
                     receiverSocket = receiverClient.socket;
-                    receiver_user_id = receiverClient.id;
-                    handleRecommendationNotification(sender_user_id,receiver_user_id,manga_name,socket,receiverSocket);
+                    receiver_username = receiverClient.username;
+
+                    handleRecommendationNotification(sender_user_id,receiver_username,manga_name,socket,receiverSocket);
                     break;
 
                 default:

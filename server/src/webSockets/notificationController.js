@@ -21,19 +21,51 @@ async function handleRequestNotification(sender_user_id, receiver_username, stat
 
         const receiver_user_id = receiver.id;
 
-        const existing = await Notification_Friend_Request.findOne({
+        const existingRequest = await Notification_Friend_Request.findOne({
             where: {
                 sender_user_id,
                 receiver_user_id,
             }
         });
 
-        if (existing) {
+        if (existingRequest) {
             console.log("Ya existe una notificación de solicitud de amistad entre estos usuarios.");
+
+            if (socket) {
+            socket.send(JSON.stringify({
+                type: 'notificationSent',
+                status: 'ERROR',
+                message: 'Friend request notification already exists.'
+                }));
+            }
+            
             return;
         }
 
-        const message = `${sender.nickname} te ha enviado una solicitud de amistad.`;
+        const friendshipExists = await Friendship.findOne({
+            where: {
+                [Op.or]: [
+                    { user_id_1: sender_user_id, user_id_2: receiver_user_id },
+                    { user_id_1: receiver_user_id, user_id_2: sender_user_id }
+                ]
+            }
+        });
+
+        if (friendshipExists) {
+            console.log("Los usuarios ya son amigos.");
+
+            if (socket) {
+                socket.send(JSON.stringify({
+                    type: 'notificationSent',
+                    status: 'ERROR',
+                    message: 'Users are already friends.'
+                }));
+            }
+
+            return;
+        }
+
+        const message = `${sender.nickname} has sent you a friend request.`;
 
         const notification = await Notification_Friend_Request.create({
             sender_user_id,
@@ -53,6 +85,7 @@ async function handleRequestNotification(sender_user_id, receiver_username, stat
                 data: {
                     id: notification.id,
                     sender_user_id,
+                    sender_nickname: sender.nickname,
                     receiver_user_id,
                     status,
                     message,
@@ -62,9 +95,10 @@ async function handleRequestNotification(sender_user_id, receiver_username, stat
         }
 
         // Confirmación al emisor
-        if (socket && socket.readyState === 1) {
+        if (socket) {
             socket.send(JSON.stringify({
                 type: 'notificationSent',
+                status: 'OK',
                 message: 'Friend request notification sent successfully.'
             }));
         }
@@ -74,26 +108,19 @@ async function handleRequestNotification(sender_user_id, receiver_username, stat
     }
 }
 
-async function handleFriendNotification(sender_user_id, receiver_user_id, socket, receiverSocket) {
+async function handleFriendNotification(sender_user_id, receiver_username, socket, receiverSocket) {
     try {
         const sender = await User.findByPk(sender_user_id);
-        const receiver = await User.findByPk(receiver_user_id);
+        const receiver = await User.findOne({ where: { nickname: receiver_username } });
 
         if (!sender || !receiver) {
             console.warn("Usuario emisor o receptor no encontrado.");
             return;
         }
 
-        const existing = await Notification_Friend.findOne({
-            where: { sender_user_id, receiver_user_id }
-        });
+        const receiver_user_id = receiver.id;
 
-        if (existing) {
-            console.log("Ya existe una notificación de amistad entre estos usuarios.");
-            return;
-        }
-
-        const message = `${sender.username} ha aceptado tu solicitud de amistad.`;
+        const message = `${sender.nickname} has accepted your friend request.`;
 
         const notification = await Notification_Friend.create({
             sender_user_id,
@@ -120,6 +147,7 @@ async function handleFriendNotification(sender_user_id, receiver_user_id, socket
                 data: {
                     id: notification.id,
                     sender_user_id,
+                    sender_nickname: sender.nickname,
                     receiver_user_id,
                     message,
                     created_at: notification.created_at
@@ -131,6 +159,7 @@ async function handleFriendNotification(sender_user_id, receiver_user_id, socket
         if (socket) {
             socket.send(JSON.stringify({
                 type: 'notificationSent',
+                status: "OK",
                 message: 'Friend notification sent successfully.'
             }));
         }
@@ -140,16 +169,18 @@ async function handleFriendNotification(sender_user_id, receiver_user_id, socket
     }
 }
 
-async function handleLikeNotification(sender_user_id, receiver_user_id, gallery_id, socket, receiverSocket) {
+async function handleLikeNotification(sender_user_id, receiver_username, gallery_id, socket, receiverSocket) {
     try {
         const sender = await User.findByPk(sender_user_id);
-        const receiver = await User.findByPk(receiver_user_id);
+        const receiver = await User.findOne({ where: { nickname: receiver_username } });
         const gallery = await Gallery.findByPk(gallery_id);
 
         if (!sender || !receiver || !gallery) {
             console.warn("Usuario emisor, receptor o galería no encontrado.");
             return;
         }
+
+        const receiver_user_id = receiver.id;
 
         const existing = await Notification_Like.findOne({
             where: {
@@ -161,6 +192,15 @@ async function handleLikeNotification(sender_user_id, receiver_user_id, gallery_
 
         if (existing) {
             console.log("Ya existe una notificación de like para esta combinación.");
+
+            if (socket) {
+                socket.send(JSON.stringify({
+                    type: 'notificationSent',
+                    status: 'ERROR',
+                    message: 'You already liked this story.'
+                }));
+            }
+
             return;
         }
 
@@ -168,7 +208,7 @@ async function handleLikeNotification(sender_user_id, receiver_user_id, gallery_
         gallery.likes += 1;
         await gallery.save();
 
-        const message = `${sender.username} te ha dado like a tu historia.`;
+        const message = `${sender.nickname} te ha dado like a tu historia.`;
 
         const notification = await Notification_Like.create({
             sender_user_id,
@@ -188,6 +228,7 @@ async function handleLikeNotification(sender_user_id, receiver_user_id, gallery_
                 data: {
                     id: notification.id,
                     sender_user_id,
+                    sender_nickname: sender.nickname,
                     receiver_user_id,
                     gallery_id,
                     message,
@@ -200,6 +241,7 @@ async function handleLikeNotification(sender_user_id, receiver_user_id, gallery_
         if (socket) {
             socket.send(JSON.stringify({
                 type: 'notificationSent',
+                status: 'OK',
                 message: 'Like notification sent successfully.'
             }));
         }
@@ -209,17 +251,19 @@ async function handleLikeNotification(sender_user_id, receiver_user_id, gallery_
     }
 }
 
-async function handleRecommendationNotification(sender_user_id, receiver_user_id, manga_name, socket, receiverSocket) {
+async function handleRecommendationNotification(sender_user_id, receiver_username, manga_name, socket, receiverSocket) {
     try {
         const sender = await User.findByPk(sender_user_id);
-        const receiver = await User.findByPk(receiver_user_id);
+        const receiver = await User.findOne({ where: { nickname: receiver_username } });
 
         if (!sender || !receiver) {
             console.warn("Usuario emisor o receptor no encontrado.");
             return;
         }
 
-        const message = `${sender.username} te ha recomendado el libro "${manga_name}".`;
+        const receiver_user_id = receiver.id;
+
+        const message = `${sender.nickname} te ha recomendado el libro "${manga_name}".`;
 
         const notification = await Notification_Recommendation.create({
             sender_user_id,
@@ -239,6 +283,7 @@ async function handleRecommendationNotification(sender_user_id, receiver_user_id
                 data: {
                     id: notification.id,
                     sender_user_id,
+                    sender_nickname: sender.nickname,
                     receiver_user_id,
                     manga_name,
                     message,
@@ -251,6 +296,7 @@ async function handleRecommendationNotification(sender_user_id, receiver_user_id
         if (socket && socket.readyState === 1) {
             socket.send(JSON.stringify({
                 type: 'notificationSent',
+                status: 'OK',
                 message: 'Recommendation notification sent successfully.'
             }));
         }
