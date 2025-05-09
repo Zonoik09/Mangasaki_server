@@ -10,12 +10,12 @@ const {
     getMangasGallery,
     removeFromGallery,
     changeGalleryImage,
-} = require('../controllers/galleryController.js');
+} = require('../controllers/userController.js');
 
 
 /**
  * @swagger
- * /api/gallery/create:
+ * /api/gallery/create_gallery:
  *   post:
  *     summary: Crea una nueva galería de manga para un usuario
  *     description: Crea una galería asociada a un usuario existente utilizando su nickname.
@@ -104,11 +104,11 @@ const {
  *                   type: string
  *                   example: "Error interno al crear la galería"
  */
-router.post('/create', createGallery);
+router.post('/create_gallery', createGallery);
 
 /**
  * @swagger
- * /api/gallery/delete:
+ * /api/gallery/delete_gallery:
  *   delete:
  *     summary: Elimina una galería de un usuario
  *     description: Elimina una galería específica asociada a un usuario mediante su nickname y el nombre de la galería.
@@ -191,11 +191,11 @@ router.post('/create', createGallery);
  *                   type: string
  *                   example: "Error interno al eliminar la galería"
  */
-router.delete('/delete', dropGallery);
+router.delete('/delete_gallery', dropGallery);
 
 /**
  * @swagger
- * /api/gallery/addin:
+ * /api/gallery/add_In_Gallery:
  *   post:
  *     summary: Añade un manga a una galería de un usuario
  *     description: Permite agregar un manga a una galería específica de un usuario existente, usando su nickname, el nombre de la galería y el nombre del manga.
@@ -291,7 +291,7 @@ router.delete('/delete', dropGallery);
  *                   type: string
  *                   example: "Error interno al añadir el manga a la galería"
  */
-router.post('/addIn', addInGallery);
+router.post('/add_In_Gallery', addInGallery);
 
 /**
  * @swagger
@@ -477,7 +477,7 @@ router.get('/getMangasGallery/:id', getMangasGallery);
 
 /**
  * @swagger
- * /api/gallery/removefrom
+ * /api/gallery/remove_From_Gallery:
  *   delete:
  *     summary: Elimina un manga de una galería de un usuario
  *     description: Elimina un manga de la galería asociada a un usuario, identificada por su nombre de galería y manga.
@@ -576,7 +576,7 @@ router.get('/getMangasGallery/:id', getMangasGallery);
  *                 data:
  *                   type: null
  */
-router.delete('/removefrom', removeFromGallery);
+router.delete('/remove_From_Gallery', removeFromGallery);
 
 
 /**
