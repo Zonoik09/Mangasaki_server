@@ -14,16 +14,18 @@ async function handleRequestNotification(sender_user_id, receiver_username, stat
         const sender = await User.findByPk(sender_user_id);
         const receiver = await User.findOne({ where: { nickname: receiver_username } });
 
-        console.log(sender)
-        console.log(receiver)
-
         if (!sender || !receiver) {
             console.warn("Usuario emisor o receptor no encontrado.");
             return;
         }
 
+        const receiver_user_id = receiver.id;
+
         const existing = await Notification_Friend_Request.findOne({
-            where: { sender_user_id, receiver_user_id }
+            where: {
+                sender_user_id,
+                receiver_user_id,
+            }
         });
 
         if (existing) {
