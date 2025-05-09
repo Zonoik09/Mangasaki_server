@@ -46,7 +46,7 @@ async function handleRequestNotification(sender_user_id, receiver_username, stat
         console.log("Notificación de solicitud de amistad creada:", notification);
 
         // Enviar notificación al receptor
-        if (receiverSocket && receiverSocket.readyState === OPEN) {
+        if (receiverSocket) {
             receiverSocket.send(JSON.stringify({
                 type: 'notification',
                 subtype: 'friend_request',
@@ -128,7 +128,7 @@ async function handleFriendNotification(sender_user_id, receiver_user_id, socket
         }
 
         // Confirmación al emisor (quien la acepta)
-        if (socket && socket.readyState === 1) {
+        if (socket) {
             socket.send(JSON.stringify({
                 type: 'notificationSent',
                 message: 'Friend notification sent successfully.'
@@ -181,7 +181,7 @@ async function handleLikeNotification(sender_user_id, receiver_user_id, gallery_
         console.log("Notificación de like creada:", notification);
 
         // Notificación al receptor
-        if (receiverSocket && receiverSocket.readyState === 1) {
+        if (receiverSocket) {
             receiverSocket.send(JSON.stringify({
                 type: 'notification',
                 subtype: 'like',
@@ -197,7 +197,7 @@ async function handleLikeNotification(sender_user_id, receiver_user_id, gallery_
         }
 
         // Confirmación al emisor
-        if (socket && socket.readyState === 1) {
+        if (socket) {
             socket.send(JSON.stringify({
                 type: 'notificationSent',
                 message: 'Like notification sent successfully.'
