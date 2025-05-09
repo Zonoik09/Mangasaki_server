@@ -46,6 +46,7 @@ class ServerLogic {
 
                 case "friend_request_notification": 
                     console.log(this.clients);
+                    print(msg)
                     sender_user_id = obj.sender_user_id;
                     receiver_username = obj.receiver_username;
                     receiverClient = [...this.clients.values()].find(client => client.username === receiver_username);

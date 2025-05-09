@@ -135,7 +135,6 @@ async function handleFriendNotification(sender_user_id, receiver_user_id, socket
     }
 }
 
-
 async function handleLikeNotification(sender_user_id, receiver_user_id, gallery_id, socket, receiverSocket) {
     try {
         const sender = await User.findByPk(sender_user_id);
