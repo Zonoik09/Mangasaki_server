@@ -51,8 +51,7 @@ class ServerLogic {
                     receiver_username = obj.receiver_username;
                     receiverClient = [...this.clients.values()].find(client => client.username === receiver_username);
                     if (!receiverClient || !receiverClient.socket) {
-                        console.log(`Socket no encontrado para usuario receptor: ${receiver_username}`);
-                        return;
+                        console.log(`Socket no encontrado para usuario receptor, puede estar offline...: ${receiver_username}`);
                     }
                 
                     receiverSocket = receiverClient.socket;
@@ -68,8 +67,7 @@ class ServerLogic {
                     receiver_username = obj.receiver_username;
                     receiverClient = [...this.clients.values()].find(client => client.username === receiver_username);
                     if (!receiverClient || !receiverClient.socket) {
-                        console.log(`Socket no encontrado para usuario receptor: ${receiver_username}`);
-                        return;
+                        console.log(`Socket no encontrado para usuario receptor, puede estar offline...: ${receiver_username}`);
                     }
                 
                     receiverSocket = receiverClient.socket;
@@ -85,8 +83,7 @@ class ServerLogic {
                     gallery_id = obj.gallery_id;
                     receiverClient = [...this.clients.values()].find(client => client.username === receiver_username);
                     if (!receiverClient || !receiverClient.socket) {
-                        console.log(`Socket no encontrado para usuario receptor: ${receiver_username}`);
-                        return;
+                        console.log(`Socket no encontrado para usuario receptor, puede estar offline...: ${receiver_username}`);
                     }
                 
                     receiverSocket = receiverClient.socket;
@@ -102,8 +99,7 @@ class ServerLogic {
                     manga_name = obj.manga_name;
                     receiverClient = [...this.clients.values()].find(client => client.username === receiver_username);
                     if (!receiverClient || !receiverClient.socket) {
-                        console.log(`Socket no encontrado para usuario receptor: ${receiver_username}`);
-                        return;
+                        console.log(`Socket no encontrado para usuario receptor, puede estar offline...: ${receiver_username}`);
                     }
                 
                     receiverSocket = receiverClient.socket;
