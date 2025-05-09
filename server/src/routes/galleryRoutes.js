@@ -10,7 +10,7 @@ const {
     getMangasGallery,
     removeFromGallery,
     changeGalleryImage,
-} = require('../controllers/userController.js');
+} = require('../controllers/galleryController.js');
 
 
 /**
