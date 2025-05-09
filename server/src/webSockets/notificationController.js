@@ -11,8 +11,11 @@ const Notification_Recommendation = require('../models/Notification_Recommendati
 
 async function handleRequestNotification(sender_user_id, receiver_user_id, status, socket, receiverSocket) {
     try {
-        const sender = await User.findByPk(sender_user_id);
-        const receiver = await User.findByPk(receiver_user_id);
+
+        console.log(sender_user_id)
+        console.log(JSON.stringify(sender_user_id))
+        const sender = await User.findByPk(sender_user_id.id);
+        const receiver = await User.findByPk(receiver_user_id.id);
 
         if (!sender || !receiver) {
             console.warn("Usuario emisor o receptor no encontrado.");
