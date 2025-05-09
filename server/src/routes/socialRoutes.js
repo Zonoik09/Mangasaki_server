@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {
     getUsersByCombination,
+    getUserNotifications,
 } = require('../controllers/socialController.js');
 
 /**
