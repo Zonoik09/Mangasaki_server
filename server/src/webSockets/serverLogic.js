@@ -56,8 +56,9 @@ class ServerLogic {
                     }
                 
                     receiverSocket = receiverClient.socket;
-                    receiver_user_id = receiverClient.id;
-                    handleRequestNotification(sender_user_id,receiver_user_id,status,socket,receiverSocket);
+                    receiver_username = receiverClient.username;
+
+                    handleRequestNotification(sender_user_id,receiver_username,status,socket,receiverSocket);
                     status = "PENDING"
                     break;
 

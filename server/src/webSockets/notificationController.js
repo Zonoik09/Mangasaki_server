@@ -9,17 +9,13 @@ const Notification_Friend = require('../models/Notification_Friend.js');
 const Notification_Like = require('../models/Notification_Like.js');
 const Notification_Recommendation = require('../models/Notification_Recommendation.js');
 
-async function handleRequestNotification(sender_user_id, receiver_user_id, status, socket, receiverSocket) {
+async function handleRequestNotification(sender_user_id, receiver_username, status, socket, receiverSocket) {
     try {
-        console.log("-----------------------------------------")
-        console.log(sender_user_id)
-        console.log(JSON.stringify(sender_user_id))
-        console.log("-----------------------------------------")
-        console.log(receiver_user_id)
-        console.log(JSON.stringify(receiver_user_id))
-        console.log("-----------------------------------------")
-        const sender = await User.findByPk(sender_user_id.id);
-        const receiver = await User.findByPk(receiver_user_id);
+        const sender = await User.findByPk(sender_user_id);
+        const receiver = await User.findOne({ where: { nickname: receiver_username } });
+
+        console.log(sender)
+        console.log(receiver)
 
         if (!sender || !receiver) {
             console.warn("Usuario emisor o receptor no encontrado.");
