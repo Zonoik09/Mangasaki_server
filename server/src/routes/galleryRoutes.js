@@ -15,7 +15,7 @@ const {
 
 /**
  * @swagger
- * /api/gallery/create_gallery:
+ * /api/gallery/create:
  *   post:
  *     summary: Crea una nueva galería de manga para un usuario
  *     description: Crea una galería asociada a un usuario existente utilizando su nickname.
@@ -104,11 +104,11 @@ const {
  *                   type: string
  *                   example: "Error interno al crear la galería"
  */
-router.post('/create_gallery', createGallery);
+router.post('/create', createGallery);
 
 /**
  * @swagger
- * /api/gallery/delete_gallery:
+ * /api/gallery/delete:
  *   delete:
  *     summary: Elimina una galería de un usuario
  *     description: Elimina una galería específica asociada a un usuario mediante su nickname y el nombre de la galería.
@@ -191,11 +191,11 @@ router.post('/create_gallery', createGallery);
  *                   type: string
  *                   example: "Error interno al eliminar la galería"
  */
-router.delete('/delete_gallery', dropGallery);
+router.delete('/delete', dropGallery);
 
 /**
  * @swagger
- * /api/gallery/add_In_Gallery:
+ * /api/gallery/addin:
  *   post:
  *     summary: Añade un manga a una galería de un usuario
  *     description: Permite agregar un manga a una galería específica de un usuario existente, usando su nickname, el nombre de la galería y el nombre del manga.
@@ -291,7 +291,7 @@ router.delete('/delete_gallery', dropGallery);
  *                   type: string
  *                   example: "Error interno al añadir el manga a la galería"
  */
-router.post('/add_In_Gallery', addInGallery);
+router.post('/addIn', addInGallery);
 
 /**
  * @swagger
@@ -477,7 +477,7 @@ router.get('/getMangasGallery/:id', getMangasGallery);
 
 /**
  * @swagger
- * /api/gallery/remove_From_Gallery:
+ * /api/gallery/removefrom
  *   delete:
  *     summary: Elimina un manga de una galería de un usuario
  *     description: Elimina un manga de la galería asociada a un usuario, identificada por su nombre de galería y manga.
@@ -576,7 +576,7 @@ router.get('/getMangasGallery/:id', getMangasGallery);
  *                 data:
  *                   type: null
  */
-router.delete('/remove_From_Gallery', removeFromGallery);
+router.delete('/removefrom', removeFromGallery);
 
 
 /**
