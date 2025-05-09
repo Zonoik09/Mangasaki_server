@@ -1,9 +1,9 @@
 const User = require('../models/User');
 
-const Notification_Friend_Request = require('./src/models/Notification_Friend_Request.js');
-const Notification_Friend = require('./src/models/Notification_Friend.js');
-const Notification_Like = require('./src/models/Notification_Like.js');
-const Notification_Recommendation = require('./src/models/Notification_Recommendation.js');
+const Notification_Friend_Request = require('../models/Notification_Friend_Request.js');
+const Notification_Friend = require('../models/Notification_Friend.js');
+const Notification_Like = require('../models/Notification_Like.js');
+const Notification_Recommendation = require('../models/Notification_Recommendation.js');
 
 const { Op } = require('sequelize');
 
