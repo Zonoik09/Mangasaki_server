@@ -33,7 +33,7 @@ async function handleRequestNotification(sender_user_id, receiver_username, stat
             return;
         }
 
-        const message = `${sender.username} te ha enviado una solicitud de amistad.`;
+        const message = `${sender.nickname} te ha enviado una solicitud de amistad.`;
 
         const notification = await Notification_Friend_Request.create({
             sender_user_id,
