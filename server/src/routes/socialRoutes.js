@@ -1,29 +1,25 @@
 const express = require('express');
 const router = express.Router();
 const {
-    analyzeManga,
-} = require('../controllers/mangaController.js');
+    getUsersByCombination,
+} = require('../controllers/socialController.js');
 
 /**
  * @swagger
- * /api/manga/analyzeManga:
- *   post:
- *     summary: Analiza un libro basado en una imagen en Base64
- *     tags: [Manga]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               base64Image:
- *                 type: string
- *                 description: Imagen codificada en Base64 para analizar
- *                 example: "iVBORw0KGgoAAAANSUhEUgAA..."
+ * /api/social/getUsersByCombination/{combination}:
+ *   get:
+ *     summary: Obtiene usuarios basados en una combinación de su nickname
+ *     tags: [Social]
+ *     parameters:
+ *       - in: path
+ *         name: combination
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Combinación del nickname para buscar usuarios
  *     responses:
  *       200:
- *         description: Análisis exitoso
+ *         description: Usuarios encontrados exitosamente
  *         content:
  *           application/json:
  *             schema:
@@ -31,15 +27,27 @@ const {
  *               properties:
  *                 status:
  *                   type: string
- *                   example: "success"
+ *                   example: "SUCCESS"
  *                 message:
  *                   type: string
- *                   example: "Libro analizado correctamente"
+ *                   example: "Usuarios encontrados"
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       nickname:
+ *                         type: string
+ *                       image_url:
+ *                         type: string
+ *                         example: "default0.jpg"
  *       400:
- *         description: Datos inválidos o incompletos
+ *         description: Combinación no proporcionada
  *       500:
  *         description: Error interno del servidor
  */
-router.post('/analyzeManga', analyzeManga);
+router.get('/getUsersByCombination/:combination', getUsersByCombination);
 
 module.exports = router;

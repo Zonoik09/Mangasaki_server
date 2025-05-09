@@ -13,7 +13,6 @@ const { logger, expressLogger } = require('./src/config/logger');
 const { sequelize } = require('./src/config/database');
 
 // Importaciones de rutas
-const adminRoutes = require('./src/routes/adminRoutes');
 const mangaRoutes = require('./src/routes/mangaRoutes');
 const socialRoutes = require('./src/routes/socialRoutes');
 const userRoutes = require('./src/routes/userRoutes');
@@ -76,7 +75,6 @@ app.use((req, res, next) => {
 app.use(expressLogger);
 
 // Configuración de rutas
-app.use('/api/admin', adminRoutes);
 app.use('/api/manga', mangaRoutes);
 app.use('/api/social', socialRoutes);
 app.use('/api/user', userRoutes);
