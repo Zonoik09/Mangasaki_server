@@ -54,7 +54,54 @@ const getUsersByCombination = async (req, res) => {
     }
 };
 
-const getUserNotifications = async (req, res) => { };
+const getUserNotifications = async (req, res) => {
+    try {
+        const userId = req.params.userId;
+
+        if (!userId) {
+            return res.status(400).json({
+                status: 'ERROR',
+                message: 'ID de usuario no proporcionado',
+                data: null,
+            });
+        }
+
+        const [
+            friendRequests,
+            friends,
+            likes,
+            recommendations
+        ] = await Promise.all([
+            Notification_Friend_Request.findAll({ where: { receiver_user_id: userId }, raw: true }),
+            Notification_Friend.findAll({ where: { receiver_user_id: userId }, raw: true }),
+            Notification_Like.findAll({ where: { receiver_user_id: userId }, raw: true }),
+            Notification_Recommendation.findAll({ where: { receiver_user_id: userId }, raw: true }),
+        ]);
+
+        const notifications = [
+            ...friendRequests.map(n => ({ ...n, type: 'FRIEND_REQUEST' })),
+            ...friends.map(n => ({ ...n, type: 'FRIEND' })),
+            ...likes.map(n => ({ ...n, type: 'LIKE' })),
+            ...recommendations.map(n => ({ ...n, type: 'RECOMMENDATION' })),
+        ];
+
+        // Orden descendente por fecha de creación
+        notifications.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+        return res.status(200).json({
+            status: 'SUCCESS',
+            message: 'Notificaciones obtenidas correctamente',
+            data: notifications,
+        });
+    } catch (error) {
+        console.error('Error al obtener notificaciones:', error);
+        return res.status(500).json({
+            status: 'ERROR',
+            message: 'Error interno al obtener notificaciones',
+            data: null,
+        });
+    }
+};
 
 module.exports = {
     getUsersByCombination,
