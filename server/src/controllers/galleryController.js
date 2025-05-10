@@ -337,9 +337,9 @@ const getMangasGallery = async (req, res, next) => {
 
 const removeFromGallery = async (req, res) => {
     try {
-        const { nickname, galleryName, manganame } = req.body;
+        const { nickname, galleryName, mangaid } = req.body;
 
-        if (!nickname || !galleryName || !manganame) {
+        if (!nickname || !galleryName || !mangaid) {
             return res.status(400).json({
                 status: 'ERROR',
                 message: 'Faltan datos requeridos: nickname, galleryName o manganame.',
@@ -377,7 +377,7 @@ const removeFromGallery = async (req, res) => {
         const galleryManga = await Gallery_Manga.findOne({
             where: {
                 gallery_id: gallery.id,
-                manga_name: manganame
+                manga_id: mangaid
             }
         });
 

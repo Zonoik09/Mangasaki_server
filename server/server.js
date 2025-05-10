@@ -94,9 +94,9 @@ async function startServer() {
             port: process.env.MYSQL_PORT
         });
 
-        await sequelize.sync({ force: false });
+        await sequelize.sync({ force: true });
         logger.info('Models sincronitzats', {
-            force: false,
+            force: true,
             timestamp: new Date().toISOString()
         });
 

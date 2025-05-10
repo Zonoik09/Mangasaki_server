@@ -495,9 +495,9 @@ router.get('/getMangasGallery/:id', getMangasGallery);
  *               galleryName:
  *                 type: string
  *                 example: "Mi galería"
- *               manganame:
- *                 type: string
- *                 example: "Manga A"
+ *               mangaid:
+ *                 type: int
+ *                 example: "1"
  *     responses:
  *       200:
  *         description: Manga eliminado de la galería correctamente
