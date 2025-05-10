@@ -3,6 +3,7 @@
 const User = require('../models/User.js');
 const Gallery = require('../models/Gallery.js');
 const Friendship = require('../models/Friendship.js')
+const { Op } = require('sequelize');
 
 const Notification_Friend_Request = require('../models/Notification_Friend_Request.js');
 const Notification_Friend = require('../models/Notification_Friend.js');
