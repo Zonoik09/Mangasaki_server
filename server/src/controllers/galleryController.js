@@ -182,7 +182,7 @@ const addInGallery = async (req, res, next) => {
         // Crear relación galería-manga
         const galleryManga = await Gallery_Manga.create({
             gallery_id: gallery.id,
-            mangaid: mangaid,
+            manga_id: mangaid,
         });
 
         logger.info('Manga añadido a galería exitosamente', { galleryId: gallery.id, mangaid });

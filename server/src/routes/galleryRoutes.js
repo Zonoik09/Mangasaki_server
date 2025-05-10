@@ -215,10 +215,10 @@ router.delete('/delete_gallery', dropGallery);
  *                 type: string
  *                 description: Nombre de la galería donde se agregará el manga
  *                 example: "Favoritos"
- *               manganame:
- *                 type: string
- *                 description: Nombre del manga a agregar
- *                 example: "One Piece"
+ *               manga_id:
+ *                 type: int
+ *                 description: Id del manga
+ *                 example: "2"
  *     responses:
  *       200:
  *         description: Manga añadido correctamente a la galería
