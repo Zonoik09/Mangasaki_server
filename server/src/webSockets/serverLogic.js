@@ -5,6 +5,7 @@ const {
     handleFriendNotification,
     handleLikeNotification,
     handleRecommendationNotification,
+    handleGetFriendsOnlineOffline,
 } = require('../webSockets/notificationController');
 
 class ServerLogic {
@@ -106,6 +107,16 @@ class ServerLogic {
                     receiver_username = receiverClient.username;
 
                     handleRecommendationNotification(sender_user_id,receiver_username,manga_name,socket,receiverSocket);
+                    break;
+
+                case "getFriendsOnlineOffline":
+
+                    console.log(this.clients);
+                    console.log(obj);
+                    sender_username = obj.username;
+
+                    handleGetFriendsOnlineOffline(this.clients, receiver_username, socket);
+                    
                     break;
 
                 default:
