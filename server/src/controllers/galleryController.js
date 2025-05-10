@@ -396,7 +396,7 @@ const removeFromGallery = async (req, res) => {
             message: 'Manga eliminado correctamente de la galería.',
             data: {
                 galleryId: gallery.id,
-                mangaRemoved: manganame
+                mangaRemoved: mangaid
             }
         });
 
