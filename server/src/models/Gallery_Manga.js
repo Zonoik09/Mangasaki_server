@@ -17,8 +17,8 @@ const Gallery_Manga = sequelize.define('Gallery_Manga', {
         },
         onDelete: 'CASCADE'
     },
-    manga_name: {
-        type: DataTypes.STRING(50),
+    manga_id: {
+        type: DataTypes.INTEGER,
         allowNull: false
     },
 }, {
@@ -28,7 +28,7 @@ const Gallery_Manga = sequelize.define('Gallery_Manga', {
     indexes: [
         {
             unique: true,
-            fields: ['gallery_id', 'manga_name']
+            fields: ['gallery_id', 'manga_id']
         }
     ]
 });

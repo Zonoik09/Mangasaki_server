@@ -138,15 +138,15 @@ const dropGallery = async (req, res, next) => {
  */
 const addInGallery = async (req, res, next) => {
     try {
-        const { nickname, galleryName, manganame } = req.body;
+        const { nickname, galleryName, mangaid } = req.body;
 
-        logger.info('Nueva solicitud de añadir un manga a la galería', { nickname, galleryName, manganame });
+        logger.info('Nueva solicitud de añadir un manga a la galería', { nickname, galleryName, mangaid });
 
         // Validación básica
-        if (!nickname || !galleryName || !manganame) {
+        if (!nickname || !galleryName || !mangaid) {
             return res.status(400).json({
                 status: 'ERROR',
-                message: 'El nickname, el nombre de la galería y el nombre del manga son obligatorios.',
+                message: 'El nickname, el nombre de la galería y el id del manga son obligatorios.',
                 data: null,
             });
         }
@@ -182,10 +182,10 @@ const addInGallery = async (req, res, next) => {
         // Crear relación galería-manga
         const galleryManga = await Gallery_Manga.create({
             gallery_id: gallery.id,
-            manga_name: manganame,
+            mangaid: mangaid,
         });
 
-        logger.info('Manga añadido a galería exitosamente', { galleryId: gallery.id, manganame });
+        logger.info('Manga añadido a galería exitosamente', { galleryId: gallery.id, mangaid });
 
         res.set('Authorization', user.token);
 
@@ -197,7 +197,7 @@ const addInGallery = async (req, res, next) => {
                 nickname: user.nickname,
                 galleryId: gallery.id,
                 galleryName: gallery.name,
-                mangaAdded: manganame
+                mangaAdded: mangaid
             },
         });
     } catch (error) {
