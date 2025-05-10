@@ -3,6 +3,8 @@ const router = express.Router();
 const {
     getUsersByCombination,
     getUserNotifications,
+    declineFriendshipRequest,   
+    deleteFriendship,
 } = require('../controllers/socialController.js');
 
 /**
@@ -107,5 +109,81 @@ router.get('/getUsersByCombination/:combination', getUsersByCombination);
  *         description: Error interno al obtener notificaciones
  */
 router.get('/getUserNotifications/:userId', getUserNotifications);
+
+/**
+ * @swagger
+ * /api/social/declineFriendRequest/{notificationId}:
+ *   delete:
+ *     summary: Rechaza una solicitud de amistad eliminando la notificación
+ *     tags: [Social]
+ *     parameters:
+ *       - in: path
+ *         name: notificationId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID de la notificación de solicitud de amistad a eliminar
+ *     responses:
+ *       200:
+ *         description: Solicitud de amistad rechazada correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "SUCCESS"
+ *                 message:
+ *                   type: string
+ *                   example: "Solicitud de amistad rechazada (eliminada)"
+ *                 data:
+ *                   type: null
+ *       400:
+ *         description: ID no proporcionado
+ *       404:
+ *         description: Solicitud de amistad no encontrada
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.delete('/declineFriendRequest/:notificationId', declineFriendshipRequest);
+
+/**
+ * @swagger
+ * /api/social/deleteFriendship/{friendshipId}:
+ *   delete:
+ *     summary: Elimina una amistad existente
+ *     tags: [Social]
+ *     parameters:
+ *       - in: path
+ *         name: friendshipId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID de la amistad a eliminar
+ *     responses:
+ *       200:
+ *         description: Amistad eliminada correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "SUCCESS"
+ *                 message:
+ *                   type: string
+ *                   example: "Amistad eliminada correctamente"
+ *                 data:
+ *                   type: null
+ *       400:
+ *         description: ID de amistad no proporcionado
+ *       404:
+ *         description: Amistad no encontrada
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.delete('/deleteFriendship/:friendshipId', deleteFriendship);
 
 module.exports = router;

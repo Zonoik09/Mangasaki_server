@@ -5,6 +5,8 @@ const Notification_Friend = require('../models/Notification_Friend.js');
 const Notification_Like = require('../models/Notification_Like.js');
 const Notification_Recommendation = require('../models/Notification_Recommendation.js');
 
+const Friendship = require('./src/models/Friendship');
+
 const { Op } = require('sequelize');
 
 const { logger } = require('../config/logger');
@@ -103,7 +105,89 @@ const getUserNotifications = async (req, res) => {
     }
 };
 
+const declineFriendshipRequest = async (req, res) => {
+    try {
+        const { notificationId } = req.params;
+
+        if (!notificationId) {
+            return res.status(400).json({
+                status: 'ERROR',
+                message: 'ID de notificación no proporcionado',
+                data: null,
+            });
+        }
+
+        const deleted = await Notification_Friend_Request.destroy({
+            where: { id: notificationId }
+        });
+
+        if (deleted === 0) {
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'Solicitud de amistad no encontrada',
+                data: null,
+            });
+        }
+
+        return res.status(200).json({
+            status: 'SUCCESS',
+            message: 'Solicitud de amistad rechazada (eliminada)',
+            data: null,
+        });
+    } catch (error) {
+        console.error('Error al rechazar solicitud:', error);
+        return res.status(500).json({
+            status: 'ERROR',
+            message: 'Error interno al rechazar solicitud',
+            data: null,
+        });
+    }
+};
+
+const deleteFriendship = async (req, res) => {
+    try {
+        const { friendshipId } = req.params;
+
+        if (!friendshipId) {
+            return res.status(400).json({
+                status: 'ERROR',
+                message: 'ID de amistad no proporcionado',
+                data: null,
+            });
+        }
+
+        const deleted = await Friendship.destroy({
+            where: { id: friendshipId }
+        });
+
+        if (deleted === 0) {
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'Amistad no encontrada',
+                data: null,
+            });
+        }
+
+        return res.status(200).json({
+            status: 'SUCCESS',
+            message: 'Amistad eliminada correctamente',
+            data: null,
+        });
+    } catch (error) {
+        console.error('Error al eliminar amistad:', error);
+        return res.status(500).json({
+            status: 'ERROR',
+            message: 'Error interno al eliminar amistad',
+            data: null,
+        });
+    }
+};
+
+// Consigue las amistades que tienen una 
+
 module.exports = {
     getUsersByCombination,
     getUserNotifications,
+    declineFriendshipRequest,   
+    deleteFriendship,
 };

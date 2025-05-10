@@ -26,7 +26,7 @@ const Notification_Friend_Request = sequelize.define('Notification_Friend_Reques
         onDelete: 'CASCADE',
     },
     status: {
-        type: DataTypes.ENUM('PENDING', 'ACCEPTED', 'DECLINED'),
+        type: DataTypes.ENUM('PENDING'),
         allowNull: false,
         defaultValue: 'PENDING',
     },
