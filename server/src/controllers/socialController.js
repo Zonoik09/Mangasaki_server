@@ -5,7 +5,7 @@ const Notification_Friend = require('../models/Notification_Friend.js');
 const Notification_Like = require('../models/Notification_Like.js');
 const Notification_Recommendation = require('../models/Notification_Recommendation.js');
 
-const Friendship = require('./src/models/Friendship');
+const Friendship = require('../models/Friendship');
 
 const { Op } = require('sequelize');
 
