@@ -141,6 +141,10 @@ const addInGallery = async (req, res, next) => {
         const { nickname, galleryName, mangaid } = req.body;
 
         logger.info('Nueva solicitud de añadir un manga a la galería', { nickname, galleryName, mangaid });
+        
+        logger.info("----------------");
+        logger.info(mangaid);
+        logger.info("----------------");
 
         // Validación básica
         if (!nickname || !galleryName || !mangaid) {
