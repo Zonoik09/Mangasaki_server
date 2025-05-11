@@ -31,13 +31,10 @@ class ServerLogic {
 
     async handleMessage(socket, id, msg) {
         try {
-            // Parsear mensaje
             const obj = JSON.parse(msg);
 
-            // Si no tiene 'type', salir silenciosamente
             if (!obj.type) return;
 
-            // Solo loggear si NO es getFriendsOnlineOffline
             if (obj.type !== "getFriendsOnlineOffline") {
                 console.log(msg);
                 console.log(`Mensaje de tipo: ${obj.type} recibido de ${id}`);
@@ -45,78 +42,54 @@ class ServerLogic {
 
             let sender_user_id, receiver_username, status, gallery_id, manga_name, receiverClient, receiverSocket, sender_username;
 
+            const findReceiver = (username) => {
+                const client = [...this.clients.values()].find(c => c.username === username);
+                if (!client || !client.socket) {
+                    console.log(`Socket no encontrado para usuario receptor, puede estar offline...: ${username}`);
+                    return { socket: null, username: username };
+                }
+                return { socket: client.socket, username: client.username };
+            };
+
             switch (obj.type) {
                 case "joinedClientWithInfo":
                     this.handleJoinedClientWithInfo(id, obj, socket);
                     break;
 
                 case "friend_request_notification": 
-                    console.log(this.clients);
-                    console.log(msg);
                     sender_user_id = obj.sender_user_id;
                     receiver_username = obj.receiver_username;
-                    receiverClient = [...this.clients.values()].find(client => client.username === receiver_username);
-                    if (!receiverClient || !receiverClient.socket) {
-                        console.log(`Socket no encontrado para usuario receptor, puede estar offline...: ${receiver_username}`);
-                    }
-
-                    receiverSocket = receiverClient.socket;
-                    receiver_username = receiverClient.username;
-
-                    handleRequestNotification(sender_user_id, receiver_username, status, socket, receiverSocket);
+                    ({ socket: receiverSocket, username: receiver_username } = findReceiver(receiver_username));
                     status = "PENDING";
+                    handleRequestNotification(sender_user_id, receiver_username, status, socket, receiverSocket);
                     break;
 
                 case "friend_notification":
-                    console.log(this.clients);
                     sender_user_id = obj.sender_user_id;
                     receiver_username = obj.receiver_username;
-                    receiverClient = [...this.clients.values()].find(client => client.username === receiver_username);
-                    if (!receiverClient || !receiverClient.socket) {
-                        console.log(`Socket no encontrado para usuario receptor, puede estar offline...: ${receiver_username}`);
-                    }
-
-                    receiverSocket = receiverClient.socket;
-                    receiver_username = receiverClient.username;
-
+                    ({ socket: receiverSocket, username: receiver_username } = findReceiver(receiver_username));
                     handleFriendNotification(sender_user_id, receiver_username, socket, receiverSocket);
                     break;
 
                 case "like_notification":
-                    console.log(this.clients);
                     sender_user_id = obj.sender_user_id;
                     receiver_username = obj.receiver_username;
                     gallery_id = obj.gallery_id;
-                    receiverClient = [...this.clients.values()].find(client => client.username === receiver_username);
-                    if (!receiverClient || !receiverClient.socket) {
-                        console.log(`Socket no encontrado para usuario receptor, puede estar offline...: ${receiver_username}`);
-                    }
-
-                    receiverSocket = receiverClient.socket;
-                    receiver_username = receiverClient.username;
-
+                    ({ socket: receiverSocket, username: receiver_username } = findReceiver(receiver_username));
                     handleLikeNotification(sender_user_id, receiver_username, gallery_id, socket, receiverSocket);
                     break;
 
                 case "recommendation_notification":
-                    console.log(this.clients);
                     sender_user_id = obj.sender_user_id;
                     receiver_username = obj.receiver_username;
                     manga_name = obj.manga_name;
-                    receiverClient = [...this.clients.values()].find(client => client.username === receiver_username);
-                    if (!receiverClient || !receiverClient.socket) {
-                        console.log(`Socket no encontrado para usuario receptor, puede estar offline...: ${receiver_username}`);
-                    }
-
-                    receiverSocket = receiverClient.socket;
-                    receiver_username = receiverClient.username;
-
+                    ({ socket: receiverSocket, username: receiver_username } = findReceiver(receiver_username));
                     handleRecommendationNotification(sender_user_id, receiver_username, manga_name, socket, receiverSocket);
                     break;
 
                 case "getFriendsOnlineOffline":
                     sender_username = obj.username;
-                    handleGetFriendsOnlineOffline(this.clients, receiver_username, socket);
+                    handleGetFriendsOnlineOffline(this.clients, sender_username, socket);
                     break;
 
                 default:
@@ -127,7 +100,6 @@ class ServerLogic {
             console.error("Error al procesar mensaje:", err.message);
         }
     }
-
 
     addClient(id) {
         this.clients.set(id, { id });
