@@ -50,6 +50,8 @@ webSocketManager.init(server, PORT);
 
 const socketLogic = new ServerLogic(webSocketManager);
 
+app.use(express.static('./public'));
+
 // Configuración de middleware
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
