@@ -354,9 +354,9 @@ async function handleGetFriendsOnlineOffline(clients, sender_username, socket) {
         for (const friend of friends) {
             const isOnline = [...clients.values()].some(client => client.username === friend.nickname);
             if (isOnline) {
-                onlineFriends.push(friend.nickname);
+                onlineFriends.push(friend);
             } else {
-                offlineFriends.push(friend.nickname);
+                offlineFriends.push(friend);
             }
         }
 
