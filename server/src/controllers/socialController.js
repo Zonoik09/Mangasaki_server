@@ -186,7 +186,7 @@ const deleteFriendship = async (req, res) => {
 
 const getRecommendatiosFromFriends = async (req, res) => {
     try {
-        const userId = parseInt(req.params.userId, 10);
+        const userId = req.params.userId;
 
         if (!userId) {
             return res.status(400).json({
