@@ -344,9 +344,9 @@ async function handleGetFriendsOnlineOffline(clients, sender_username, socket) {
 
         // Buscar todos los amigos por ID
         const friends = await User.findAll({
-            where: { id: friendIds }
+            where: { id: friendIds },
+            attributes: ['id', 'nickname']
         });
-
         // Separar amigos online y offline
         const onlineFriends = [];
         const offlineFriends = [];
@@ -354,8 +354,10 @@ async function handleGetFriendsOnlineOffline(clients, sender_username, socket) {
         for (const friend of friends) {
             const isOnline = [...clients.values()].some(client => client.username === friend.nickname);
             if (isOnline) {
+                console.log(friend);
                 onlineFriends.push(friend);
             } else {
+                console.log(friend);
                 offlineFriends.push(friend);
             }
         }
