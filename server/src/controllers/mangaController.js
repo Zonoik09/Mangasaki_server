@@ -318,7 +318,7 @@ const addOrUpdateUserMangaStatus = async (req, res) => {
  */
 const deleteUserManga = async (req, res) => {
     try {
-        const { userId, mangaId } = req.body;
+        const { userId, mangaId } = req.query;
 
         if (!userId || !mangaId) {
             return res.status(400).json({
