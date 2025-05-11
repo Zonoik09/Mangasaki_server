@@ -316,9 +316,72 @@ async function handleRecommendationNotification(sender_user_id, receiver_usernam
     }
 }
 
+async function handleGetFriendsOnlineOffline(clients, sender_username, socket) {
+    try {
+        const user = await User.findOne({ where: { nickname: sender_username } });
+
+        if (!user) {
+            console.warn("El usuario que hizo la solicitud no existe");
+            return;
+        }
+
+        const user_id = user.id;
+
+        // Obtener amistades del usuario
+        const friendships = await Friendship.findAll({
+            where: {
+                [Op.or]: [
+                    { user_id_1: user_id },
+                    { user_id_2: user_id }
+                ]
+            }
+        });
+
+        // Sacar IDs de los amigos
+        const friendIds = friendships.map(friendship =>
+            friendship.user_id_1 === user_id ? friendship.user_id_2 : friendship.user_id_1
+        );
+
+        // Buscar todos los amigos por ID
+        const friends = await User.findAll({
+            where: { id: friendIds }
+        });
+
+        // Separar amigos online y offline
+        const onlineFriends = [];
+        const offlineFriends = [];
+
+        for (const friend of friends) {
+            const isOnline = [...clients.values()].some(client => client.username === friend.nickname);
+            if (isOnline) {
+                onlineFriends.push(friend.nickname);
+            } else {
+                offlineFriends.push(friend.nickname);
+            }
+        }
+
+        // Enviar al socket
+        if (socket && socket.readyState === 1) {
+            socket.send(JSON.stringify({
+                type: 'amigosOnlineOfflineCompartidos',
+                status: 'OK',
+                message: 'amigosOnlineOfflineCompartidos correctamente',
+                data: {
+                    online: onlineFriends,
+                    offline: offlineFriends
+                }
+            }));
+        }
+
+    } catch (error) {
+        console.error("Error al obtener amigos online/offline:", error.message);
+    }
+}
+
 module.exports = {
     handleRequestNotification,
     handleFriendNotification,
     handleLikeNotification,
     handleRecommendationNotification,
+    handleGetFriendsOnlineOffline
 };
