@@ -16,8 +16,8 @@ const User_Manga = sequelize.define('User_Manga', {
         },
         onDelete: 'CASCADE'
     },
-    manga_name: {
-        type: DataTypes.STRING(50),
+    manga_id: {
+        type: DataTypes.INTEGER,
         allowNull: false
     },
     status: {
@@ -32,7 +32,7 @@ const User_Manga = sequelize.define('User_Manga', {
     indexes: [
         {
             unique: true,
-            fields: ['user_id', 'manga_name']
+            fields: ['user_id', 'manga_id']
         }
     ]
 });

@@ -11,6 +11,8 @@ const ISBN_URL = process.env.ISBN_URL;
 
 const MANGA_NAME_URL = process.env.MANGA_NAME_URL;
 
+const User_Manga = require('../models/User_Manga');
+
 /**
  * Hace una petición con imagen.
  * @route POST /api/manga/analyzeManga
@@ -219,6 +221,223 @@ const buildResponse = (status, message, result) => {
     };
 };
 
+const User = require('../models/User');
+const User_Manga = require('../models/User_Manga');
+
+/**
+ * Añade o actualiza el estado de un manga para un usuario
+ * @route POST /api/user-manga/add_or_update
+ */
+const addOrUpdateUserMangaStatus = async (req, res) => {
+    try {
+        const { userId, mangaId, status } = req.body;
+
+        if (!userId || !mangaId || !status) {
+            return res.status(400).json({
+                status: 'ERROR',
+                message: 'Los campos userId, mangaId y status son obligatorios.',
+                data: null,
+            });
+        }
+
+        // Verificar que el usuario exista
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'Usuario no encontrado.',
+                data: null,
+            });
+        }
+
+        // Verificar si ya existe la relación user-manga
+        const existingEntry = await User_Manga.findOne({
+            where: {
+                user_id: userId,
+                manga_id: mangaId
+            }
+        });
+
+        if (existingEntry) {
+            if (existingEntry.status !== status) {
+                // Actualizar el estado
+                await existingEntry.update({ status });
+
+                return res.status(200).json({
+                    status: 'OK',
+                    message: `Estado del manga actualizado de '${existingEntry.status}' a '${status}'.`,
+                    data: {
+                        userId,
+                        mangaId,
+                        previousStatus: existingEntry.status,
+                        newStatus: status
+                    }
+                });
+            } else {
+                return res.status(200).json({
+                    status: 'OK',
+                    message: 'El manga ya se encuentra en el estado solicitado.',
+                    data: {
+                        userId,
+                        mangaId,
+                        status
+                    }
+                });
+            }
+        } else {
+            // Crear nueva entrada
+            const newEntry = await User_Manga.create({
+                user_id: userId,
+                manga_id: mangaId,
+                status
+            });
+
+            return res.status(201).json({
+                status: 'OK',
+                message: 'Manga registrado exitosamente con estado inicial.',
+                data: {
+                    userId,
+                    mangaId,
+                    status: newEntry.status
+                }
+            });
+        }
+    } catch (error) {
+        console.error("Error al añadir o actualizar manga del usuario:", error.message);
+
+        return res.status(500).json({
+            status: 'ERROR',
+            message: 'Error interno del servidor al manejar el manga del usuario.',
+            data: null
+        });
+    }
+};
+
+/**
+ * Elimina la relación entre un usuario y un manga
+ * @route DELETE /api/user-manga/delete
+ */
+const deleteUserManga = async (req, res) => {
+    try {
+        const { userId, mangaId } = req.body;
+
+        if (!userId || !mangaId) {
+            return res.status(400).json({
+                status: 'ERROR',
+                message: 'Los campos userId y mangaId son obligatorios.',
+                data: null,
+            });
+        }
+
+        // Verificar si la relación existe
+        const userManga = await User_Manga.findOne({
+            where: {
+                user_id: userId,
+                manga_id: mangaId
+            }
+        });
+
+        if (!userManga) {
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'La relación usuario-manga no existe.',
+                data: null
+            });
+        }
+
+        // Eliminar la relación
+        await userManga.destroy();
+
+        return res.status(200).json({
+            status: 'OK',
+            message: 'Manga eliminado correctamente de la lista del usuario.',
+            data: {
+                userId,
+                mangaId
+            }
+        });
+
+    } catch (error) {
+        console.error("Error al eliminar manga del usuario:", error.message);
+
+        return res.status(500).json({
+            status: 'ERROR',
+            message: 'Error interno al eliminar el manga.',
+            data: null
+        });
+    }
+};
+
+/**
+ * Obtiene los mangas de un usuario organizados por estado
+ * @route GET /api/user-manga/status
+ */
+const getUserMangasByStatus = async (req, res) => {
+    try {
+        const { userId } = req.query;
+
+        if (!userId) {
+            return res.status(400).json({
+                status: 'ERROR',
+                message: 'El campo userId es obligatorio.',
+                data: null,
+            });
+        }
+
+        // Buscar todos los mangas del usuario
+        const userMangas = await User_Manga.findAll({
+            where: { user_id: userId }
+        });
+
+        // Inicializar listas
+        const pending = [];
+        const reading = [];
+        const completed = [];
+        const abandoned = [];
+
+        // Clasificar por estado
+        for (const entry of userMangas) {
+            switch (entry.status) {
+                case 'PENDING':
+                    pending.push(entry.manga_id);
+                    break;
+                case 'READING':
+                    reading.push(entry.manga_id);
+                    break;
+                case 'COMPLETED':
+                    completed.push(entry.manga_id);
+                    break;
+                case 'ABANDONED':
+                    abandoned.push(entry.manga_id);
+                    break;
+            }
+        }
+
+        return res.status(200).json({
+            status: 'OK',
+            message: 'Mangas clasificados por estado correctamente.',
+            data: {
+                PENDING: pending,
+                READING: reading,
+                COMPLETED: completed,
+                ABANDONED: abandoned
+            }
+        });
+
+    } catch (error) {
+        console.error("Error al obtener mangas por estado:", error.message);
+
+        return res.status(500).json({
+            status: 'ERROR',
+            message: 'Error interno al obtener los mangas.',
+            data: null
+        });
+    }
+};
+
 module.exports = {
     analyzeManga,
+    addOrUpdateUserMangaStatus,
+    deleteUserManga,
+    getUserMangasByStatus,
 };
