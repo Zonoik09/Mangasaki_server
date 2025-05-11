@@ -132,17 +132,12 @@ const dropGallery = async (req, res, next) => {
     }
 };
 
-/**
- * Añade un manga a una galería de un usuario.
- * @route POST /api/gallery/add_In_Gallery
- */
 const addInGallery = async (req, res, next) => {
     try {
         const { nickname, galleryName, mangaid } = req.body;
 
         logger.info('Nueva solicitud de añadir un manga a la galería', { nickname, galleryName, mangaid });
 
-        // Validación básica
         if (!nickname || !galleryName || !mangaid) {
             return res.status(400).json({
                 status: 'ERROR',
@@ -151,7 +146,6 @@ const addInGallery = async (req, res, next) => {
             });
         }
 
-        // Buscar al usuario
         const user = await User.findOne({ where: { nickname } });
         if (!user) {
             logger.warn('Usuario no encontrado', { nickname });
@@ -162,7 +156,6 @@ const addInGallery = async (req, res, next) => {
             });
         }
 
-        // Buscar la galería del usuario
         const gallery = await Gallery.findOne({
             where: {
                 user_id: user.id,
@@ -175,6 +168,22 @@ const addInGallery = async (req, res, next) => {
             return res.status(404).json({
                 status: 'ERROR',
                 message: 'Galería no encontrada para este usuario',
+                data: null,
+            });
+        }
+
+        // Verificar cuántos mangas ya hay en la galería
+        const mangaCount = await Gallery_Manga.count({
+            where: {
+                gallery_id: gallery.id
+            }
+        });
+
+        if (mangaCount >= 5) {
+            logger.warn('Límite de mangas alcanzado en la galería', { galleryId: gallery.id });
+            return res.status(400).json({
+                status: 'ERROR',
+                message: 'No se pueden añadir más de 5 mangas a una galería',
                 data: null,
             });
         }
@@ -213,6 +222,7 @@ const addInGallery = async (req, res, next) => {
         });
     }
 };
+
 
 const getGallery = async (req, res, next) => {
     try {
