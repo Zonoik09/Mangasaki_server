@@ -347,22 +347,25 @@ async function handleGetFriendsOnlineOffline(clients, sender_username, socket) {
             where: { id: friendIds },
             attributes: ['id', 'nickname']
         });
+
         // Separar amigos online y offline
         const onlineFriends = [];
         const offlineFriends = [];
 
         for (const friend of friends) {
             const isOnline = [...clients.values()].some(client => client.username === friend.nickname);
+
+            // Verificar si el amigo está en línea o fuera de línea
             if (isOnline) {
-                console.log(friend);
+                console.log(`Amigo en línea: ${friend.nickname}`);
                 onlineFriends.push(friend);
             } else {
-                console.log(friend);
+                console.log(`Amigo fuera de línea: ${friend.nickname}`);
                 offlineFriends.push(friend);
             }
         }
 
-        // Enviar al socket
+        // Enviar al socket solo si está conectado
         if (socket && socket.readyState === 1) {
             socket.send(JSON.stringify({
                 type: 'amigosOnlineOfflineCompartidos',
@@ -379,6 +382,7 @@ async function handleGetFriendsOnlineOffline(clients, sender_username, socket) {
         console.error("Error al obtener amigos online/offline:", error.message);
     }
 }
+
 
 module.exports = {
     handleRequestNotification,
