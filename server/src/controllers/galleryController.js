@@ -223,7 +223,6 @@ const addInGallery = async (req, res, next) => {
     }
 };
 
-
 const getGallery = async (req, res, next) => {
     try {
         const { nickname } = req.params;

@@ -5,6 +5,7 @@ const {
     getUserNotifications,
     declineFriendshipRequest,   
     deleteFriendship,
+    getRecommendatiosFromFriends,
 } = require('../controllers/socialController.js');
 
 /**
@@ -185,5 +186,43 @@ router.delete('/declineFriendRequest/:notificationId', declineFriendshipRequest)
  *         description: Error interno del servidor
  */
 router.delete('/deleteFriendship/:friendshipId', deleteFriendship);
+
+/**
+ * @swagger
+ * /api/social/recommendations/{userId}:
+ *   get:
+ *     summary: Obtiene recomendaciones de mangas según lo que leen los amigos
+ *     tags: [Social]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del usuario que solicita las recomendaciones
+ *     responses:
+ *       200:
+ *         description: Recomendaciones obtenidas correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "SUCCESS"
+ *                 message:
+ *                   type: string
+ *                   example: "Recomendaciones obtenidas correctamente"
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: integer
+ *       400:
+ *         description: ID de usuario no proporcionado
+ *       500:
+ *         description: Error interno al obtener recomendaciones
+ */
+router.get('/recommendations/:userId', getRecommendatiosFromFriends);
 
 module.exports = router;

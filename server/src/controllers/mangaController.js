@@ -14,6 +14,7 @@ const MANGA_NAME_URL = process.env.MANGA_NAME_URL;
 const User_Manga = require('../models/User_Manga');
 const User = require('../models/User');
 
+
 /**
  * Hace una petición con imagen.
  * @route POST /api/manga/analyzeManga
