@@ -196,6 +196,15 @@ const getRecommendatiosFromFriends = async (req, res) => {
             });
         }
 
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'Usuario no encontrado.',
+                data: null,
+            });
+        }
+
         // Obtener IDs de amigos
         const friendships = await Friendship.findAll({
             where: {
