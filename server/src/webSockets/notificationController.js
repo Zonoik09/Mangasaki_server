@@ -132,6 +132,15 @@ async function handleFriendNotification(sender_user_id, receiver_username, socke
 
         console.log("Notificación de amistad creada:", notification);
 
+        await Notification_Friend_Request.destroy({
+            where: {
+                [Op.or]: [
+                    { sender_user_id, receiver_user_id },
+                    { sender_user_id: receiver_user_id, receiver_user_id: sender_user_id }
+                ]
+            }
+        });
+
         // Crear la amistad entre los usuarios (Friendship)
         const friendship = await Friendship.create({
             user_id_1: sender_user_id,
