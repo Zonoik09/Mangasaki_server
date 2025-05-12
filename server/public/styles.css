@@ -80,13 +80,12 @@ header p {
     color: #60a5fa;
 }
 
-
 /* DOWNLOAD SECTION */
 .downloads {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 40px 10%;
+    padding: 30px 10%;
     flex-wrap: wrap;
     background-color: rgba(0, 0, 0, 0.5);
     margin-top: 40px;
@@ -113,7 +112,7 @@ header p {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 60px 10%;
+    padding: 30px 10%;
     gap: 40px;
     flex-wrap: wrap;
     background-color: rgba(0, 0, 0, 0.5);
@@ -127,7 +126,7 @@ header p {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 60px 10%;
+    padding: 30px 10%;
     gap: 40px;
     flex-wrap: wrap;
     background-color: rgba(0, 0, 0, 0.5);
