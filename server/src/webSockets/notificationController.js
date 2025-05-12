@@ -261,7 +261,7 @@ async function handleLikeNotification(sender_user_id, receiver_username, gallery
     }
 }
 
-async function handleRecommendationNotification(sender_user_id, receiver_username, manga_name, socket, receiverSocket) {
+async function handleRecommendationNotification(sender_user_id, receiver_username, manga_id, socket, receiverSocket) {
     try {
         const sender = await User.findByPk(sender_user_id);
         const receiver = await User.findOne({ where: { nickname: receiver_username } });
@@ -273,12 +273,12 @@ async function handleRecommendationNotification(sender_user_id, receiver_usernam
 
         const receiver_user_id = receiver.id;
 
-        const message = `${sender.nickname} te ha recomendado el libro "${manga_name}".`;
+        const message = `${sender.nickname} te ha recomendado el libro "${manga_id}".`;
 
         const notification = await Notification_Recommendation.create({
             sender_user_id,
             receiver_user_id,
-            manga_name,
+            manga_id,
             message,
             created_at: new Date()
         });
@@ -295,7 +295,7 @@ async function handleRecommendationNotification(sender_user_id, receiver_usernam
                     sender_user_id,
                     sender_nickname: sender.nickname,
                     receiver_user_id,
-                    manga_name,
+                    manga_id,
                     message,
                     created_at: notification.created_at
                 }

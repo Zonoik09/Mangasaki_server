@@ -82,9 +82,9 @@ class ServerLogic {
                 case "recommendation_notification":
                     sender_user_id = obj.sender_user_id;
                     receiver_username = obj.receiver_username;
-                    manga_name = obj.manga_name;
+                    manga_id = obj.manga_id;
                     ({ socket: receiverSocket, username: receiver_username } = findReceiver(receiver_username));
-                    handleRecommendationNotification(sender_user_id, receiver_username, manga_name, socket, receiverSocket);
+                    handleRecommendationNotification(sender_user_id, receiver_username, manga_id, socket, receiverSocket);
                     break;
 
                 case "getFriendsOnlineOffline":

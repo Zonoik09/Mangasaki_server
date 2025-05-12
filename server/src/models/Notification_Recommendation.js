@@ -25,9 +25,9 @@ const Notification_Recommendation = sequelize.define('Notification_Recommendatio
         },
         onDelete: 'CASCADE',
     },
-    manga_name: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
+    manga_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false
     },
     message: {
         type: DataTypes.STRING(255),
