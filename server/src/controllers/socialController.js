@@ -24,9 +24,9 @@ const getUsersByCombination = async (req, res) => {
             });
         }
 
-        // Obtener el nickname del usuario actual
-        const requestingUser = await User.findByPk(userId);
-        if (!requestingUser) {
+        // Obtener el usuario actual (para conocer su nickname)
+        const currentUser = await User.findByPk(userId);
+        if (!currentUser) {
             return res.status(404).json({
                 status: 'ERROR',
                 message: 'Usuario no encontrado',
@@ -34,7 +34,7 @@ const getUsersByCombination = async (req, res) => {
             });
         }
 
-        // Obtener IDs de amistades del usuario (bidireccional)
+        // Obtener IDs de usuarios con los que ya hay amistad
         const friendships = await Friendship.findAll({
             where: {
                 [Op.or]: [
@@ -44,23 +44,30 @@ const getUsersByCombination = async (req, res) => {
             }
         });
 
-        const friendIds = friendships.map(f => (
-            f.user_id_1 === parseInt(userId) ? f.user_id_2 : f.user_id_1
-        ));
+        const friendIds = friendships.flatMap(f => 
+            f.user_id_1 === userId ? f.user_id_2 : f.user_id_1
+        );
 
-        // Buscar usuarios que coincidan con la combinación,
-        // excluir al usuario actual, su nickname y sus amigos
+        // Buscar usuarios que coincidan con el filtro y no estén en amistades ni sean el mismo usuario
         const users = await User.findAll({
             where: {
-                nickname: {
-                    [Op.like]: `%${combination}%`
-                },
-                id: {
-                    [Op.notIn]: [parseInt(userId), ...friendIds]
-                },
-                nickname: {
-                    [Op.ne]: requestingUser.nickname
-                }
+                [Op.and]: [
+                    {
+                        nickname: {
+                            [Op.like]: `%${combination}%`
+                        }
+                    },
+                    {
+                        nickname: {
+                            [Op.ne]: currentUser.nickname
+                        }
+                    },
+                    {
+                        id: {
+                            [Op.notIn]: [userId, ...friendIds]
+                        }
+                    }
+                ]
             },
             attributes: ['id', 'nickname', 'image_url']
         });
@@ -76,7 +83,6 @@ const getUsersByCombination = async (req, res) => {
             message: 'Usuarios encontrados',
             data: processedUsers,
         });
-
     } catch (error) {
         console.error('Error al buscar usuarios:', error);
         return res.status(500).json({
