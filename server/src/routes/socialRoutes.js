@@ -10,17 +10,28 @@ const {
 
 /**
  * @swagger
- * /api/social/getUsersByCombination/{combination}:
- *   get:
- *     summary: Obtiene usuarios basados en una combinación de su nickname
+ * /api/social/getUsersByCombination:
+ *   post:
+ *     summary: Busca usuarios por nickname excluyendo al usuario actual y sus amigos
  *     tags: [Social]
- *     parameters:
- *       - in: path
- *         name: combination
- *         required: true
- *         schema:
- *           type: string
- *         description: Combinación del nickname para buscar usuarios
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - combination
+ *               - userId
+ *             properties:
+ *               combination:
+ *                 type: string
+ *                 example: "juan"
+ *                 description: Parte del nickname a buscar
+ *               userId:
+ *                 type: integer
+ *                 example: 5
+ *                 description: ID del usuario que realiza la búsqueda (será excluido junto con sus amigos)
  *     responses:
  *       200:
  *         description: Usuarios encontrados exitosamente
@@ -48,11 +59,11 @@ const {
  *                         type: string
  *                         example: "default0.jpg"
  *       400:
- *         description: Combinación no proporcionada
+ *         description: Parámetros faltantes
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/getUsersByCombination/:combination', getUsersByCombination);
+router.post('/getUsersByCombination', getUsersByCombination);
 
 /**
  * @swagger

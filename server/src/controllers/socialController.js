@@ -14,39 +14,69 @@ const { logger } = require('../config/logger');
 
 const getUsersByCombination = async (req, res) => {
     try {
-        const { combination } = req.params;
+        const { combination, userId } = req.body;
 
-        if (!combination) {
+        if (!combination || !userId) {
             return res.status(400).json({
                 status: 'ERROR',
-                message: 'La combinación es obligatoria',
+                message: 'La combinación y el userId son obligatorios',
                 data: null,
             });
         }
 
+        // Obtener el nickname del usuario actual
+        const requestingUser = await User.findByPk(userId);
+        if (!requestingUser) {
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'Usuario no encontrado',
+                data: null,
+            });
+        }
+
+        // Obtener IDs de amistades del usuario (bidireccional)
+        const friendships = await Friendship.findAll({
+            where: {
+                [Op.or]: [
+                    { user_id_1: userId },
+                    { user_id_2: userId }
+                ]
+            }
+        });
+
+        const friendIds = friendships.map(f => (
+            f.user_id_1 === parseInt(userId) ? f.user_id_2 : f.user_id_1
+        ));
+
+        // Buscar usuarios que coincidan con la combinación,
+        // excluir al usuario actual, su nickname y sus amigos
         const users = await User.findAll({
             where: {
                 nickname: {
                     [Op.like]: `%${combination}%`
+                },
+                id: {
+                    [Op.notIn]: [parseInt(userId), ...friendIds]
+                },
+                nickname: {
+                    [Op.ne]: requestingUser.nickname
                 }
             },
-            attributes: ['id', 'nickname']
+            attributes: ['id', 'nickname', 'image_url']
         });
 
-        // Reemplaza image_url por default0.jpg solo si es null
-        const processedUsers = users.map(user => {
-            return {
-                id: user.id,
-                nickname: user.nickname,
-                image_url: user.image_url || 'default0.jpg'
-            };
-        });
+        const processedUsers = users.map(user => ({
+            id: user.id,
+            nickname: user.nickname,
+            image_url: user.image_url || 'default0.jpg'
+        }));
 
         return res.status(200).json({
             status: 'SUCCESS',
             message: 'Usuarios encontrados',
             data: processedUsers,
         });
+
     } catch (error) {
         console.error('Error al buscar usuarios:', error);
         return res.status(500).json({
