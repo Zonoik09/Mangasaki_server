@@ -40,7 +40,7 @@ class ServerLogic {
                 console.log(`Mensaje de tipo: ${obj.type} recibido de ${id}`);
             }
 
-            let sender_user_id, receiver_username, status, gallery_id, manga_name, receiverClient, receiverSocket, sender_username;
+            let sender_user_id, receiver_username, status, gallery_id, manga_id, receiverSocket, sender_username;
 
             const findReceiver = (username) => {
                 const client = [...this.clients.values()].find(c => c.username === username);
