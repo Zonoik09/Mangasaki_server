@@ -218,7 +218,7 @@ async function handleLikeNotification(sender_user_id, receiver_username, gallery
         gallery.likes += 1;
         await gallery.save();
 
-        const message = `${sender.nickname} te ha dado like a tu historia.`;
+        const message = `${sender.nickname} liked your story.`;
 
         const notification = await Notification_Like.create({
             sender_user_id,
@@ -273,7 +273,7 @@ async function handleRecommendationNotification(sender_user_id, receiver_usernam
 
         const receiver_user_id = receiver.id;
 
-        const message = `${sender.nickname} te ha recomendado el libro "${manga_id}".`;
+        const message = `${sender.nickname} recommended the book "${manga_id}" to you.`;
 
         const notification = await Notification_Recommendation.create({
             sender_user_id,
