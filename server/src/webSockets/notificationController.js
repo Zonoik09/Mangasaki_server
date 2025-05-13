@@ -230,6 +230,12 @@ async function handleLikeNotification(sender_user_id, receiver_username, gallery
 
         console.log("Notificación de like creada:", notification);
 
+        await Gallery_User_Likes.create({
+            sender_user_id,
+            receiver_user_id,
+            gallery_id
+        });
+
         // Notificación al receptor
         if (receiverSocket) {
             receiverSocket.send(JSON.stringify({

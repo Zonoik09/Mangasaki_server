@@ -8,7 +8,7 @@ const path = require('path');
 
 const Gallery = require('../models/Gallery');
 const Gallery_Manga = require('../models/Gallery_Manga');
-const Notification_Like = require('../models/Notification_Like');
+const Gallery_User_Like = require('../models/Gallery_User_Likes')
 
 const createGallery = async (req, res, next) => {
     try {
@@ -579,7 +579,7 @@ const checkIfGalleryIsLiked = async (req, res) => {
         const { galleryId, userId } = req.params;
 
         // Verificamos si existe un like del usuario para esa galería
-        const like = await Notification_Like.findOne({
+        const like = await Gallery_User_Like.findOne({
             where: {
                 gallery_id: galleryId,
                 sender_user_id: userId
