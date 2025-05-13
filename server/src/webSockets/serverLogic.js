@@ -91,7 +91,37 @@ class ServerLogic {
                     sender_username = obj.username;
                     handleGetFriendsOnlineOffline(this.clients, sender_username, socket);
                     break;
+                
+                case "disconnectRequest":
+                    sender_username = obj.username;
 
+                    // Encontrar al cliente correspondiente por username
+                    const clientEntry = [...this.clients.entries()].find(([_, c]) => c.username === sender_username);
+
+                    if (clientEntry) {
+                        const [clientId, client] = clientEntry;
+
+                        console.log(`Solicitud de desconexión recibida para: ${sender_username} (ID: ${clientId})`);
+
+                        // Eliminar del mapa de clientes
+                        this.clients.delete(clientId);
+
+                        // Cerrar socket si está abierto
+                        if (client.socket && client.socket.close) {
+                            client.socket.close();
+                        }
+
+                        // (Opcional) Responder confirmación de desconexión
+                        const response = JSON.stringify({
+                            type: "disconnectResponse",
+                            message: "Desconexión realizada correctamente",
+                        });
+
+                        socket.send(response);
+                    } else {
+                        console.log(`No se encontró cliente con username: ${sender_username}`);
+                    }
+                    break;
                 default:
                     console.log(`Tipo de mensaje no reconocido: ${obj.type}`);
                     break;
