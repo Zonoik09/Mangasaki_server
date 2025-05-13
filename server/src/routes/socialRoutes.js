@@ -237,4 +237,77 @@ router.delete('/deleteFriendship/:friendshipId', deleteFriendship);
  */
 router.get('/recommendations/:userId', getRecommendatiosFromFriends);
 
+
+/**
+ * @swagger
+ * /api/social/deleteNotification:
+ *   delete:
+ *     summary: Elimina una notificación según su tipo e ID
+ *     tags: [Social]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - type
+ *               - notificationId
+ *             properties:
+ *               type:
+ *                 type: string
+ *                 enum: [FRIEND_REQUEST, FRIEND, LIKE, RECOMMENDATION]
+ *                 example: "FRIEND"
+ *                 description: Tipo de notificación a eliminar
+ *               notificationId:
+ *                 type: integer
+ *                 example: 12
+ *                 description: ID de la notificación que se desea eliminar
+ *     responses:
+ *       200:
+ *         description: Notificación eliminada correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "SUCCESS"
+ *                 message:
+ *                   type: string
+ *                   example: "FRIEND eliminado correctamente"
+ *                 data:
+ *                   type: "null"
+ *       400:
+ *         description: Petición inválida (falta un campo o tipo incorrecto)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "El type y el notificationId son obligatorios"
+ *       404:
+ *         description: Notificación no encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "Registro no encontrado"
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.delete('/deleteNotification', deleteNotification);
+
 module.exports = router;
