@@ -574,39 +574,42 @@ const getUsersByCombination = async (req, res) => {
 
 
 
-const checkIfLiked = async (req, res) => {
+const checkIfGalleryIsLiked = async (req, res) => {
     try {
         const { galleryId, userId } = req.params;
 
-        if (!galleryId || !userId) {
-            return res.status(400).json({
-                status: 'ERROR',
-                message: 'Faltan parámetros',
-                data: null,
-            });
-        }
-
+        // Verificamos si existe un like del usuario para esa galería
         const like = await Notification_Like.findOne({
             where: {
-                sender_user_id: userId,
                 gallery_id: galleryId,
+                sender_user_id: userId
             }
         });
 
+        if (!like) {
+            // Si no se encuentra el like, devolvemos liked: false
+            return res.status(200).json({
+                status: 'SUCCESS',
+                liked: false,
+                message: `El usuario con ID ${userId} no ha dado like a la galería con ID ${galleryId}`
+            });
+        }
+
+        // Si se encuentra el like, respondemos con liked: true
         return res.status(200).json({
             status: 'SUCCESS',
-            liked: !!like,
+            liked: true,
+            message: 'El usuario ha dado like a esta galería'
         });
     } catch (error) {
-        console.error('Error al verificar like:', error);
+        console.error('Error al verificar si el usuario dio like a la galería:', error);
         return res.status(500).json({
             status: 'ERROR',
-            message: 'Error del servidor',
+            message: 'Error al verificar si el usuario dio like',
             data: null,
         });
     }
 };
-
 
 module.exports = {
     createGallery,
@@ -618,5 +621,5 @@ module.exports = {
     removeFromGallery,
     getUsersByCombination,
     changeGalleryImage,
-    checkIfLiked,
+    checkIfGalleryIsLiked,
 };
