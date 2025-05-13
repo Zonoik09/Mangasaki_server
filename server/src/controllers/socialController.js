@@ -300,10 +300,146 @@ const getRecommendatiosFromFriends = async (req, res) => {
     }
 };
 
+const deleteNotification = async (req, res) => {
+    try {
+        const { type, notificationId } = req.body;
+
+        if (!type || !notificationId) {
+            return res.status(400).json({
+                status: 'ERROR',
+                message: 'El type y el notificationId son obligatorios',
+                data: null,
+            });
+        }
+
+        let deleted = 0;
+
+        switch (type) {
+            case "FRIEND_REQUEST": // probablemente querías escribir "FRIEND_REQUEST"
+                deleted = await Notification_Friend_Request.destroy({ where: { id: notificationId } });
+                break;
+
+            case "FRIEND":
+                deleted = await Notification_Friend.destroy({ where: { id: notificationId } });
+                break;
+
+            case "LIKE":
+                deleted = await Notification_Like.destroy({ where: { id: notificationId } });
+                break;
+
+            case "RECOMMENDATION":
+                deleted = await Notification_Recommendation.destroy({ where: { id: notificationId } });
+                break;
+
+            default:
+                return res.status(400).json({
+                    status: 'ERROR',
+                    message: `Tipo de notificación inválido: ${type}`,
+                    data: null,
+                });
+        }
+
+        if (deleted === 0) {
+            return res.status(404).json({
+                status: 'ERROR',
+                message: 'Registro no encontrado',
+                data: null,
+            });
+        }
+
+        return res.status(200).json({
+            status: 'SUCCESS',
+            message: `${type} eliminado correctamente`,
+            data: null,
+        });
+
+    } catch (error) {
+        console.error('Error al eliminar registro:', error);
+        return res.status(500).json({
+            status: 'ERROR',
+            message: 'Error interno al eliminar registro',
+            data: null,
+        });
+    }
+};
+
+/**
+ * @swagger
+ * /api/social/deleteNotification:
+ *   delete:
+ *     summary: Elimina una notificación según su tipo e ID
+ *     tags: [Social]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - type
+ *               - notificationId
+ *             properties:
+ *               type:
+ *                 type: string
+ *                 enum: [FRIEND_REQUEST, FRIEND, LIKE, RECOMMENDATION]
+ *                 example: "FRIEND"
+ *                 description: Tipo de notificación a eliminar
+ *               notificationId:
+ *                 type: integer
+ *                 example: 12
+ *                 description: ID de la notificación que se desea eliminar
+ *     responses:
+ *       200:
+ *         description: Notificación eliminada correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "SUCCESS"
+ *                 message:
+ *                   type: string
+ *                   example: "FRIEND eliminado correctamente"
+ *                 data:
+ *                   type: "null"
+ *       400:
+ *         description: Petición inválida (falta un campo o tipo incorrecto)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "El type y el notificationId son obligatorios"
+ *       404:
+ *         description: Notificación no encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "ERROR"
+ *                 message:
+ *                   type: string
+ *                   example: "Registro no encontrado"
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.delete('/deleteNotification', deleteNotification);
+
 module.exports = {
     getUsersByCombination,
     getUserNotifications,
     declineFriendshipRequest,   
     deleteFriendship,
     getRecommendatiosFromFriends,
+    deleteNotification
 };

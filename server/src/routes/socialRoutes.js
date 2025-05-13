@@ -6,6 +6,7 @@ const {
     declineFriendshipRequest,   
     deleteFriendship,
     getRecommendatiosFromFriends,
+    deleteNotification,
 } = require('../controllers/socialController.js');
 
 /**
