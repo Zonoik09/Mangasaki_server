@@ -207,7 +207,7 @@ async function handleLikeNotification(sender_user_id, receiver_username, gallery
                 socket.send(JSON.stringify({
                     type: 'notificationSent',
                     status: 'ERROR',
-                    message: 'You already liked this story.'
+                    message: 'You already liked this collection.'
                 }));
             }
 
@@ -218,7 +218,7 @@ async function handleLikeNotification(sender_user_id, receiver_username, gallery
         gallery.likes += 1;
         await gallery.save();
 
-        const message = `${sender.nickname} liked your story.`;
+        const message = `${sender.nickname} liked your collection.`;
 
         const notification = await Notification_Like.create({
             sender_user_id,

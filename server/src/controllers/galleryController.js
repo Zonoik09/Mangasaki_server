@@ -8,6 +8,7 @@ const path = require('path');
 
 const Gallery = require('../models/Gallery');
 const Gallery_Manga = require('../models/Gallery_Manga');
+const Notification_Like = require('../models/Notification_Like');
 
 const createGallery = async (req, res, next) => {
     try {
@@ -571,6 +572,42 @@ const getUsersByCombination = async (req, res) => {
     }
 };
 
+
+
+const checkIfLiked = async (req, res) => {
+    try {
+        const { galleryId, userId } = req.params;
+
+        if (!galleryId || !userId) {
+            return res.status(400).json({
+                status: 'ERROR',
+                message: 'Faltan parámetros',
+                data: null,
+            });
+        }
+
+        const like = await Notification_Like.findOne({
+            where: {
+                sender_user_id: userId,
+                gallery_id: galleryId,
+            }
+        });
+
+        return res.status(200).json({
+            status: 'SUCCESS',
+            liked: !!like,
+        });
+    } catch (error) {
+        console.error('Error al verificar like:', error);
+        return res.status(500).json({
+            status: 'ERROR',
+            message: 'Error del servidor',
+            data: null,
+        });
+    }
+};
+
+
 module.exports = {
     createGallery,
     dropGallery,
@@ -581,4 +618,5 @@ module.exports = {
     removeFromGallery,
     getUsersByCombination,
     changeGalleryImage,
+    checkIfLiked,
 };

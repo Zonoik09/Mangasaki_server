@@ -10,6 +10,7 @@ const {
     getMangasGallery,
     removeFromGallery,
     changeGalleryImage,
+    checkIfLiked,
 } = require('../controllers/galleryController.js');
 
 
@@ -732,6 +733,47 @@ router.get('/getGalleryImage/:galleryId', getGalleryImage);
  *                   example: "Error al cambiar la imagen de la galeria"
  */
 router.post('/changeImage', changeGalleryImage);
+
+/**
+ * @swagger
+ * /api/gallery/isLiked/{galleryId}/{userId}:
+ *   get:
+ *     summary: Verifica si un usuario ha dado like a una galería
+ *     tags:
+ *       - Likes
+ *     parameters:
+ *       - in: path
+ *         name: galleryId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID de la galería
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del usuario que podría haber dado like
+ *     responses:
+ *       200:
+ *         description: Resultado de verificación
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: SUCCESS
+ *                 liked:
+ *                   type: boolean
+ *                   example: true
+ *       400:
+ *         description: Parámetros faltantes o inválidos
+ *       500:
+ *         description: Error del servidor
+ */
+router.get('/gallery/isLiked/:galleryId/:userId', checkIfLiked);
 
 
 module.exports = router;
