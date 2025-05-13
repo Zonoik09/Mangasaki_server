@@ -784,7 +784,7 @@ router.post('/changeImage', changeGalleryImage);
  *                   type: string
  *                   example: "Error al verificar si el usuario dio like"
  */
-
+router.get('/isLiked/:galleryId/:userId', checkIfGalleryIsLiked);
 
 
 module.exports = router;
