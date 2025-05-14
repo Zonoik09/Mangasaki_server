@@ -1,67 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mangasaki</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" type="image/png" href="logo.png" />
 </head>
-
 <body>
+
     <header>
-        <h1>Mangasaki</h1>
-        <p>Welcome to the best manga platform</p>
+        <img src="logo.png" alt="Mangasaki Logo" class="header-logo" />
+        <nav class="header-nav">
+            <a href="#home">HOME</a>
+            <a href="#development">DEVELOPMENT ENVIRONMENT</a>
+            <a href="#download">DOWNLOAD</a>
+        </nav>
     </header>
 
-    <section class="intro">
-        <div class="preDiv">
-            <div class="intro-text">
-                <h2>What is Mangasaki?</h2>
-                <p>
-                    Mangasaki is an innovative social network for manga and anime lovers. Create collections, scan books with AI,
-                    recommend titles to your friends, customize your profile, track what you're reading, have finished, and so much more.
-                </p>
+    <main>
+        <section id="home" class="section">
+            <div class="preDiv">
+                <div class="intro-text">
+                    <h2>What is Mangasaki?</h2>
+                    <p>
+                        Mangasaki is an innovative social network for manga and anime lovers.
+                        Create collections, scan books with AI, recommend titles to your friends,
+                        customize your profile, track what you're reading, have finished, and much more.
+                    </p>
+                    <p><br>
+                        Mangasaki is not a manga reader—it's a vibrant community where users can interact,
+                        discover hidden gems, and share their passion for manga and anime. Built with AI-powered scanning
+                        features and community-driven recommendations, Mangasaki empowers fans to:
+                    </p>
+                    <ul>
+                        <li>Organize personalized manga collections.</li>
+                        <li>Discover popular titles through user suggestions.</li>
+                        <li>Track reading progress with ease.</li>
+                        <li>Connect with friends and fellow fans in a shared space.</li>
+                    </ul>
+                </div>
+                <img src="default0.png" alt="Mangasaki Illustration" class="intro-logo" />
             </div>
-            <img src="logo.png" alt="Large Mangasaki Logo" class="intro-logo">
-        </div>
-    </section>
+        </section>
 
-    <section class="git">
-        <div class="preDiv">
-            <div class="git-text">
-                <h2>Development Environment</h2>
-                <p>
-                    This project was developed using Git for version control. You can check out the code on 
-                    <a href="https://github.com/Zonoik09/Mangasaki_server/wiki" target="_blank" class="github-link">GitHub</a>.
-                </p>
+        <section id="development" class="section">
+            <div class="preDiv">
+                <div class="git-text">
+                    <h2>Development Environment</h2>
+                    <p>
+                        Mangasaki is an open-source project developed with modern tools:
+                    </p>
+                    <ul>
+                        <li><strong>Backend:</strong> Node.js with WebSockets</li>
+                        <li><strong>Frontend:</strong> Flutter (for mobile platforms)</li>
+                        <li><strong>Version control:</strong> Git + GitHub</li>
+                    </ul>
+                    <p>
+                        You can explore the code on GitHub:
+                    </p>
+                    <ul>
+                        <li><a href="https://github.com/Zonoik09/Mangasaki_server" target="_blank">Server Repository (Node.js)</a></li>
+                        <li><a href="https://github.com/Zonoik09/mangasaki_client" target="_blank">Client Repository (Flutter)</a></li>
+                    </ul>
+                </div>
+                <img src="git.jpg" alt="Git Logo" class="git-logo" />
             </div>
-            <img src="git.jpg" alt="Large Git Logo" class="git-logo">
-        </div>
-    </section>
+        </section>
 
-    <section class="downloads">
-        <div class="preDiv">
-            <div class="download-text">
-                <h2>Download Mangasaki</h2>
-                <p>Enjoy the Mangasaki experience on your favorite device. The mobile version is already available!</p>
-                <a href="https://mangasaki.ieti.site/downloads/desktop.exe" class="btn-desktop">Download for Desktop</a>
-            </div>
-            <div class="qr-codes">
-                <div class="qr-box">
-                    <h3>Mobile Version</h3>
-                    <img src="app.png" alt="QR code for mobile download">
+        <section id="download" class="section">
+            <div class="preDiv">
+                <div class="download-text">
+                    <h2>Download Mangasaki</h2>
+                    <p>Enjoy Mangasaki on both mobile and desktop platforms.</p>
+
+                    <h3>📱 Mobile Version</h3>
+                    <div class="qr-codes">
+                        <div class="qr-box">
+                            <img src="app.png" alt="QR code for mobile download" />
+                            <p>If you can't scan the QR code, download the APK directly:</p>
+                            <a href="https://mangasaki.ieti.site/downloads/mobile.apk" class="btn-apk">Download APK</a>
+                        </div>
+                    </div>
+
+                    <h3>💻 Desktop Versions</h3>
+                    <a href="https://mangasaki.ieti.site/downloads/desktop.exe" class="btn-desktop">Download for Windows</a>
+                    <a href="https://mangasaki.ieti.site/downloads/desktop-linux.AppImage" class="btn-desktop">Download for Linux</a>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </main>
 
     <footer>
         <p>&copy; 2025 Mangasaki | All rights reserved</p>
         <p>Made by: Pablo Vicente, Jonathan Rueda, Mario Pes</p>
     </footer>
+
 </body>
-
-
 </html>
