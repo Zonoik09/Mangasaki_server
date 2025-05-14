@@ -345,35 +345,45 @@ async function handleGetFriendsOnlineOffline(clients, sender_username, socket) {
             }
         });
 
-        // Sacar IDs de los amigos
-        const friendIds = friendships.map(friendship =>
-            friendship.user_id_1 === user_id ? friendship.user_id_2 : friendship.user_id_1
+        // Obtener todos los IDs de amigos
+        const friendIds = friendships.map(f =>
+            f.user_id_1 === user_id ? f.user_id_2 : f.user_id_1
         );
 
-        // Buscar todos los amigos por ID
+        // Obtener info de los amigos
         const friends = await User.findAll({
             where: { id: friendIds },
             attributes: ['id', 'nickname']
         });
 
-        // Separar amigos online y offline
+        // Map de ID a User
+        const friendMap = new Map(friends.map(f => [f.id, f]));
+
+        // Agrupar con ID de amistad
         const onlineFriends = [];
         const offlineFriends = [];
 
-        for (const friend of friends) {
+        for (const friendship of friendships) {
+            const friendId = friendship.user_id_1 === user_id ? friendship.user_id_2 : friendship.user_id_1;
+            const friend = friendMap.get(friendId);
+            if (!friend) continue;
+
             const isOnline = [...clients.values()].some(client => client.username === friend.nickname);
 
-            // Verificar si el amigo está en línea o fuera de línea
+            const friendData = {
+                id: friend.id,
+                nickname: friend.nickname,
+                friendship_id: friendship.id
+            };
+
             if (isOnline) {
-                console.log(`Amigo en línea: ${friend.nickname}`);
-                onlineFriends.push(friend);
+                onlineFriends.push(friendData);
             } else {
-                console.log(`Amigo fuera de línea: ${friend.nickname}`);
-                offlineFriends.push(friend);
+                offlineFriends.push(friendData);
             }
         }
 
-        // Enviar al socket solo si está conectado
+        // Enviar la información al socket
         if (socket && socket.readyState === 1) {
             socket.send(JSON.stringify({
                 type: 'amigosOnlineOfflineCompartidos',
@@ -390,6 +400,7 @@ async function handleGetFriendsOnlineOffline(clients, sender_username, socket) {
         console.error("Error al obtener amigos online/offline:", error.message);
     }
 }
+
 
 
 module.exports = {
